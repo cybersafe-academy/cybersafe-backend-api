@@ -9,7 +9,6 @@ import (
 
 func Routes(c *components.Components) {
 
-	c.Logger.Info().Msg("[SERVICE] : Configuring Service")
 	c.Router.Route("/api", func(r chi.Router) {
 		r.Mount("/", service.SetupRoutes(c))
 	})
