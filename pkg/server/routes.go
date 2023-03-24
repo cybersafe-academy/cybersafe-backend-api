@@ -7,11 +7,11 @@ import (
 	"github.com/go-chi/chi"
 )
 
-func Routes(Components *components.Components) {
+func Routes(c *components.Components) {
 
-	// Components.Logger.Info().Msg("[SERVICE] : Setup routes")
-	Components.Router.Route("/api", func(r chi.Router) {
-		r.Mount("/", service.SetupRoutes(Components))
+	c.Logger.Info().Msg("[SERVICE] : Configuring Service")
+	c.Router.Route("/api", func(r chi.Router) {
+		r.Mount("/", service.SetupRoutes(c))
 	})
 
 	// Components.Router.Get("/swagger/*", httpSwagger.Handler())

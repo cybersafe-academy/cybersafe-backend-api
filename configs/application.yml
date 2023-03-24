@@ -2,7 +2,7 @@ database:
   host: loremipsulum
   user: loremipsulum
   password: loremipsulum
-  dbname: loremipsulum
+  name: loremipsulum
   port: loremipsulum
   sslmode: loremipsulum
   timezone: loremipsulum

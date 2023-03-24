@@ -7,7 +7,7 @@ import (
 )
 
 func Config(c *components.Components) {
-	// Components.Logger.Info().Msg("[SERVICE] : Configuring Service")
+	c.Logger.Info().Msg("[SERVICE] : Configuring Service")
 
 	c.Router = chi.NewRouter()
 

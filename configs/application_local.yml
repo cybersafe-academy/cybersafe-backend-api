@@ -2,5 +2,5 @@ database:
   host: localhost
   user: postgres
   password: potgres
-  dbname: cybersafeacademy
+  name: cybersafeacademy
   port: 5432
