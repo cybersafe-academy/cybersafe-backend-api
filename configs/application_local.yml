@@ -4,3 +4,6 @@ database:
   password: potgres
   name: cybersafeacademy
   port: 5432
+
+application:
+  name: CyberSafe Academy

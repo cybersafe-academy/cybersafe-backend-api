@@ -32,6 +32,8 @@ func CreateDBConnection(config settings.Settings) *gorm.DB {
 		Logger:      logger.Default.LogMode(logger.Info),
 	})
 
+	dbConnection = db
+
 	if err != nil {
 		log.Info().Err(err).Msg("Error occurred while connecting with the database")
 		os.Exit(-1)

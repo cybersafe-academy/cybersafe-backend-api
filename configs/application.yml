@@ -6,3 +6,6 @@ database:
   port: loremipsulum
   sslmode: loremipsulum
   timezone: loremipsulum
+
+application:
+  name: CyberSafe Academy

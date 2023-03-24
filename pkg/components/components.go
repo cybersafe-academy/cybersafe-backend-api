@@ -3,6 +3,7 @@ package components
 import (
 	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
+	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/settings"
 	"fmt"
 	"net/http"
@@ -37,12 +38,14 @@ func Config() *Components {
 	}
 
 	config := settings.Config("", applications)
+	log := logger.Config("/", config.String("application.name"), "v1", (env == environment.Prd))
 
 	db.CreateDBConnection(config)
 
 	return &Components{
 		Settings:    config,
 		Environment: environment.FromString(env),
+		Logger:      log,
 	}
 }
 
