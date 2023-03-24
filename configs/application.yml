@@ -1,0 +1,8 @@
+database:
+  host: loremipsulum
+  user: loremipsulum
+  password: loremipsulum
+  dbname: loremipsulum
+  port: loremipsulum
+  sslmode: loremipsulum
+  timezone: loremipsulum

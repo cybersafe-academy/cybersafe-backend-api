@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # localstack:
+  #   container_name: localstack
+  #   image: localstack/localstack:latest
+  #   network_mode: bridge
+  #   ports:
+  #     - "127.0.0.1:4510-4530:4510-4530"
+  #     - "127.0.0.1:4566:4566"
+  #     - "127.0.0.1:4571:4571"
+  #   environment:
+  #     - AWS_DEFAULT_REGION=us-east-2
+  #     - DEBUG=true
+  #     - LAMBDA_EXECUTOR=local
+  #     - DATA_DIR=/tmp/data
+  #     - HOST_TMP_FOLDER=/tmp/localstack
+  #     - DOCKER_HOST=unix:///var/run/docker.sock
+  #   volumes:
+  #     - "./init_scripts:/docker-entrypoint-initaws.d"
+  #     - "./awscli_definitions:/etc/awscli_definitions"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+
+  postgresql:
+    container_name: postgresql
+    image: bitnami/postgresql:latest
+    network_mode: bridge
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=cybersafeacademy

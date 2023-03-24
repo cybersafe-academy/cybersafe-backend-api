@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  user: postgres
+  password: potgres
+  dbname: cybersafeacademy
+  port: 5432
