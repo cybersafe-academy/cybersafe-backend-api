@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"cybersafe-backend-api/pkg/components"
