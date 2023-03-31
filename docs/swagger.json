@@ -1,0 +1,30 @@
+{
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "REST Api for all the system services",
+        "title": "CyberSafe Academy APIs",
+        "contact": {},
+        "version": "0.001Beta"
+    },
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token. e.g: Bearer eyJhbGciO....",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "Language": {
+            "type": "apiKey",
+            "name": "Accept-Language",
+            "in": "header"
+        }
+    }
+}

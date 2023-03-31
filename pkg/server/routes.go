@@ -5,6 +5,7 @@ import (
 	"cybersafe-backend-api/pkg/handlers"
 
 	"github.com/go-chi/chi"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func Routes(c *components.Components) {
@@ -13,5 +14,5 @@ func Routes(c *components.Components) {
 		r.Mount("/", handlers.SetupRoutes(c))
 	})
 
-	// Components.Router.Get("/swagger/*", httpSwagger.Handler())
+	c.Router.Get("/swagger/*", httpSwagger.Handler())
 }

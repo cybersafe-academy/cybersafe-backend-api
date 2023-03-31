@@ -1,0 +1,22 @@
+basePath: /api/v1
+consumes:
+- application/json
+info:
+  contact: {}
+  description: REST Api for all the system services
+  title: CyberSafe Academy APIs
+  version: 0.001Beta
+paths: {}
+produces:
+- application/json
+securityDefinitions:
+  Bearer:
+    description: 'Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....'
+    in: header
+    name: Authorization
+    type: apiKey
+  Language:
+    in: header
+    name: Accept-Language
+    type: apiKey
+swagger: "2.0"
