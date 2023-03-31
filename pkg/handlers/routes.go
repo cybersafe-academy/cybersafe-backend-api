@@ -1,8 +1,8 @@
-package services
+package handlers
 
 import (
 	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/services/user"
+	"cybersafe-backend-api/pkg/handlers/user"
 	"net/http"
 
 	"github.com/go-chi/chi"

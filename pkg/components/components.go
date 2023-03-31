@@ -31,16 +31,23 @@ func Config() *Components {
 
 	env := os.Getenv("ENV")
 
-	applications = append(applications, "configs/application.yml")
+	applications = append(applications, "../../configs/application.yml")
 
 	if environment.IsValid(env) {
-		applications = append(applications, fmt.Sprintf("configs/application_%s.yml", env))
+		applications = append(applications, fmt.Sprintf("../../configs/application_%s.yml", environment.FromString(env)))
 	}
 
 	config := settings.Config("", applications)
 	log := logger.Config("/", config.String("application.name"), "v1", (env == environment.Prd))
 
 	db.CreateDBConnection(config)
+
+	err := db.AutoMigrateDB()
+
+	if err != nil {
+		log.Info().Err(err).Msg("Error occurred while trying to run migrations...")
+		os.Exit(-1)
+	}
 
 	return &Components{
 		Settings:    config,

@@ -1,9 +1,7 @@
 package models
 
-import "gorm.io/gorm"
-
 type User struct {
-	*gorm.Model
+	Shared
 	Name string
 	Age  int
 	CPF  string

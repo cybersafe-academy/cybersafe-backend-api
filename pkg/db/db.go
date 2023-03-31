@@ -19,11 +19,12 @@ var dbConnection *gorm.DB
 func CreateDBConnection(config settings.Settings) *gorm.DB {
 
 	args := fmt.Sprintf(
-		"postgres://%s:%s@%s/%s",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=America/Sao_Paulo",
+		config.String("database.host"),
 		config.String("database.user"),
 		config.String("database.password"),
-		config.String("database.host"),
 		config.String("database.name"),
+		config.String("database.port"),
 	)
 
 	db, err := gorm.Open(postgres.Open(args), &gorm.Config{
@@ -43,15 +44,23 @@ func CreateDBConnection(config settings.Settings) *gorm.DB {
 }
 
 func GetDatabaseConnection() (*gorm.DB, error) {
-	sqlDB, err := dbConnection.DB()
-	if err != nil {
-		return dbConnection, err
-	}
-	if err := sqlDB.Ping(); err != nil {
-		return dbConnection, err
+
+	if dbConnection != nil {
+		return dbConnection, nil
 	}
 
-	return dbConnection, nil
+	err := fmt.Errorf("database connection was not configured")
+
+	log.Info().Err(err).Msg("Error occurred while connecting with the database")
+
+	return nil, err
+}
+
+func MustGetDbConn() *gorm.DB {
+
+	db, _ := GetDatabaseConnection()
+
+	return db
 }
 
 func AutoMigrateDB() error {
@@ -60,7 +69,11 @@ func AutoMigrateDB() error {
 		return connErr
 	}
 
-	err := db.AutoMigrate(&models.User{})
+	modelsSlice := []any{
+		&models.User{},
+	}
+
+	err := db.AutoMigrate(modelsSlice...)
 
 	return err
 }
