@@ -1,22 +1,118 @@
-basePath: /api/
-consumes:
-- application/json
+basePath: /v2
+definitions:
+  components.Error:
+    properties:
+      code:
+        example: 400
+        type: integer
+      description:
+        example: Bad Request
+        type: string
+      error_details:
+        items:
+          $ref: '#/definitions/components.ErrorDetail'
+        type: array
+      id:
+        example: c77fa521-99b1-4c54-9a8d-4b6902912eb0
+        type: string
+    type: object
+  components.ErrorDetail:
+    properties:
+      attribute:
+        example: field name with error or key for help messages
+        type: string
+      messages:
+        example:
+        - explanatory messages about the attribute error
+        items:
+          type: string
+        type: array
+    type: object
+  components.Response:
+    properties:
+      error:
+        $ref: '#/definitions/components.Error'
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  pagination.PaginationData:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      page:
+        type: integer
+    type: object
+  user.ResponseContent:
+    properties:
+      age:
+        type: integer
+      cpf:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+host: petstore.swagger.io
 info:
-  contact: {}
-  description: REST Api for all the system services
-  title: CyberSafe Academy APIs
-  version: 0.001Beta
-paths: {}
-produces:
-- application/json
-securityDefinitions:
-  Bearer:
-    description: 'Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....'
-    in: header
-    name: Authorization
-    type: apiKey
-  Language:
-    in: header
-    name: Accept-Language
-    type: apiKey
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /base-paths:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  content:
+                    $ref: '#/definitions/user.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      tags:
+      - Domain
 swagger: "2.0"

@@ -14,5 +14,6 @@ func Routes(c *components.Components) {
 		r.Mount("/", handlers.SetupRoutes(c))
 	})
 
-	c.Router.Get("/swagger/*", httpSwagger.Handler())
+	c.Router.Get("/*", httpSwagger.Handler())
+
 }

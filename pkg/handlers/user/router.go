@@ -10,7 +10,7 @@ import (
 
 func SetupRoutes(c *components.Components) http.Handler {
 
-	subRouter := chi.NewRouter()
+	subRouter := chi.NewMux()
 
 	subRouter.Use(middlewares.Authenticate)
 	subRouter.Use(middlewares.PaginationParams)
@@ -18,13 +18,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		ListUsersHandler(components.HttpComponents(w, r, c))
 	})
-
-	// _subRouter := chi.NewRouter()
-	// _subRouter.Get("/forgot-password", func(w http.ResponseWriter, r *http.Request) {
-	// 	GetAll(components.HttpComponents(w, r, c))
-	// })
-
-	// subRouter.Mount("/", _subRouter)
 
 	return subRouter
 

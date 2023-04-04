@@ -10,14 +10,17 @@ import (
 	"net/http"
 )
 
-//	@summary		List Users
-//	@description	List users from the database with pagination.
-//	@tags			Users
-//	@param			{PaginationData}	paginationData.query	-	Pagination	query	parameters.
-//	@return			{ResponseContent} 200 - List of users
-//	@security		JWT
-//	@router /api/users [get]
-
+// ListDomainsHandler @Summary   List domains
+//
+//	@Tags		Domain
+//	@success	200		{array}	pagination.PaginationData{content=ResponseContent}	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		page	query		int					false	"Page number"
+//	@Param		limit	query		int					false	"Limit of elements per page"
+//	@Router		/base-paths [get]
+//	@Security	Bearer
+//	@Security	Language
 func ListUsersHandler(c *components.HTTPComponents) {
 
 	dbConn := db.MustGetDbConn()
