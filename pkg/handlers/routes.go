@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	_ "cybersafe-backend-api/docs"
 	"cybersafe-backend-api/pkg/components"
 	"cybersafe-backend-api/pkg/handlers/user"
 	"net/http"

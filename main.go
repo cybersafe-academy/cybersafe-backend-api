@@ -12,7 +12,7 @@ import (
 //	@title						CyberSafe Academy APIs
 //	@Description				REST Api for all the system services
 //	@version					0.001Beta
-//	@BasePath					/api/v1
+//	@BasePath					/api/
 //	@Accept						json
 //	@Produce					json
 //	@query.collection.format	multi

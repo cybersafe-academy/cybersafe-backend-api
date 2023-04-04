@@ -41,7 +41,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.001Beta",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "/api/",
 	Schemes:          []string{},
 	Title:            "CyberSafe Academy APIs",
 	Description:      "REST Api for all the system services",

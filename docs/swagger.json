@@ -12,7 +12,7 @@
         "contact": {},
         "version": "0.001Beta"
     },
-    "basePath": "/api/v1",
+    "basePath": "/api/",
     "paths": {},
     "securityDefinitions": {
         "Bearer": {

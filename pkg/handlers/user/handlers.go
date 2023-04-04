@@ -10,6 +10,14 @@ import (
 	"net/http"
 )
 
+//	@summary		List Users
+//	@description	List users from the database with pagination.
+//	@tags			Users
+//	@param			{PaginationData}	paginationData.query	-	Pagination	query	parameters.
+//	@return			{ResponseContent} 200 - List of users
+//	@security		JWT
+//	@router /api/users [get]
+
 func ListUsersHandler(c *components.HTTPComponents) {
 
 	dbConn := db.MustGetDbConn()

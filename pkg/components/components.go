@@ -31,10 +31,10 @@ func Config() *Components {
 
 	env := os.Getenv("ENV")
 
-	applications = append(applications, "../../configs/application.yml")
+	applications = append(applications, "configs/application.yml")
 
 	if environment.IsValid(env) {
-		applications = append(applications, fmt.Sprintf("../../configs/application_%s.yml", environment.FromString(env)))
+		applications = append(applications, fmt.Sprintf("configs/application_%s.yml", environment.FromString(env)))
 	}
 
 	config := settings.Config("", applications)
