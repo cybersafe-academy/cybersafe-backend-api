@@ -1,6 +1,7 @@
 package components
 
 import (
+	"cybersafe-backend-api/docs"
 	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
@@ -39,6 +40,14 @@ func Config() *Components {
 
 	config := settings.Config("", applications)
 	log := logger.Config("/", config.String("application.name"), "v1", (env == environment.Prd))
+
+	docs.SwaggerInfo.Host = fmt.Sprintf(
+		"%s:%s",
+		config.StrWDefault("docs.host", "localhost"),
+		config.StrWDefault("docs.port", "8080"),
+	)
+
+	docs.SwaggerInfo.BasePath = config.StrWDefault("docs.basePath", "/api")
 
 	db.CreateDBConnection(config)
 

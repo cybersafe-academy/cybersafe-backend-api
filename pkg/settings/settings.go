@@ -16,6 +16,16 @@ func (s *settings) get(key string) any {
 	return value
 }
 
+func (s *settings) getWithDefault(key string, dflt any) any {
+	value := s.source.Get(key)
+
+	if value == nil {
+		return dflt
+	}
+
+	return value
+}
+
 func (s *settings) Get(key string) any {
 	return s.source.Get(key)
 
@@ -23,6 +33,10 @@ func (s *settings) Get(key string) any {
 
 func (s *settings) String(key string) string {
 	return cast.ToString(s.get(key))
+}
+
+func (s *settings) StrWDefault(key string, dflt string) string {
+	return cast.ToString(s.getWithDefault(key, dflt))
 }
 
 func (s *settings) Bool(key string) bool {

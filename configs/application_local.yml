@@ -7,3 +7,8 @@ database:
 
 application:
   name: CyberSafe Academy
+
+docs:
+  host: localhost
+  basePath: /api
+  port: 8080

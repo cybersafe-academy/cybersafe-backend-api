@@ -27,6 +27,7 @@ type ResponseContent struct {
 
 type RequestContent struct {
 	UserFields
+	Password string `json:"password"`
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {

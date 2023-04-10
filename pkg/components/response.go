@@ -1,6 +1,7 @@
 package components
 
 import (
+	"log"
 	"net/http"
 	"reflect"
 
@@ -36,7 +37,7 @@ func (e *Response) Render(_ http.ResponseWriter, request *http.Request) error {
 	return nil
 }
 
-func errorResponse(module string, httpCode int, err error) render.Renderer {
+func errorResponse(httpCode int, err error) render.Renderer {
 
 	// Custom service responses
 	vof := reflect.ValueOf(err)
@@ -51,12 +52,6 @@ func errorResponse(module string, httpCode int, err error) render.Renderer {
 			Err:            err,
 			HTTPStatusCode: httpCode,
 			ErrorText:      err.Error(),
-			ErrorDetails: []ErrorDetail{
-				{
-					Attribute: "module",
-					Messages:  []string{module},
-				},
-			},
 		},
 	}
 
@@ -64,7 +59,13 @@ func errorResponse(module string, httpCode int, err error) render.Renderer {
 }
 
 func HttpErrorResponse(components *HTTPComponents, httpCode int, err error) {
-	_ = render.Render(components.HttpResponse, components.HttpRequest, errorResponse(components.Components.Settings.String("application.name"), httpCode, err))
+	log.Printf("Error %s", err.Error())
+	_ = render.Render(components.HttpResponse, components.HttpRequest, errorResponse(httpCode, err))
+}
+
+func HttpErrorMiddlewareResponse(w http.ResponseWriter, r *http.Request, httpCode int, err error) {
+	log.Printf("Error %s", err.Error())
+	_ = render.Render(w, r, errorResponse(httpCode, err))
 }
 
 func HttpResponse(components *HTTPComponents, httpCode int) {
