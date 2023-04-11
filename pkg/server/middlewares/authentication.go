@@ -13,6 +13,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 const UserKey = Key("user")
@@ -31,7 +32,9 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := jwt.ParseWithClaims(authorizationHeader, &jwtutil.CustomClaims{}, func(token *jwt.Token) (any, error) {
+		jwtClaims := &jwtutil.CustomClaims{}
+
+		token, err := jwt.ParseWithClaims(authorizationHeader, jwtClaims, func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
@@ -71,22 +74,12 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
-		claims, err := jwtutil.GetClaims(*token)
-
-		if err != nil {
-			components.HttpErrorMiddlewareResponse(
-				w, r,
-				http.StatusUnauthorized,
-				errutil.ErrInvalidClaims,
-			)
-			return
-		}
-
-		userID := claims.UserID
+		userID := uuid.MustParse(jwtClaims.UserID)
 		user := models.User{}
+
 		db.MustGetDbConn().First(&user, userID)
 
-		ctx := context.WithValue(r.Context(), UserKey, user)
+		ctx := context.WithValue(r.Context(), UserKey, &user)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
