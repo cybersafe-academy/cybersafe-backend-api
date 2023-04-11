@@ -20,11 +20,10 @@ import (
 //	@license.name	MIT
 //	@license.url	https://opensource.org/license/mit/
 
-//	@security					ApiKeyAuth
-//	@securityDefinitions.basic	BasicAuth
-
-//	@securitydefinitions.oauth2.application	OAuth2Application
-//	@tokenUrl								https://example.com/oauth/token
+//	@securityDefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....
 
 func main() {
 

@@ -1,4 +1,20 @@
 definitions:
+  authentication.LoginRequest:
+    properties:
+      cpf:
+        type: string
+      password:
+        type: string
+    type: object
+  authentication.TokenContent:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: number
+      tokenType:
+        type: string
+    type: object
   components.Error:
     properties:
       code:
@@ -90,6 +106,30 @@ info:
   title: CyberSafe Academy API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates an user and generates an access token
+      parameters:
+      - description: User login information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authentication.TokenContent'
+        "400":
+          description: Bad Request
+      summary: User login
+      tags:
+      - Authentication
   /users:
     get:
       parameters:
@@ -246,10 +286,9 @@ paths:
       tags:
       - User
 securityDefinitions:
-  BasicAuth:
-    type: basic
-  OAuth2Application:
-    flow: application
-    tokenUrl: https://example.com/oauth/token
-    type: oauth2
+  Bearer:
+    description: 'Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

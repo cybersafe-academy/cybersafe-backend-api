@@ -7,7 +7,9 @@ import (
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/models"
+	"cybersafe-backend-api/pkg/settings"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -26,9 +28,16 @@ func Authenticator(next http.Handler) http.Handler {
 				http.StatusUnauthorized,
 				errutil.ErrCredentialsMissing,
 			)
+			return
 		}
 
-		token, err := jwt.Parse(authorizationHeader, jwtutil.Parse)
+		token, err := jwt.ParseWithClaims(authorizationHeader, &jwtutil.CustomClaims{}, func(token *jwt.Token) (any, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+
+			return []byte(settings.ExportedSettings.String("jwt.secretKey")), nil
+		})
 
 		if errors.Is(err, jwt.ErrTokenMalformed) {
 			components.HttpErrorMiddlewareResponse(
@@ -36,24 +45,21 @@ func Authenticator(next http.Handler) http.Handler {
 				http.StatusUnauthorized,
 				errutil.ErrInvalidJWT,
 			)
+			return
 		} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
 			components.HttpErrorMiddlewareResponse(
 				w, r,
 				http.StatusUnauthorized,
 				errutil.ErrInvalidSignature,
 			)
+			return
 		} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {
 			components.HttpErrorMiddlewareResponse(
 				w, r,
 				http.StatusUnauthorized,
 				errutil.ErrTokenExpiredOrPending,
 			)
-		} else {
-			components.HttpErrorMiddlewareResponse(
-				w, r,
-				http.StatusUnauthorized,
-				errutil.ErrInvalidJWT,
-			)
+			return
 		}
 
 		if !token.Valid {
@@ -62,6 +68,7 @@ func Authenticator(next http.Handler) http.Handler {
 				http.StatusUnauthorized,
 				errutil.ErrInvalidJWT,
 			)
+			return
 		}
 
 		claims, err := jwtutil.GetClaims(*token)
@@ -72,6 +79,7 @@ func Authenticator(next http.Handler) http.Handler {
 				http.StatusUnauthorized,
 				errutil.ErrInvalidClaims,
 			)
+			return
 		}
 
 		userID := claims.UserID

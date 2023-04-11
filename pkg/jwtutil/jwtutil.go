@@ -8,23 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func Parse(token *jwt.Token) (any, error) {
-	jwtToken, ok := token.Method.(*jwt.SigningMethodECDSA)
-
-	if !ok {
-		return nil, errutil.ErrInvalidJWT
-	}
-
-	return jwtToken, nil
-
-}
-
-func Generate(userID, issuer, subject, secretKey string) (string, error) {
+func Generate(userID, issuer, subject, secretKey string, expirationTime time.Duration) (string, error) {
 
 	claims := CustomClaims{
-		UserID: userID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		userID,
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    userID,
@@ -33,9 +22,9 @@ func Generate(userID, issuer, subject, secretKey string) (string, error) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodEdDSA, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString(secretKey)
+	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
 	}

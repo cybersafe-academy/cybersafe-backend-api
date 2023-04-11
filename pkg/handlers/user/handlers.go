@@ -36,8 +36,10 @@ func ListUsersHandler(c *components.HTTPComponents) {
 
 	if errors.Is(err, errutil.ErrInvalidPageParam) {
 		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
 	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
 		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
 	}
 
 	var users []models.User
@@ -75,10 +77,11 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
+			return
 		} else {
 			components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+			return
 		}
-		return
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(user), http.StatusOK)

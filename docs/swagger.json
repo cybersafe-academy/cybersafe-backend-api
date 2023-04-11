@@ -16,6 +16,43 @@
         "version": "1.0"
     },
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Authenticates an user and generates an access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User login information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/authentication.TokenContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -286,6 +323,31 @@
         }
     },
     "definitions": {
+        "authentication.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "cpf": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "authentication.TokenContent": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "number"
+                },
+                "tokenType": {
+                    "type": "string"
+                }
+            }
+        },
         "components.Error": {
             "type": "object",
             "properties": {
@@ -406,13 +468,11 @@
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
-        },
-        "OAuth2Application": {
-            "type": "oauth2",
-            "flow": "application",
-            "tokenUrl": "https://example.com/oauth/token"
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token. e.g: Bearer eyJhbGciO....",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

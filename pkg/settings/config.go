@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var ExportedSettings *settings
+
 func Config(envPrefix string, files []string) *settings {
 
 	s := settings{source: config(envPrefix, files)}

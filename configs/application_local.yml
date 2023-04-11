@@ -7,8 +7,13 @@ database:
 
 application:
   name: CyberSafe Academy
+  issuer: cybersafe
 
 docs:
   host: localhost
   basePath: /api
   port: 8080
+
+jwt:
+  secretKey: secretKey
+  subject: userCredentials

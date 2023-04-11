@@ -39,6 +39,9 @@ func Config() *Components {
 	}
 
 	config := settings.Config("", applications)
+
+	settings.ExportedSettings = config
+
 	log := logger.Config("/", config.String("application.name"), "v1", (env == environment.Prd))
 
 	docs.SwaggerInfo.Host = fmt.Sprintf(
@@ -72,4 +75,8 @@ func HttpComponents(writer http.ResponseWriter, request *http.Request, c *Compon
 		Components:   c,
 	}
 	return &httpComp
+}
+
+func GetSettings() {
+
 }

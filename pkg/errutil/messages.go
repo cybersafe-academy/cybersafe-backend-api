@@ -12,12 +12,12 @@ var (
 	ErrInvalidLimitParam = errors.New("invalid limit param")
 
 	//JWT
-	ErrInvalidJWT            = errors.New("the given jwt token is invalid")
+	ErrInvalidJWT            = errors.New("invalid JWT token")
 	ErrCredentialsMissing    = errors.New("credentials missing")
 	ErrInvalidSignature      = errors.New("invalid signature")
 	ErrTokenExpiredOrPending = errors.New("token expired or pending")
 	ErrInvalidClaims         = errors.New("invalid claims")
 
 	//User
-	ErrUserResourceNotFound = errors.New("user not found with given id")
+	ErrUserResourceNotFound = errors.New("user not found with given identifier")
 )
