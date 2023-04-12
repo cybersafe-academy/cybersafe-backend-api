@@ -181,6 +181,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/logoff": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "description": "Logs off an user",
+                "tags": [
+                    "User"
+                ],
+                "summary": "User logoff",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "security": [

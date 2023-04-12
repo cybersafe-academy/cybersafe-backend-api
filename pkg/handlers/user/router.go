@@ -29,6 +29,9 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
 		UpdateUserHandler(components.HttpComponents(w, r, c))
 	})
+	subRouter.Post("/logoff", func(w http.ResponseWriter, r *http.Request) {
+		LogOffHandler(components.HttpComponents(w, r, c))
+	})
 
 	return subRouter
 

@@ -2,13 +2,15 @@ package components
 
 import (
 	"cybersafe-backend-api/docs"
-	"cybersafe-backend-api/pkg/db"
+	"cybersafe-backend-api/pkg/components/cacheutil"
+	"cybersafe-backend-api/pkg/components/db"
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/settings"
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
@@ -53,6 +55,8 @@ func Config() *Components {
 	docs.SwaggerInfo.BasePath = config.StrWDefault("docs.basePath", "/api")
 
 	db.CreateDBConnection(config)
+
+	cacheutil.Config(1*time.Hour, 30*time.Minute)
 
 	err := db.AutoMigrateDB()
 

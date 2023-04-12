@@ -2,7 +2,9 @@ package user
 
 import (
 	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/db"
+	"cybersafe-backend-api/pkg/components/db"
+	"cybersafe-backend-api/pkg/components/jwtutil"
+	"time"
 
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/models"
@@ -189,4 +191,36 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(*updatedUser), http.StatusOK)
+}
+
+// LogOffHandler is the HTTP handler for user log off
+//
+//	@Summary		User logoff
+//	@Description	Logs off an user
+//	@Tags			User
+//	@Success		204
+//	@Failure		400	"Bad Request"
+//
+//	@Router			/users/logoff [post]
+//	@Security		Bearer
+//	@Security		Language
+func LogOffHandler(c *components.HTTPComponents) {
+	authorizationHeader := c.HttpRequest.Header.Get("Authorization")
+
+	jwtClaims := &jwtutil.CustomClaims{}
+
+	token, err := jwtutil.Parse(authorizationHeader, jwtClaims)
+
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUnexpectedError)
+		return
+	}
+
+	jwtutil.AddToBlackList(
+		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Local()),
+		jwtClaims.RegisteredClaims.ID,
+		token.Raw,
+	)
+
+	components.HttpResponse(c, http.StatusNoContent)
 }

@@ -3,13 +3,11 @@ package middlewares
 import (
 	"context"
 	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/db"
+	"cybersafe-backend-api/pkg/components/db"
+	"cybersafe-backend-api/pkg/components/jwtutil"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/models"
-	"cybersafe-backend-api/pkg/settings"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -17,6 +15,7 @@ import (
 )
 
 const UserKey = Key("user")
+const JWTIDKey = Key("jwtID")
 
 func Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -34,13 +33,7 @@ func Authenticator(next http.Handler) http.Handler {
 
 		jwtClaims := &jwtutil.CustomClaims{}
 
-		token, err := jwt.ParseWithClaims(authorizationHeader, jwtClaims, func(token *jwt.Token) (any, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-
-			return []byte(settings.ExportedSettings.String("jwt.secretKey")), nil
-		})
+		token, err := jwtutil.Parse(authorizationHeader, jwtClaims)
 
 		if errors.Is(err, jwt.ErrTokenMalformed) {
 			components.HttpErrorMiddlewareResponse(

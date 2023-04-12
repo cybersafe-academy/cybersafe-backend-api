@@ -2,15 +2,17 @@ package authentication
 
 import (
 	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/db"
+	"cybersafe-backend-api/pkg/components/db"
+	"cybersafe-backend-api/pkg/components/jwtutil"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/models"
 	"errors"
 	"time"
 
 	"net/http"
 
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -56,13 +58,23 @@ func LoginHandler(c *components.HTTPComponents) {
 	}
 
 	expirationTime := 24 * time.Hour
+	JWTID := uuid.NewString()
+
+	claims := jwtutil.CustomClaims{
+		UserID: user.ID.String(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    c.Components.Settings.String("application.issuer"),
+			Subject:   c.Components.Settings.String("jwt.subject"),
+			ID:        JWTID,
+		},
+	}
 
 	tokenString, err := jwtutil.Generate(
-		user.ID.String(),
-		c.Components.Settings.String("application.issuer"),
-		c.Components.Settings.String("jwt.subject"),
+		claims,
 		c.Components.Settings.String("jwt.secretKey"),
-		expirationTime,
 	)
 
 	if err != nil {

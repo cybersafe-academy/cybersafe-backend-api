@@ -285,6 +285,20 @@ paths:
       summary: Update user by ID
       tags:
       - User
+  /users/logoff:
+    post:
+      description: Logs off an user
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      - Language: []
+      summary: User logoff
+      tags:
+      - User
 securityDefinitions:
   Bearer:
     description: 'Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....'
