@@ -67,6 +67,15 @@ func Authenticator(next http.Handler) http.Handler {
 			return
 		}
 
+		if jwtutil.IsBlackListed(jwtClaims.RegisteredClaims.ID) {
+			components.HttpErrorMiddlewareResponse(
+				w, r,
+				http.StatusUnauthorized,
+				errutil.ErrInvalidJWT,
+			)
+			return
+		}
+
 		userID := uuid.MustParse(jwtClaims.UserID)
 		user := models.User{}
 
