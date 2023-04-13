@@ -81,7 +81,7 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 			return
 		}
 	}
@@ -115,7 +115,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	result := dbConn.Create(user)
 
 	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
 
@@ -142,7 +142,7 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 	result := dbConn.Delete(&models.User{}, uuid.MustParse(id))
 
 	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
 
@@ -175,7 +175,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	user := &models.User{}
-	result := dbConn.First(user, "id = ?", id)
+	result := dbConn.First(user, id)
 
 	if result.Error != nil {
 		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
@@ -186,7 +186,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	result = dbConn.Model(user).Updates(updatedUser)
 
 	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
 
@@ -209,15 +209,11 @@ func LogOffHandler(c *components.HTTPComponents) {
 
 	jwtClaims := &jwtutil.CustomClaims{}
 
-	token, err := jwtutil.Parse(authorizationHeader, jwtClaims)
-
-	if err != nil {
-		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUnexpectedError)
-		return
-	}
+	// This error cannot occur because the token was already parsed in the middleware
+	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims)
 
 	jwtutil.AddToBlackList(
-		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Local()),
+		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Time),
 		jwtClaims.RegisteredClaims.ID,
 		token.Raw,
 	)

@@ -46,7 +46,7 @@ func LoginHandler(c *components.HTTPComponents) {
 			components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 			return
 		}
 	}
@@ -57,10 +57,11 @@ func LoginHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	expirationTime := 24 * time.Hour
+	expirationTime := 1 * time.Hour
 	JWTID := uuid.NewString()
 
 	claims := jwtutil.CustomClaims{
+
 		UserID: user.ID.String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),

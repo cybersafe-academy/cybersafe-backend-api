@@ -58,7 +58,10 @@ func GetDatabaseConnection() (*gorm.DB, error) {
 
 func MustGetDbConn() *gorm.DB {
 
-	db, _ := GetDatabaseConnection()
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		panic("couldn't get database connection")
+	}
 
 	return db
 }
