@@ -1,8 +1,8 @@
 package user
 
 import (
-	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/server/middlewares"
+	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/server/middlewares"
 	"net/http"
 
 	"github.com/go-chi/chi"

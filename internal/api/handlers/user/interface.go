@@ -1,7 +1,7 @@
 package user
 
 import (
-	"cybersafe-backend-api/pkg/models"
+	"cybersafe-backend-api/internal/models"
 	"net/http"
 	"time"
 

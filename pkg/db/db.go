@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/helpers"
-	"cybersafe-backend-api/pkg/models"
 	"cybersafe-backend-api/pkg/settings"
 )
 

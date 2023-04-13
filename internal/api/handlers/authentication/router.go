@@ -1,7 +1,7 @@
 package authentication
 
 import (
-	"cybersafe-backend-api/pkg/components"
+	"cybersafe-backend-api/internal/api/components"
 	"net/http"
 
 	"github.com/go-chi/chi"

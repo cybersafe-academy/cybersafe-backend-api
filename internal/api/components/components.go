@@ -2,8 +2,8 @@ package components
 
 import (
 	"cybersafe-backend-api/docs"
-	"cybersafe-backend-api/pkg/components/cacheutil"
-	"cybersafe-backend-api/pkg/components/db"
+	"cybersafe-backend-api/pkg/cacheutil"
+	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/settings"
@@ -12,6 +12,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
 )
@@ -31,6 +32,13 @@ type HTTPComponents struct {
 
 func Config() *Components {
 	var applications []string
+
+	govalidator.TagMap["duck"] = govalidator.Validator(
+		func(str string) bool {
+			return str == "duck"
+
+		},
+	)
 
 	env := os.Getenv("ENV")
 

@@ -1,6 +1,6 @@
 package user
 
-import "cybersafe-backend-api/pkg/models"
+import "cybersafe-backend-api/internal/models"
 
 func ToListResponse(users []models.User) []ResponseContent {
 

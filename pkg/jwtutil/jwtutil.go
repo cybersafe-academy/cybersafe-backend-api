@@ -1,7 +1,7 @@
 package jwtutil
 
 import (
-	"cybersafe-backend-api/pkg/components/cacheutil"
+	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/settings"
 	"fmt"

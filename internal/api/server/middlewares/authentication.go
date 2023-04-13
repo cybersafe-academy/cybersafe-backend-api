@@ -2,11 +2,11 @@ package middlewares
 
 import (
 	"context"
-	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/components/db"
-	"cybersafe-backend-api/pkg/components/jwtutil"
+	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/models"
+	"cybersafe-backend-api/pkg/jwtutil"
 	"errors"
 	"net/http"
 

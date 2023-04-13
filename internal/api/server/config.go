@@ -2,7 +2,7 @@ package server
 
 import (
 	_ "cybersafe-backend-api/docs"
-	"cybersafe-backend-api/pkg/components"
+	"cybersafe-backend-api/internal/api/components"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"

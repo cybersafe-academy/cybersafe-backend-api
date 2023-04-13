@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/server"
+	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/server"
 	"fmt"
 	"log"
 	"net/http"

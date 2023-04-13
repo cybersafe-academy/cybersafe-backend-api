@@ -1,8 +1,8 @@
 package server
 
 import (
-	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/handlers"
+	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/handlers"
 
 	"github.com/go-chi/chi"
 	httpSwagger "github.com/swaggo/http-swagger"

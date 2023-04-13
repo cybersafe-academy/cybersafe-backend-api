@@ -2,9 +2,9 @@ package handlers
 
 import (
 	_ "cybersafe-backend-api/docs"
-	"cybersafe-backend-api/pkg/components"
-	"cybersafe-backend-api/pkg/handlers/authentication"
-	"cybersafe-backend-api/pkg/handlers/user"
+	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/handlers/authentication"
+	"cybersafe-backend-api/internal/api/handlers/user"
 	"net/http"
 
 	"github.com/go-chi/chi"
