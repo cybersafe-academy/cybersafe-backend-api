@@ -11,9 +11,9 @@ import (
 )
 
 type UserFields struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-	CPF  string `json:"cpf"`
+	Name string `json:"name" valid:"type(string), required"`
+	Age  int    `json:"age" valid:"type(int), required"`
+	CPF  string `json:"cpf" valid:"type(string), cpf, required"`
 }
 
 type ResponseContent struct {
@@ -27,7 +27,7 @@ type ResponseContent struct {
 
 type RequestContent struct {
 	UserFields
-	Password string `json:"password"`
+	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {

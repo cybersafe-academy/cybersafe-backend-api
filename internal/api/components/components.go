@@ -7,12 +7,12 @@ import (
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/settings"
+	"cybersafe-backend-api/pkg/validation"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
 )
@@ -31,18 +31,10 @@ type HTTPComponents struct {
 }
 
 func Config() *Components {
-	var applications []string
-
-	govalidator.TagMap["duck"] = govalidator.Validator(
-		func(str string) bool {
-			return str == "duck"
-
-		},
-	)
 
 	env := os.Getenv("ENV")
 
-	applications = append(applications, "configs/application.yml")
+	applications := []string{"configs/application.yml"}
 
 	if environment.IsValid(env) {
 		applications = append(applications, fmt.Sprintf("configs/application_%s.yml", environment.FromString(env)))
@@ -65,6 +57,8 @@ func Config() *Components {
 	db.CreateDBConnection(config)
 
 	cacheutil.Config(1*time.Hour, 30*time.Minute)
+
+	validation.Config()
 
 	err := db.AutoMigrateDB()
 
