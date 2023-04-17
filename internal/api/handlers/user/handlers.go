@@ -3,8 +3,6 @@ package user
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/pkg/db"
-	"cybersafe-backend-api/pkg/jwtutil"
-	"time"
 
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
@@ -191,32 +189,4 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(*updatedUser), http.StatusOK)
-}
-
-// LogOffHandler is the HTTP handler for user log off
-//
-//	@Summary		User logoff
-//	@Description	Logs off an user
-//	@Tags			User
-//	@Success		204
-//	@Failure		400	"Bad Request"
-//
-//	@Router			/users/logoff [post]
-//	@Security		Bearer
-//	@Security		Language
-func LogOffHandler(c *components.HTTPComponents) {
-	authorizationHeader := c.HttpRequest.Header.Get("Authorization")
-
-	jwtClaims := &jwtutil.CustomClaims{}
-
-	// This error cannot occur because the token was already parsed in the middleware
-	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims)
-
-	jwtutil.AddToBlackList(
-		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Time),
-		jwtClaims.RegisteredClaims.ID,
-		token.Raw,
-	)
-
-	components.HttpResponse(c, http.StatusNoContent)
 }
