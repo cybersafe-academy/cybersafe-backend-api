@@ -121,6 +121,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/courses": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "List courses with paginated response",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit of elements per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/pagination.PaginationData"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/course.ResponseContent"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -162,7 +224,7 @@ const docTemplate = `{
                                     {
                                         "type": "object",
                                         "properties": {
-                                            "content": {
+                                            "data": {
                                                 "$ref": "#/definitions/user.ResponseContent"
                                             }
                                         }
@@ -219,7 +281,7 @@ const docTemplate = `{
                                     {
                                         "type": "object",
                                         "properties": {
-                                            "content": {
+                                            "data": {
                                                 "$ref": "#/definitions/user.ResponseContent"
                                             }
                                         }
@@ -368,7 +430,7 @@ const docTemplate = `{
                                     {
                                         "type": "object",
                                         "properties": {
-                                            "content": {
+                                            "data": {
                                                 "$ref": "#/definitions/user.ResponseContent"
                                             }
                                         }
@@ -462,6 +524,73 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "$ref": "#/definitions/components.Error"
+                }
+            }
+        },
+        "course.ContentFields": {
+            "type": "object",
+            "properties": {
+                "PDFURL": {
+                    "type": "string",
+                    "example": "https://pdf.com"
+                },
+                "contentType": {
+                    "type": "string",
+                    "example": "youtube"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageURL": {
+                    "type": "string",
+                    "example": "https://image.com"
+                },
+                "youtubeURL": {
+                    "type": "string",
+                    "example": "https://www.youtube.com/watch?v=mvV7tzRm8Pk"
+                }
+            }
+        },
+        "course.ResponseContent": {
+            "type": "object",
+            "properties": {
+                "contentInHours": {
+                    "type": "number",
+                    "example": 24.5
+                },
+                "contents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/course.ContentFields"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Course Description"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string",
+                    "example": "advanced"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Example Course"
+                },
+                "thumbnailURL": {
+                    "type": "string",
+                    "example": "https://image.com"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

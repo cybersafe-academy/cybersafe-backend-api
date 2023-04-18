@@ -48,6 +48,53 @@ definitions:
       error:
         $ref: '#/definitions/components.Error'
     type: object
+  course.ContentFields:
+    properties:
+      PDFURL:
+        example: https://pdf.com
+        type: string
+      contentType:
+        example: youtube
+        type: string
+      id:
+        type: string
+      imageURL:
+        example: https://image.com
+        type: string
+      youtubeURL:
+        example: https://www.youtube.com/watch?v=mvV7tzRm8Pk
+        type: string
+    type: object
+  course.ResponseContent:
+    properties:
+      contentInHours:
+        example: 24.5
+        type: number
+      contents:
+        items:
+          $ref: '#/definitions/course.ContentFields'
+        type: array
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        example: Course Description
+        type: string
+      id:
+        type: string
+      level:
+        example: advanced
+        type: string
+      name:
+        example: Example Course
+        type: string
+      thumbnailURL:
+        example: https://image.com
+        type: string
+      updatedAt:
+        type: string
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -164,6 +211,41 @@ paths:
       summary: User login refresh
       tags:
       - Authentication
+  /courses:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/course.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List courses with paginated response
+      tags:
+      - Courses
   /users:
     get:
       parameters:
@@ -183,7 +265,7 @@ paths:
               allOf:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
-                  content:
+                  data:
                     $ref: '#/definitions/user.ResponseContent'
                 type: object
             type: array
@@ -215,7 +297,7 @@ paths:
               allOf:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
-                  content:
+                  data:
                     $ref: '#/definitions/user.ResponseContent'
                 type: object
             type: array
@@ -247,7 +329,7 @@ paths:
               allOf:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
-                  content:
+                  data:
                     $ref: '#/definitions/user.ResponseContent'
                 type: object
             type: array

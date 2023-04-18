@@ -20,7 +20,7 @@ import (
 //	@Summary	List users with paginated response
 //
 //	@Tags		User
-//	@success	200		{array}	pagination.PaginationData{content=ResponseContent}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
@@ -92,7 +92,7 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 //	@Summary	Create a user
 //
 //	@Tags		User
-//	@success	200		{array}	pagination.PaginationData{content=ResponseContent}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		request	body		RequestContent		true	"Request payload for creating a new user"
@@ -125,7 +125,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 //	@Summary	Delete a user by ID
 //
 //	@Tags		User
-//	@success	200		{array}	pagination.PaginationData{content=ResponseContent}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of the user to be deleted"

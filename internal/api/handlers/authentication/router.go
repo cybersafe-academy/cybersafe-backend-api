@@ -12,14 +12,14 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 	subRouter := chi.NewMux()
 
-	subRouter.Route("/", func(r chi.Router) {
-		subRouter.Use(middlewares.Authenticator)
+	subRouter.Group(func(r chi.Router) {
+		r.Use(middlewares.Authenticator)
 
-		subRouter.Post("/logoff", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/logoff", func(w http.ResponseWriter, r *http.Request) {
 			LogOffHandler(components.HttpComponents(w, r, c))
 		})
 
-		subRouter.Get("/refresh", func(w http.ResponseWriter, r *http.Request) {
+		r.Get("/refresh", func(w http.ResponseWriter, r *http.Request) {
 			RefreshTokenHandler(components.HttpComponents(w, r, c))
 		})
 	})
@@ -29,5 +29,4 @@ func SetupRoutes(c *components.Components) http.Handler {
 	})
 
 	return subRouter
-
 }
