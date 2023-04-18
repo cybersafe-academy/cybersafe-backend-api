@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/settings"
 )
@@ -64,19 +63,4 @@ func MustGetDbConn() *gorm.DB {
 	}
 
 	return db
-}
-
-func AutoMigrateDB() error {
-	db, connErr := GetDatabaseConnection()
-	if connErr != nil {
-		return connErr
-	}
-
-	modelsSlice := []any{
-		&models.User{},
-	}
-
-	err := db.AutoMigrate(modelsSlice...)
-
-	return err
 }

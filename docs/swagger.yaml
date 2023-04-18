@@ -148,14 +148,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticates an user and generates an access token
-      parameters:
-      - description: User login information
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/authentication.LoginRequest'
+      description: Refreshes the token for an authenticated user
       produces:
       - application/json
       responses:
@@ -165,7 +158,10 @@ paths:
             $ref: '#/definitions/authentication.TokenContent'
         "400":
           description: Bad Request
-      summary: User login
+      security:
+      - Bearer: []
+      - Language: []
+      summary: User login refresh
       tags:
       - Authentication
   /users:

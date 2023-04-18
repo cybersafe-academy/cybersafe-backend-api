@@ -100,8 +100,8 @@ func LoginHandler(c *components.HTTPComponents) {
 //	@Tags			Authentication
 //	@Accept			json
 //	@Produce		json
-//	@Success		200		{object}	TokenContent
-//	@Failure		400		"Bad Request"
+//	@Success		200	{object}	TokenContent
+//	@Failure		400	"Bad Request"
 //
 //	@Router			/auth/refresh [post]
 //	@Security		Bearer

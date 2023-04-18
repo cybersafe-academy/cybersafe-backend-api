@@ -89,7 +89,15 @@ const docTemplate = `{
         },
         "/auth/refresh": {
             "post": {
-                "description": "Authenticates an user and generates an access token",
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "description": "Refreshes the token for an authenticated user",
                 "consumes": [
                     "application/json"
                 ],
@@ -99,18 +107,7 @@ const docTemplate = `{
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "User login",
-                "parameters": [
-                    {
-                        "description": "User login information",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authentication.LoginRequest"
-                        }
-                    }
-                ],
+                "summary": "User login refresh",
                 "responses": {
                     "200": {
                         "description": "OK",
