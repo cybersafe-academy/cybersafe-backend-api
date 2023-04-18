@@ -531,23 +531,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "PDFURL": {
-                    "type": "string",
-                    "example": "https://pdf.com"
+                    "type": "string"
                 },
                 "contentType": {
-                    "type": "string",
-                    "example": "youtube"
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "imageURL": {
-                    "type": "string",
-                    "example": "https://image.com"
+                    "type": "string"
                 },
                 "youtubeURL": {
-                    "type": "string",
-                    "example": "https://www.youtube.com/watch?v=mvV7tzRm8Pk"
+                    "type": "string"
                 }
             }
         },
@@ -555,8 +551,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "contentInHours": {
-                    "type": "number",
-                    "example": 24.5
+                    "type": "number"
                 },
                 "contents": {
                     "type": "array",
@@ -571,23 +566,19 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "description": {
-                    "type": "string",
-                    "example": "Course Description"
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "level": {
-                    "type": "string",
-                    "example": "advanced"
+                    "type": "string"
                 },
                 "name": {
-                    "type": "string",
-                    "example": "Example Course"
+                    "type": "string"
                 },
                 "thumbnailURL": {
-                    "type": "string",
-                    "example": "https://image.com"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"

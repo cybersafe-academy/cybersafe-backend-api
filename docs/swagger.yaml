@@ -51,24 +51,19 @@ definitions:
   course.ContentFields:
     properties:
       PDFURL:
-        example: https://pdf.com
         type: string
       contentType:
-        example: youtube
         type: string
       id:
         type: string
       imageURL:
-        example: https://image.com
         type: string
       youtubeURL:
-        example: https://www.youtube.com/watch?v=mvV7tzRm8Pk
         type: string
     type: object
   course.ResponseContent:
     properties:
       contentInHours:
-        example: 24.5
         type: number
       contents:
         items:
@@ -79,18 +74,14 @@ definitions:
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       description:
-        example: Course Description
         type: string
       id:
         type: string
       level:
-        example: advanced
         type: string
       name:
-        example: Example Course
         type: string
       thumbnailURL:
-        example: https://image.com
         type: string
       updatedAt:
         type: string

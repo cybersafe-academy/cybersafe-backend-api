@@ -19,7 +19,7 @@ type UserFields struct {
 type ResponseContent struct {
 	UserFields
 
-	ID        uuid.UUID      `json:"id"`
+	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
