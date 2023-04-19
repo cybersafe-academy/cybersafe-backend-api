@@ -21,7 +21,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		GetCourseByID(components.HttpComponents(w, r, c))
 	})
 	subRouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
-		CreateUserHandler(components.HttpComponents(w, r, c))
+		CreateCourseHandler(components.HttpComponents(w, r, c))
 	})
 
 	return subRouter
