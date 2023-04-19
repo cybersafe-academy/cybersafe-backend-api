@@ -52,5 +52,22 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 }
 
 func (re *RequestContent) ToEntity() *models.Course {
-	return &models.Course{}
+	course := &models.Course{
+		Name:           re.Name,
+		Description:    re.Description,
+		ContentInHours: re.ContentInHours,
+		ThumbnailURL:   re.ThumbnailURL,
+		Level:          re.Level,
+	}
+
+	for _, content := range re.Contents {
+		course.Contents = append(course.Contents, models.Content{
+			ContentType: content.ContentType,
+			YoutubeURL:  content.YoutubeURL,
+			PDFURL:      content.PDFURL,
+			ImageURL:    content.ImageURL,
+		})
+	}
+
+	return course
 }

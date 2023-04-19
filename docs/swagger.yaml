@@ -61,6 +61,23 @@ definitions:
       youtubeURL:
         type: string
     type: object
+  course.RequestContent:
+    properties:
+      contentInHours:
+        type: number
+      contents:
+        items:
+          $ref: '#/definitions/course.ContentFields'
+        type: array
+      description:
+        type: string
+      level:
+        type: string
+      name:
+        type: string
+      thumbnailURL:
+        type: string
+    type: object
   course.ResponseContent:
     properties:
       contentInHours:
@@ -236,7 +253,64 @@ paths:
       - Language: []
       summary: List courses with paginated response
       tags:
-      - Courses
+      - Course
+    post:
+      parameters:
+      - description: Request payload for creating a new course
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/course.RequestContent'
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/course.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create a course
+      tags:
+      - Course
+  /courses/{id}:
+    get:
+      parameters:
+      - description: ID of the course to be retrieved
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/course.ResponseContent'
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get course by ID
+      tags:
+      - Course
   /users:
     get:
       parameters:
