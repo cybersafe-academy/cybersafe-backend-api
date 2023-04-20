@@ -23,6 +23,12 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		CreateCourseHandler(components.HttpComponents(w, r, c))
 	})
+	subRouter.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		DeleteCourseHandler(components.HttpComponents(w, r, c))
+	})
+	subRouter.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		UpdateCourseHandler(components.HttpComponents(w, r, c))
+	})
 
 	return subRouter
 

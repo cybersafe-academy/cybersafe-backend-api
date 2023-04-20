@@ -119,3 +119,74 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 	components.HttpResponseWithPayload(c, ToResponse(*course), http.StatusOK)
 }
+
+// DeleteCourseHandler
+//
+//	@Summary	Delete a course by ID
+//
+//	@Tags		Course
+//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of the course to be deleted"
+//	@Router		/courses/{id} [delete]
+//	@Security	Bearer
+//	@Security	Language
+func DeleteCourseHandler(c *components.HTTPComponents) {
+	id := chi.URLParam(c.HttpRequest, "id")
+
+	dbConn := db.MustGetDbConn()
+
+	result := dbConn.Delete(&models.Course{}, uuid.MustParse(id))
+
+	if result.Error != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// UpdateCourseHandler
+//
+//	@Summary	Update course by ID
+//
+//	@Tags		Course
+//	@success	200		{object}	ResponseContent	"OK"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		request	body		RequestContent		true	"Request payload for updating course information"
+//	@Param		id		path		string				true	"ID of course to be updated"
+//	@Router		/courses/{id} [put]
+//	@Security	Bearer
+//	@Security	Language
+func UpdateCourseHandler(c *components.HTTPComponents) {
+	courseRequest := RequestContent{}
+	err := components.ValidateRequest(c, &courseRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	dbConn := db.MustGetDbConn()
+	id := chi.URLParam(c.HttpRequest, "id")
+
+	course := &models.Course{}
+	result := dbConn.First(course, id)
+
+	if result.Error != nil {
+		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
+		return
+	}
+
+	updatedCourse := courseRequest.ToEntity()
+	result = dbConn.Model(course).Updates(updatedCourse)
+
+	if result.Error != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToResponse(*updatedCourse), http.StatusOK)
+}

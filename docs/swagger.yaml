@@ -287,6 +287,37 @@ paths:
       tags:
       - Course
   /courses/{id}:
+    delete:
+      parameters:
+      - description: ID of the course to be deleted
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/course.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Delete a course by ID
+      tags:
+      - Course
     get:
       parameters:
       - description: ID of the course to be retrieved
@@ -309,6 +340,38 @@ paths:
       - Bearer: []
       - Language: []
       summary: Get course by ID
+      tags:
+      - Course
+    put:
+      parameters:
+      - description: Request payload for updating course information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/course.RequestContent'
+      - description: ID of course to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/course.ResponseContent'
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update course by ID
       tags:
       - Course
   /users:
