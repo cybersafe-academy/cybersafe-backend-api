@@ -2,25 +2,36 @@ package models
 
 import "github.com/google/uuid"
 
-type LevelString string
-type ContentTypeString string
-
 const (
-	BeginnerLevel     LevelString = "beginner"
-	IntermediateLevel LevelString = "intermediate"
-	AdvancedLevel     LevelString = "advanced"
+	BeginnerLevel     string = "beginner"
+	IntermediateLevel string = "intermediate"
+	AdvancedLevel     string = "advanced"
 )
 
 const (
-	ContentTypeYoutube ContentTypeString = "youtube"
-	ContentTypePDF     ContentTypeString = "pdf"
-	ContentTypeImage   ContentTypeString = "image"
+	ContentTypeYoutube string = "youtube"
+	ContentTypePDF     string = "pdf"
+	ContentTypeImage   string = "image"
+)
+
+var (
+	ValidContentTypes []string = []string{
+		ContentTypeYoutube,
+		ContentTypePDF,
+		ContentTypeImage,
+	}
+
+	ValidCourseLevels []string = []string{
+		BeginnerLevel,
+		IntermediateLevel,
+		AdvancedLevel,
+	}
 )
 
 type Course struct {
 	Shared
 
-	Name           string
+	Title          string
 	Description    string
 	ContentInHours float64
 	ThumbnailURL   string
@@ -32,6 +43,7 @@ type Course struct {
 type Content struct {
 	Shared
 
+	Title       string
 	ContentType string
 	YoutubeURL  string
 	PDFURL      string

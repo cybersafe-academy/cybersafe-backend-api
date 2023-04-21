@@ -210,22 +210,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/course.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
+                            "$ref": "#/definitions/course.ResponseContent"
                         }
                     },
                     "400": {
@@ -356,26 +341,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/course.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
+                    "204": {
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -451,14 +418,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
                 "tags": [
                     "User"
                 ],
@@ -478,22 +437,40 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/user.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
+                            "$ref": "#/definitions/user.ResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get authenticated user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.ResponseContent"
                         }
                     },
                     "400": {
@@ -624,26 +601,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/user.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
+                    "204": {
+                        "description": "No content"
                     },
                     "400": {
                         "description": "Bad Request"
@@ -852,6 +811,9 @@ const docTemplate = `{
                 "cpf": {
                     "type": "string"
                 },
+                "email": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -874,6 +836,9 @@ const docTemplate = `{
                 },
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "email": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"

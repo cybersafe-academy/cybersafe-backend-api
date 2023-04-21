@@ -17,7 +17,7 @@ require (
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
 )
 
-require github.com/go-chi/cors v1.2.1 // indirect
+require github.com/go-chi/cors v1.2.1
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

@@ -5,12 +5,28 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	DefaultUserRole string = "default"
+	AdminUserRole   string = "admin"
+	MasterUserRole  string = "master"
+)
+
+var (
+	ValidUserRoles []string = []string{
+		DefaultUserRole,
+		AdminUserRole,
+		MasterUserRole,
+	}
+)
+
 type User struct {
 	Shared
 
 	Name     string
+	Role     string `gorm:"default:'default'"`
+	Email    string `gorm:"unique"`
 	Age      int
-	CPF      string
+	CPF      string `gorm:"unique"`
 	Password string
 }
 

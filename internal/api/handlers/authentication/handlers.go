@@ -62,8 +62,8 @@ func LoginHandler(c *components.HTTPComponents) {
 	JWTID := uuid.NewString()
 
 	claims := jwtutil.CustomClaims{
-
 		UserID: user.ID.String(),
+		Role:   user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -121,6 +121,7 @@ func RefreshTokenHandler(c *components.HTTPComponents) {
 	claims := jwtutil.CustomClaims{
 
 		UserID: user.ID.String(),
+		Role:   user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expirationTime)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

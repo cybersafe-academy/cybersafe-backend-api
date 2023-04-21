@@ -2,6 +2,7 @@ package user
 
 import (
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/errutil"
 	"net/http"
 	"time"
 
@@ -11,9 +12,11 @@ import (
 )
 
 type UserFields struct {
-	Name string `json:"name" valid:"type(string), required"`
-	Age  int    `json:"age" valid:"type(int), required"`
-	CPF  string `json:"cpf" valid:"type(string), cpf, required"`
+	Name  string `json:"name" valid:"type(string), required"`
+	Role  string `json:"role" valid:"type(string), required"`
+	Email string `json:"email" valid:"type(string), email, required"`
+	Age   int    `json:"age" valid:"type(int), required"`
+	CPF   string `json:"cpf" valid:"type(string), cpf, required"`
 }
 
 type ResponseContent struct {
@@ -31,6 +34,11 @@ type RequestContent struct {
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidCourseLevel
+	}
+
 	_, err := govalidator.ValidateStruct(*re)
 	if err != nil {
 		return err
@@ -42,6 +50,7 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 func (re *RequestContent) ToEntity() *models.User {
 	return &models.User{
 		Name:     re.Name,
+		Email:    re.Email,
 		Age:      re.Age,
 		CPF:      re.CPF,
 		Password: re.Password,

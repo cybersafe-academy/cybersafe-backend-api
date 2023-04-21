@@ -92,7 +92,7 @@ func GetCourseByID(c *components.HTTPComponents) {
 //	@Summary	Create a course
 //
 //	@Tags		Course
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@Success	200		{object}	ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		request	body		RequestContent		true	"Request payload for creating a new course"
@@ -125,7 +125,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Delete a course by ID
 //
 //	@Tags		Course
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@success	204		"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of the course to be deleted"

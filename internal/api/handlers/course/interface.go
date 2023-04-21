@@ -2,6 +2,7 @@ package course
 
 import (
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/errutil"
 	"net/http"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type CourseFields struct {
-	Name           string  `json:"name" valid:"type(string), required"`
+	Title          string  `json:"title" valid:"type(string), required"`
 	Description    string  `json:"description" valid:"type(string), required"`
 	ContentInHours float64 `json:"contentInHours" valid:"type(float), required"`
 	ThumbnailURL   string  `json:"thumbnailURL" valid:"type(string), required"`
@@ -23,6 +24,7 @@ type CourseFields struct {
 type ContentFields struct {
 	ID uuid.UUID `json:"id" valid:"uuid, required"`
 
+	Title       string `json:"title" valid:"type(string), required"`
 	ContentType string `json:"contentType" valid:"type(string), required"`
 	YoutubeURL  string `json:"youtubeURL" valid:"type(string), required"`
 	PDFURL      string `json:"PDFURL" valid:"type(string), required"`
@@ -43,6 +45,17 @@ type RequestContent struct {
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Level, models.ValidCourseLevels...) {
+		return errutil.ErrInvalidCourseLevel
+	}
+
+	for _, content := range re.Contents {
+		if !govalidator.IsIn(content.ContentType, models.ValidContentTypes...) {
+			return errutil.ErrInvalidContentType
+		}
+	}
+
 	_, err := govalidator.ValidateStruct(*re)
 	if err != nil {
 		return err
@@ -53,7 +66,7 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 
 func (re *RequestContent) ToEntity() *models.Course {
 	course := &models.Course{
-		Name:           re.Name,
+		Title:          re.Title,
 		Description:    re.Description,
 		ContentInHours: re.ContentInHours,
 		ThumbnailURL:   re.ThumbnailURL,
@@ -62,6 +75,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 
 	for _, content := range re.Contents {
 		course.Contents = append(course.Contents, models.Content{
+			Title:       re.Title,
 			ContentType: content.ContentType,
 			YoutubeURL:  content.YoutubeURL,
 			PDFURL:      content.PDFURL,

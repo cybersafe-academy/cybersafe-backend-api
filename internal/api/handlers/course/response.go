@@ -14,7 +14,7 @@ func ToListResponse(courses []models.Course) []ResponseContent {
 			UpdatedAt: course.UpdatedAt,
 			DeletedAt: course.DeletedAt,
 			CourseFields: CourseFields{
-				Name:           course.Description,
+				Title:          course.Title,
 				Description:    course.Description,
 				ContentInHours: course.ContentInHours,
 				ThumbnailURL:   course.Description,
@@ -51,7 +51,7 @@ func ToResponse(course models.Course) ResponseContent {
 		UpdatedAt: course.UpdatedAt,
 		DeletedAt: course.DeletedAt,
 		CourseFields: CourseFields{
-			Name:           course.Description,
+			Title:          course.Title,
 			Description:    course.Description,
 			ContentInHours: course.ContentInHours,
 			ThumbnailURL:   course.Description,
@@ -64,6 +64,7 @@ func ToResponse(course models.Course) ResponseContent {
 	for _, content := range course.Contents {
 		contentsResponse = append(contentsResponse, ContentFields{
 			ID:          content.ID,
+			Title:       content.Title,
 			ContentType: content.ContentType,
 			YoutubeURL:  content.YoutubeURL,
 			PDFURL:      content.PDFURL,

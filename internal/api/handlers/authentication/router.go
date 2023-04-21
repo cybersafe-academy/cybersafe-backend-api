@@ -13,7 +13,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter := chi.NewMux()
 
 	subRouter.Group(func(r chi.Router) {
-		r.Use(middlewares.Authenticator)
+		r.Use(middlewares.Authorizer())
 
 		r.Post("/logoff", func(w http.ResponseWriter, r *http.Request) {
 			LogOffHandler(components.HttpComponents(w, r, c))

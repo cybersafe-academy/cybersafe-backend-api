@@ -2,6 +2,7 @@ package user
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/pkg/db"
 
 	"cybersafe-backend-api/internal/models"
@@ -55,6 +56,27 @@ func ListUsersHandler(c *components.HTTPComponents) {
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }
 
+// GetAuthenticatedUserHandler retrieves a user by ID
+//
+//	@Summary	Get authenticated user
+//	@Tags		User
+//	@Success	200		{object}	ResponseContent	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Router		/users/me [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetAuthenticatedUserHandler(c *components.HTTPComponents) {
+	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)
+}
+
 // GetUserByIDHandler retrieves a user by ID
 //
 //	@Summary	Get user by ID
@@ -92,13 +114,11 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 //	@Summary	Create a user
 //
 //	@Tags		User
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@Success	200		{object}	ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		request	body		RequestContent		true	"Request payload for creating a new user"
 //	@Router		/users [post]
-//	@Security	Bearer
-//	@Security	Language
 func CreateUserHandler(c *components.HTTPComponents) {
 	userRequest := RequestContent{}
 	err := components.ValidateRequest(c, &userRequest)
@@ -125,7 +145,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 //	@Summary	Delete a user by ID
 //
 //	@Tags		User
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@Success	204		"No content"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of the user to be deleted"

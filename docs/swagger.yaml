@@ -126,6 +126,8 @@ definitions:
         type: integer
       cpf:
         type: string
+      email:
+        type: string
       name:
         type: string
       password:
@@ -141,6 +143,8 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
       id:
         type: string
       name:
@@ -266,14 +270,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/course.ResponseContent'
-                type: object
-            type: array
+            $ref: '#/definitions/course.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -295,17 +292,8 @@ paths:
         required: true
         type: string
       responses:
-        "200":
+        "204":
           description: OK
-          schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/course.ResponseContent'
-                type: object
-            type: array
         "400":
           description: Bad Request
         default:
@@ -421,23 +409,13 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/user.ResponseContent'
-                type: object
-            type: array
+            $ref: '#/definitions/user.ResponseContent'
         "400":
           description: Bad Request
         default:
           description: Standard error example object
           schema:
             $ref: '#/definitions/components.Response'
-      security:
-      - Bearer: []
-      - Language: []
       summary: Create a user
       tags:
       - User
@@ -450,17 +428,8 @@ paths:
         required: true
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/user.ResponseContent'
-                type: object
-            type: array
+        "204":
+          description: No content
         "400":
           description: Bad Request
         default:
@@ -527,6 +496,25 @@ paths:
       - Bearer: []
       - Language: []
       summary: Update user by ID
+      tags:
+      - User
+  /users/me:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.ResponseContent'
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get authenticated user
       tags:
       - User
 securityDefinitions:
