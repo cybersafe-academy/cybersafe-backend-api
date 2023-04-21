@@ -707,6 +707,9 @@ const docTemplate = `{
                 "imageURL": {
                     "type": "string"
                 },
+                "title": {
+                    "type": "string"
+                },
                 "youtubeURL": {
                     "type": "string"
                 }
@@ -730,10 +733,10 @@ const docTemplate = `{
                 "level": {
                     "type": "string"
                 },
-                "name": {
+                "thumbnailURL": {
                     "type": "string"
                 },
-                "thumbnailURL": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -765,10 +768,10 @@ const docTemplate = `{
                 "level": {
                     "type": "string"
                 },
-                "name": {
+                "thumbnailURL": {
                     "type": "string"
                 },
-                "thumbnailURL": {
+                "title": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -819,6 +822,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
@@ -844,6 +850,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "updatedAt": {

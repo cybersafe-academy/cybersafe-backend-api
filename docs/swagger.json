@@ -698,6 +698,9 @@
                 "imageURL": {
                     "type": "string"
                 },
+                "title": {
+                    "type": "string"
+                },
                 "youtubeURL": {
                     "type": "string"
                 }
@@ -721,10 +724,10 @@
                 "level": {
                     "type": "string"
                 },
-                "name": {
+                "thumbnailURL": {
                     "type": "string"
                 },
-                "thumbnailURL": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -756,10 +759,10 @@
                 "level": {
                     "type": "string"
                 },
-                "name": {
+                "thumbnailURL": {
                     "type": "string"
                 },
-                "thumbnailURL": {
+                "title": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -810,6 +813,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
@@ -835,6 +841,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "updatedAt": {
