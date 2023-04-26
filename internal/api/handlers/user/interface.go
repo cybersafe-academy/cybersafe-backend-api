@@ -36,7 +36,7 @@ type RequestContent struct {
 func (re *RequestContent) Bind(_ *http.Request) error {
 
 	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
-		return errutil.ErrInvalidCourseLevel
+		return errutil.ErrInvalidUserRole
 	}
 
 	_, err := govalidator.ValidateStruct(*re)
@@ -53,6 +53,7 @@ func (re *RequestContent) ToEntity() *models.User {
 		Email:    re.Email,
 		Age:      re.Age,
 		CPF:      re.CPF,
+		Role:     re.Role,
 		Password: re.Password,
 	}
 }

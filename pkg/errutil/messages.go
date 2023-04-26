@@ -21,6 +21,7 @@ var (
 
 	//User
 	ErrUserResourceNotFound = errors.New("user not found with given identifier")
+	ErrInvalidUserRole      = errors.New("invalid user role")
 
 	//Course
 	ErrInvalidCourseLevel = errors.New("invalid course level")

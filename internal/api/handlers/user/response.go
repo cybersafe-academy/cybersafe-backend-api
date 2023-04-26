@@ -23,9 +23,11 @@ func ToListResponse(users []models.User) []ResponseContent {
 func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
 		UserFields: UserFields{
-			Name: user.Name,
-			Age:  user.Age,
-			CPF:  user.CPF,
+			Name:  user.Name,
+			Age:   user.Age,
+			CPF:   user.CPF,
+			Role:  user.Role,
+			Email: user.Email,
 		},
 		ID:        user.ID,
 		CreatedAt: user.CreatedAt,
