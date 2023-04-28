@@ -54,7 +54,7 @@ func LoginHandler(c *components.HTTPComponents) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrLoginOrPasswordIncorrect)
 		return
 	}
 

@@ -11,6 +11,9 @@ var (
 	ErrInvalidPageParam  = errors.New("invalid page param")
 	ErrInvalidLimitParam = errors.New("invalid limit param")
 
+	//Authentication
+	ErrLoginOrPasswordIncorrect = errors.New("login or password incorrect")
+
 	//JWT
 	ErrInvalidJWT             = errors.New("invalid JWT token")
 	ErrCredentialsMissing     = errors.New("credentials missing")
