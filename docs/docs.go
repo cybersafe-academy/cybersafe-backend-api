@@ -815,15 +815,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 }
             }
@@ -844,15 +842,13 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
+                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 },
                 "updatedAt": {
