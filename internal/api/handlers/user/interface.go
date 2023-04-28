@@ -48,11 +48,11 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 
 func (re *RequestContent) ToEntity() *models.User {
 	return &models.User{
-		Name:     re.Name,
-		Email:    re.Email,
-		Age:      re.Age,
-		CPF:      re.CPF,
-		Role:     re.Role,
+		Name:  re.Name,
+		Email: re.Email,
+		Age:   re.Age,
+		CPF:   re.CPF,
+		// Role:     re.Role,
 		Password: re.Password,
 	}
 }
