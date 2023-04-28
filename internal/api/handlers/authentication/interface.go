@@ -8,7 +8,7 @@ import (
 
 type LoginRequest struct {
 	Password string `json:"password"`
-	CPF      string `json:"cpf" valid:"type(string), cpf, required"`
+	CPF      string `json:"cpf"`
 }
 
 type TokenContent struct {
