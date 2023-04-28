@@ -15,7 +15,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 	subRouter.Group(func(r chi.Router) {
 
-		r.Use(middlewares.Authorizer(models.AdminUserRole, models.MasterUserRole))
+		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			DeleteUserHandler(components.HttpComponents(w, r, c))
@@ -26,7 +26,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 	})
 
 	subRouter.Group(func(r chi.Router) {
-		r.Use(middlewares.Authorizer())
+		r.Use(middlewares.Authorizer(c))
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			ListUsersHandler(components.HttpComponents(w, r, c))

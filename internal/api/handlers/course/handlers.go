@@ -2,7 +2,6 @@ package course
 
 import (
 	"cybersafe-backend-api/internal/api/components"
-	"cybersafe-backend-api/pkg/db"
 
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
@@ -30,7 +29,7 @@ import (
 //	@Security	Language
 func ListCoursesHandler(c *components.HTTPComponents) {
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
@@ -69,7 +68,7 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 func GetCourseByID(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	var course models.Course
 	result := dbConn.First(&course, uuid.MustParse(id))
@@ -108,7 +107,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	course := courseRequest.ToEntity()
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	result := dbConn.Create(course)
 
@@ -135,7 +134,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 func DeleteCourseHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	result := dbConn.Delete(&models.Course{}, uuid.MustParse(id))
 
@@ -169,7 +168,7 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	course := &models.Course{}

@@ -6,12 +6,6 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var c *cache.Cache
-
-func Config(defaultExpiration, cleanupInterval time.Duration) {
-	c = cache.New(defaultExpiration, cleanupInterval)
-}
-
-func GetCache() *cache.Cache {
-	return c
+func Config(defaultExpiration, cleanupInterval time.Duration) *cache.Cache {
+	return cache.New(defaultExpiration, cleanupInterval)
 }

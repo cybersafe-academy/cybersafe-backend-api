@@ -14,7 +14,9 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/patrickmn/go-cache"
 	"github.com/rs/zerolog"
+	"gorm.io/gorm"
 )
 
 type Components struct {
@@ -22,6 +24,8 @@ type Components struct {
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
+	DB          *gorm.DB
+	Cache       *cache.Cache
 }
 
 type HTTPComponents struct {
@@ -54,23 +58,22 @@ func Config() *Components {
 
 	docs.SwaggerInfo.BasePath = config.StrWDefault("docs.basePath", "/api")
 
-	db.CreateDBConnection(config)
-
-	cacheutil.Config(1*time.Hour, 30*time.Minute)
+	cache := cacheutil.Config(1*time.Hour, 30*time.Minute)
 
 	validation.Config()
-
+	dbConn := db.CreateDBConnection(config)
 	err := db.AutoMigrateDB()
 
 	if err != nil {
-		log.Info().Err(err).Msg("Error occurred while trying to run migrations...")
-		os.Exit(-1)
+		panic("Error occurred while trying to run migrations...")
 	}
 
 	return &Components{
 		Settings:    config,
 		Environment: environment.FromString(env),
 		Logger:      log,
+		DB:          dbConn,
+		Cache:       cache,
 	}
 }
 

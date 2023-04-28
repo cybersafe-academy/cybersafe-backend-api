@@ -4,7 +4,6 @@ import (
 	"context"
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/models"
-	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"errors"
@@ -18,7 +17,7 @@ import (
 const UserKey = Key("user")
 const JWTIDKey = Key("jwtID")
 
-func Authorizer(allowedRoles ...string) func(next http.Handler) http.Handler {
+func Authorizer(c *components.Components, allowedRoles ...string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -69,7 +68,7 @@ func Authorizer(allowedRoles ...string) func(next http.Handler) http.Handler {
 				return
 			}
 
-			if jwtutil.IsBlackListed(jwtClaims.RegisteredClaims.ID) {
+			if jwtutil.IsBlackListed(c.Cache, jwtClaims.RegisteredClaims.ID) {
 				components.HttpErrorMiddlewareResponse(
 					w, r,
 					http.StatusUnauthorized,
@@ -81,7 +80,7 @@ func Authorizer(allowedRoles ...string) func(next http.Handler) http.Handler {
 			userID := uuid.MustParse(jwtClaims.UserID)
 			user := models.User{}
 
-			db.MustGetDbConn().First(&user, userID)
+			c.DB.First(&user, userID)
 
 			if !govalidator.IsIn(jwtClaims.Role, allowedRoles...) && len(allowedRoles) != 0 {
 				components.HttpErrorMiddlewareResponse(

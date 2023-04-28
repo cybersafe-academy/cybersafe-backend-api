@@ -3,7 +3,6 @@ package user
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
-	"cybersafe-backend-api/pkg/db"
 
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
@@ -31,7 +30,7 @@ import (
 //	@Security	Language
 func ListUsersHandler(c *components.HTTPComponents) {
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
@@ -91,7 +90,7 @@ func GetAuthenticatedUserHandler(c *components.HTTPComponents) {
 func GetUserByIDHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	var user models.User
 	result := dbConn.First(&user, uuid.MustParse(id))
@@ -128,7 +127,12 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	}
 
 	user := userRequest.ToEntity()
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
+
+	if err := dbConn.Where("cpf = ?", user.CPF).First(&user).Error; err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
 
 	result := dbConn.Create(user)
 
@@ -155,7 +159,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 func DeleteUserHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 
 	result := dbConn.Delete(&models.User{}, uuid.MustParse(id))
 
@@ -189,7 +193,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := db.MustGetDbConn()
+	dbConn := c.Components.DB
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	user := &models.User{}

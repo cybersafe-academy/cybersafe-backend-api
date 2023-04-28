@@ -25,6 +25,7 @@ var (
 	//User
 	ErrUserResourceNotFound = errors.New("user not found with given identifier")
 	ErrInvalidUserRole      = errors.New("invalid user role")
+	ErrCPFAlreadyInUse      = errors.New("cpf already in use")
 
 	//Course
 	ErrInvalidCourseLevel = errors.New("invalid course level")

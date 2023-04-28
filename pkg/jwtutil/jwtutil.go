@@ -1,17 +1,16 @@
 package jwtutil
 
 import (
-	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/settings"
 	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/patrickmn/go-cache"
 )
 
 func Generate(claims CustomClaims, secretKey string) (string, error) {
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(secretKey))
@@ -23,7 +22,6 @@ func Generate(claims CustomClaims, secretKey string) (string, error) {
 }
 
 func GetClaims(token jwt.Token) (*CustomClaims, error) {
-
 	claims, ok := token.Claims.(*CustomClaims)
 
 	if !ok {
@@ -46,17 +44,14 @@ func Parse(token string, claims *CustomClaims) (*jwt.Token, error) {
 	return jwtToken, err
 }
 
-func IsBlackListed(jwtID string) bool {
-	cache := cacheutil.GetCache()
-
-	_, found := cache.Get(jwtID)
+func IsBlackListed(c *cache.Cache, jwtID string) bool {
+	_, found := c.Get(jwtID)
 
 	return found
 }
 
-func AddToBlackList(duration time.Duration, jwtID, tokenString string) {
-	cache := cacheutil.GetCache()
-	cache.Set(
+func AddToBlackList(c *cache.Cache, duration time.Duration, jwtID, tokenString string) {
+	c.Set(
 		jwtID,
 		tokenString,
 		duration,

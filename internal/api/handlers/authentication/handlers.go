@@ -4,7 +4,6 @@ import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
-	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"errors"
@@ -40,7 +39,7 @@ func LoginHandler(c *components.HTTPComponents) {
 
 	user := models.User{}
 
-	result := db.MustGetDbConn().Where("CPF = ?", loginRequest.CPF).First(&user)
+	result := c.Components.DB.Where("CPF = ?", loginRequest.CPF).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -171,6 +170,7 @@ func LogOffHandler(c *components.HTTPComponents) {
 	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims)
 
 	jwtutil.AddToBlackList(
+		c.Components.Cache,
 		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Time),
 		jwtClaims.RegisteredClaims.ID,
 		token.Raw,

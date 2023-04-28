@@ -15,7 +15,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 	subRouter.Group(func(r chi.Router) {
 
-		r.Use(middlewares.Authorizer(models.AdminUserRole, models.MasterUserRole))
+		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseHandler(components.HttpComponents(w, r, c))
@@ -30,7 +30,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 	subRouter.Group(func(r chi.Router) {
 
-		r.Use(middlewares.Authorizer())
+		r.Use(middlewares.Authorizer(c))
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			ListCoursesHandler(components.HttpComponents(w, r, c))
