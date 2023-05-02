@@ -17,3 +17,8 @@ docs:
 jwt:
   secretKey: secretKey
   subject: userCredentials
+
+mail:
+  email: cybersafeacad@gmail.com
+  password: iqSK@E&4@!#o6n
+  updatePasswordEndpoint: /update-password

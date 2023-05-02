@@ -41,3 +41,15 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 	return nil
 }
+
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(hashedPassword)
+
+	return nil
+}

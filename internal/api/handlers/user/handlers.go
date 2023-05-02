@@ -129,8 +129,8 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	user := userRequest.ToEntity()
 	dbConn := c.Components.DB
 
-	if err := dbConn.Where("cpf = ?", user.CPF).First(&user).Error; err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+	if err := dbConn.Where("cpf = ? AND email = ?", user.CPF, user.Email).First(&user).Error; err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrCPFAlreadyInUse)
 		return
 	}
 

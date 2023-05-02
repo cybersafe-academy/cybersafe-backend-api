@@ -5,12 +5,16 @@ import (
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
+	"cybersafe-backend-api/pkg/mail"
 	"errors"
+	"fmt"
 	"time"
 
 	"net/http"
 
+	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -175,6 +179,93 @@ func LogOffHandler(c *components.HTTPComponents) {
 		jwtClaims.RegisteredClaims.ID,
 		token.Raw,
 	)
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// ForgotPasswordHandler is the HTTP handler for requesting a new password
+//
+//	@Summary		Request new password via e-mail
+//	@Description	Receives the user email and if the email is valid, send a verification via email
+//	@Tags			Authentication
+//	@Accept			json
+//	@Produce		json
+//	@Success		204	"No content"
+//	@Failure		400	"Bad Request"
+//
+//	@Router			/auth/forgot-password [post]
+func ForgotPasswordHandler(c *components.HTTPComponents) {
+
+	forgotPasswordRequest := ForgotPasswordRequest{}
+	err := components.ValidateRequest(c, &forgotPasswordRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := c.Components.DB.Where("email = ?", forgotPasswordRequest.Email).First(&models.User{}).Error; err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		return
+	}
+
+	randomToken := helpers.MustGenerateURLEncodedRandomToken()
+
+	c.Components.Cache.Set(
+		randomToken, forgotPasswordRequest.Email, time.Minute*15,
+	)
+
+	updatePasswordURL := fmt.Sprintf(
+		"%s:%s%s%s?t=%s",
+		c.Components.Settings.String("docs.host"),
+		c.Components.Settings.String("docs.port"),
+		c.Components.Settings.String("docs.basePath"),
+		c.Components.Settings.String("mail.updatePasswordEndpoint"),
+		randomToken,
+	)
+
+	c.Components.Mail.Send(
+		[]string{forgotPasswordRequest.Email},
+		mail.DefaultForgotPasswordSubject,
+		fmt.Sprintf("Reset your password: %s", updatePasswordURL),
+	)
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// ForgotPasswordHandler is the HTTP handler for requesting a new password
+//
+//	@Summary		Request new password via e-mail
+//	@Description	Receives the user email and if the email is valid, send a verification via email
+//	@Tags			Authentication
+//	@Accept			json
+//	@Produce		json
+//	@Success		204	"No content"
+//	@Failure		400	"Bad Request"
+//
+//	@Router			/auth/update-password [post]
+func UpdatePasswordHandler(c *components.HTTPComponents) {
+	randomToken := chi.URLParam(c.HttpRequest, "t")
+
+	updatePasswordRequest := UpdatePasswordRequest{}
+	err := components.ValidateRequest(c, &updatePasswordRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	email, found := c.Components.Cache.Get(randomToken)
+
+	if !found {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		return
+	}
+
+	user := &models.User{
+		Email:    email.(string),
+		Password: updatePasswordRequest.Password,
+	}
+
+	c.Components.DB.Model(&models.User{}).Where("email = ?", email).Updates(user)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }
