@@ -20,5 +20,5 @@ jwt:
 
 mail:
   email: cybersafeacad@gmail.com
-  password: iqSK@E&4@!#o6n
+  password: "****"
   updatePasswordEndpoint: /update-password
