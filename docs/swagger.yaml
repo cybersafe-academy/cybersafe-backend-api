@@ -169,6 +169,22 @@ info:
   title: CyberSafe Academy API
   version: "1.0"
 paths:
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Receives the user email and if the email is valid, send a verification
+        via email
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Request new password via e-mail
+      tags:
+      - Authentication
   /auth/login:
     post:
       consumes:
@@ -225,6 +241,22 @@ paths:
       - Bearer: []
       - Language: []
       summary: User login refresh
+      tags:
+      - Authentication
+  /auth/update-password:
+    post:
+      consumes:
+      - application/json
+      description: Receives the user email and if the email is valid, send a verification
+        via email
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Request new password via e-mail
       tags:
       - Authentication
   /courses:

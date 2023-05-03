@@ -210,7 +210,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 
 	randomToken := helpers.MustGenerateURLEncodedRandomToken()
 
-	c.Components.Cache.Set(
+	(*c.Components.Cache).Set(
 		randomToken, forgotPasswordRequest.Email, time.Minute*15,
 	)
 
@@ -223,7 +223,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		randomToken,
 	)
 
-	c.Components.Mail.Send(
+	(*c.Components.Mail).Send(
 		[]string{forgotPasswordRequest.Email},
 		mail.DefaultForgotPasswordSubject,
 		fmt.Sprintf("Reset your password: %s", updatePasswordURL),
@@ -253,7 +253,7 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, found := c.Components.Cache.Get(randomToken)
+	email, found := (*c.Components.Cache).Get(randomToken)
 
 	if !found {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)

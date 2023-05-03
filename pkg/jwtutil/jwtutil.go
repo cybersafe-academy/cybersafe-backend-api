@@ -50,8 +50,8 @@ func IsBlackListed(c cacheutil.Cacher, jwtID string) bool {
 	return found
 }
 
-func AddToBlackList(c cacheutil.Cacher, duration time.Duration, jwtID, tokenString string) {
-	c.Set(
+func AddToBlackList(c *cacheutil.Cacher, duration time.Duration, jwtID, tokenString string) {
+	(*c).Set(
 		jwtID,
 		tokenString,
 		duration,

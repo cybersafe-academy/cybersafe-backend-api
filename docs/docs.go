@@ -25,6 +25,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/forgot-password": {
+            "post": {
+                "description": "Receives the user email and if the email is valid, send a verification via email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request new password via e-mail",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Authenticates an user and generates an access token",
@@ -114,6 +137,29 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/authentication.TokenContent"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/auth/update-password": {
+            "post": {
+                "description": "Receives the user email and if the email is valid, send a verification via email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request new password via e-mail",
+                "responses": {
+                    "204": {
+                        "description": "No content"
                     },
                     "400": {
                         "description": "Bad Request"

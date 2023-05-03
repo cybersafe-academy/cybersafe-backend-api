@@ -25,8 +25,8 @@ type Components struct {
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
 	DB          *gorm.DB
-	Cache       cacheutil.Cacher
-	Mail        mail.Mailer
+	Cache       *cacheutil.Cacher
+	Mail        *mail.Mailer
 }
 
 type HTTPComponents struct {
@@ -76,8 +76,8 @@ func Config() *Components {
 		Environment: environment.FromString(env),
 		Logger:      log,
 		DB:          dbConn,
-		Cache:       cache,
-		Mail:        mailer,
+		Cache:       &cache,
+		Mail:        &mailer,
 	}
 }
 
