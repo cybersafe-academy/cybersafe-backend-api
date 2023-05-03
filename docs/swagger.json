@@ -29,6 +29,17 @@
                     "Authentication"
                 ],
                 "summary": "Request new password via e-mail",
+                "parameters": [
+                    {
+                        "description": "Reset password info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.ForgotPasswordRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -137,7 +148,7 @@
         },
         "/auth/update-password": {
             "post": {
-                "description": "Receives the user email and if the email is valid, send a verification via email",
+                "description": "Checks the token on the request and updates the password",
                 "consumes": [
                     "application/json"
                 ],
@@ -147,7 +158,16 @@
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Request new password via e-mail",
+                "summary": "Update password after email verification",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User verification token",
+                        "name": "t",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -655,6 +675,14 @@
         }
     },
     "definitions": {
+        "authentication.ForgotPasswordRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "authentication.LoginRequest": {
             "type": "object",
             "properties": {

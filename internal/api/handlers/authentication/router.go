@@ -30,6 +30,9 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Post("/forgot-password", func(w http.ResponseWriter, r *http.Request) {
 		ForgotPasswordHandler(components.HttpComponents(w, r, c))
 	})
+	subRouter.Post("/update-password", func(w http.ResponseWriter, r *http.Request) {
+		UpdatePasswordHandler(components.HttpComponents(w, r, c))
+	})
 
 	return subRouter
 }

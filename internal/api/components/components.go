@@ -19,11 +19,16 @@ import (
 	"gorm.io/gorm"
 )
 
+// type Services struct {
+// 	Users user.UserManager
+// }
+
 type Components struct {
 	Environment string
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
+	Storer      db.Storer
 	DB          *gorm.DB
 	Cache       *cacheutil.Cacher
 	Mail        *mail.Mailer
@@ -78,6 +83,7 @@ func Config() *Components {
 		DB:          dbConn,
 		Cache:       &cache,
 		Mail:        &mailer,
+		Storer:      &db.DBStorer{Conn: dbConn},
 	}
 }
 

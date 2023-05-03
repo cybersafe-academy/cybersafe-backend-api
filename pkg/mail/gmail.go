@@ -3,6 +3,7 @@ package mail
 import (
 	"cybersafe-backend-api/pkg/settings"
 	"net/smtp"
+	"strings"
 )
 
 const (
@@ -22,9 +23,23 @@ func Config(config settings.Settings) Mailer {
 }
 
 func (gm *GmailMailer) Send(to []string, subject string, message string) error {
+	headers := make(map[string]string)
+	headers["From"] = gm.Email
+	headers["To"] = strings.Join(to, ",")
+	headers["Subject"] = subject
+	headers["MIME-version"] = "1.0"
+	headers["Content-Type"] = "text/html; charset=\"UTF-8\""
+
+	body := ""
+
+	for key, value := range headers {
+		body += key + ": " + value + "\r\n"
+	}
+
+	body += "\r\n" + message
 	auth := smtp.PlainAuth("", gm.Email, gm.Password, "smtp.gmail.com")
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, gm.Email, to, []byte(message))
+	err := smtp.SendMail("smtp.gmail.com:587", auth, gm.Email, to, []byte(body))
 
 	if err != nil {
 		return err

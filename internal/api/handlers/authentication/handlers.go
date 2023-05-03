@@ -8,7 +8,6 @@ import (
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
-	"errors"
 	"fmt"
 	"time"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 // LoginHandler is the HTTP handler for user login
@@ -41,18 +39,11 @@ func LoginHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user := models.User{}
+	user, err := c.Components.Storer.GetUserByCPF(loginRequest.CPF)
 
-	result := c.Components.DB.Where("CPF = ?", loginRequest.CPF).First(&user)
-
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
-			return
-		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrUserResourceNotFound)
+		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
@@ -190,8 +181,10 @@ func LogOffHandler(c *components.HTTPComponents) {
 //	@Tags			Authentication
 //	@Accept			json
 //	@Produce		json
-//	@Success		204	"No content"
-//	@Failure		400	"Bad Request"
+//	@Param			request	body	ForgotPasswordRequest	true	"Reset password info"
+//
+//	@Success		204		"No content"
+//	@Failure		400		"Bad Request"
 //
 //	@Router			/auth/forgot-password [post]
 func ForgotPasswordHandler(c *components.HTTPComponents) {
@@ -234,11 +227,13 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 
 // ForgotPasswordHandler is the HTTP handler for requesting a new password
 //
-//	@Summary		Request new password via e-mail
-//	@Description	Receives the user email and if the email is valid, send a verification via email
+//	@Summary		Update password after email verification
+//	@Description	Checks the token on the request and updates the password
 //	@Tags			Authentication
 //	@Accept			json
 //	@Produce		json
+//	@Param			t	query	string	true	"User verification token"
+//
 //	@Success		204	"No content"
 //	@Failure		400	"Bad Request"
 //

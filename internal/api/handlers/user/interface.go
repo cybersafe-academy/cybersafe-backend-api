@@ -10,6 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserManager interface {
+}
+
 type UserFields struct {
 	Name string `json:"name" valid:"type(string), required"`
 	// Role  string `json:"role" valid:"type(string), required"`
