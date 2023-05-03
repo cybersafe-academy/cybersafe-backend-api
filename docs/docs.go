@@ -175,6 +175,15 @@ const docTemplate = `{
                         "name": "t",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "description": "Update password info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.UpdatePasswordRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -713,6 +722,14 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "tokenType": {
+                    "type": "string"
+                }
+            }
+        },
+        "authentication.UpdatePasswordRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
                     "type": "string"
                 }
             }

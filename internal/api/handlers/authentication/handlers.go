@@ -13,7 +13,6 @@ import (
 
 	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -232,14 +231,14 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 //	@Tags			Authentication
 //	@Accept			json
 //	@Produce		json
-//	@Param			t	query	string	true	"User verification token"
-//
-//	@Success		204	"No content"
-//	@Failure		400	"Bad Request"
+//	@Param			t		query	string					true	"User verification token"
+//	@Param			request	body	UpdatePasswordRequest	true	"Update password info"
+//	@Success		204		"No content"
+//	@Failure		400		"Bad Request"
 //
 //	@Router			/auth/update-password [post]
 func UpdatePasswordHandler(c *components.HTTPComponents) {
-	randomToken := chi.URLParam(c.HttpRequest, "t")
+	randomToken := c.HttpRequest.URL.Query().Get("t")
 
 	updatePasswordRequest := UpdatePasswordRequest{}
 	err := components.ValidateRequest(c, &updatePasswordRequest)
