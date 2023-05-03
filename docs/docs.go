@@ -783,7 +783,27 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ContentFields": {
+        "course.ContentRequest": {
+            "type": "object",
+            "properties": {
+                "PDFURL": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "imageURL": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "youtubeURL": {
+                    "type": "string"
+                }
+            }
+        },
+        "course.ContentResponse": {
             "type": "object",
             "properties": {
                 "PDFURL": {
@@ -815,7 +835,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentFields"
+                        "$ref": "#/definitions/course.ContentRequest"
                     }
                 },
                 "description": {
@@ -841,7 +861,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentFields"
+                        "$ref": "#/definitions/course.ContentResponse"
                     }
                 },
                 "createdAt": {

@@ -58,7 +58,20 @@ definitions:
       error:
         $ref: '#/definitions/components.Error'
     type: object
-  course.ContentFields:
+  course.ContentRequest:
+    properties:
+      PDFURL:
+        type: string
+      contentType:
+        type: string
+      imageURL:
+        type: string
+      title:
+        type: string
+      youtubeURL:
+        type: string
+    type: object
+  course.ContentResponse:
     properties:
       PDFURL:
         type: string
@@ -79,7 +92,7 @@ definitions:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentFields'
+          $ref: '#/definitions/course.ContentRequest'
         type: array
       description:
         type: string
@@ -96,7 +109,7 @@ definitions:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentFields'
+          $ref: '#/definitions/course.ContentResponse'
         type: array
       createdAt:
         type: string

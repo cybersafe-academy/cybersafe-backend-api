@@ -17,13 +17,30 @@ type CourseFields struct {
 	ContentInHours float64 `json:"contentInHours" valid:"type(float), required"`
 	ThumbnailURL   string  `json:"thumbnailURL" valid:"type(string), required"`
 	Level          string  `json:"level" valid:"type(string), required"`
+}
 
-	Contents []ContentFields `json:"contents"`
+type CourseResponse struct {
+	CourseFields
+
+	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+
+	Contents []ContentResponse `json:"contents"`
+}
+
+type ContentRequest struct {
+	ContentFields
+}
+
+type ContentResponse struct {
+	ContentFields
+
+	ID uuid.UUID `json:"id" valid:"uuid, required"`
 }
 
 type ContentFields struct {
-	ID uuid.UUID `json:"id" valid:"uuid, required"`
-
 	Title       string `json:"title" valid:"type(string), required"`
 	ContentType string `json:"contentType" valid:"type(string), required"`
 	YoutubeURL  string `json:"youtubeURL" valid:"type(string), required"`
@@ -32,7 +49,7 @@ type ContentFields struct {
 }
 
 type ResponseContent struct {
-	CourseFields
+	CourseResponse
 
 	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
 	CreatedAt time.Time      `json:"createdAt"`
@@ -42,6 +59,8 @@ type ResponseContent struct {
 
 type RequestContent struct {
 	CourseFields
+
+	Contents []ContentRequest
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {

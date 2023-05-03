@@ -2,13 +2,13 @@ package course
 
 import "cybersafe-backend-api/internal/models"
 
-func ToListResponse(courses []models.Course) []ResponseContent {
+func ToListResponse(courses []models.Course) []CourseResponse {
 
-	var coursesResponse []ResponseContent
+	var coursesResponse []CourseResponse
 
 	for _, course := range courses {
 
-		courseResponse := ResponseContent{
+		courseResponse := CourseResponse{
 			ID:        course.ID,
 			CreatedAt: course.CreatedAt,
 			UpdatedAt: course.UpdatedAt,
@@ -24,28 +24,30 @@ func ToListResponse(courses []models.Course) []ResponseContent {
 
 		coursesResponse = append(coursesResponse, courseResponse)
 
-		var contentsResponse []ContentFields
+		var contentsResponse []ContentResponse
 
 		for _, content := range course.Contents {
-			contentsResponse = append(contentsResponse, ContentFields{
-				ID:          content.ID,
-				ContentType: content.ContentType,
-				YoutubeURL:  content.YoutubeURL,
-				PDFURL:      content.PDFURL,
-				ImageURL:    content.ImageURL,
+			contentsResponse = append(contentsResponse, ContentResponse{
+				ContentFields: ContentFields{
+					ContentType: content.ContentType,
+					YoutubeURL:  content.YoutubeURL,
+					PDFURL:      content.PDFURL,
+					ImageURL:    content.ImageURL,
+				},
+				ID: content.ID,
 			})
 		}
 
-		courseResponse.CourseFields.Contents = contentsResponse
+		courseResponse.Contents = contentsResponse
 
 	}
 
 	return coursesResponse
 }
 
-func ToResponse(course models.Course) ResponseContent {
+func ToResponse(course models.Course) CourseResponse {
 
-	courseResponse := ResponseContent{
+	courseResponse := CourseResponse{
 		ID:        course.ID,
 		CreatedAt: course.CreatedAt,
 		UpdatedAt: course.UpdatedAt,
@@ -59,20 +61,22 @@ func ToResponse(course models.Course) ResponseContent {
 		},
 	}
 
-	var contentsResponse []ContentFields
+	var contentsResponse []ContentResponse
 
 	for _, content := range course.Contents {
-		contentsResponse = append(contentsResponse, ContentFields{
-			ID:          content.ID,
-			Title:       content.Title,
-			ContentType: content.ContentType,
-			YoutubeURL:  content.YoutubeURL,
-			PDFURL:      content.PDFURL,
-			ImageURL:    content.ImageURL,
+		contentsResponse = append(contentsResponse, ContentResponse{
+			ID: content.ID,
+			ContentFields: ContentFields{
+				Title:       content.Title,
+				ContentType: content.ContentType,
+				YoutubeURL:  content.YoutubeURL,
+				PDFURL:      content.PDFURL,
+				ImageURL:    content.ImageURL,
+			},
 		})
 	}
 
-	courseResponse.CourseFields.Contents = contentsResponse
+	courseResponse.Contents = contentsResponse
 
 	return courseResponse
 }

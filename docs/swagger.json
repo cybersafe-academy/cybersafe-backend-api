@@ -774,7 +774,27 @@
                 }
             }
         },
-        "course.ContentFields": {
+        "course.ContentRequest": {
+            "type": "object",
+            "properties": {
+                "PDFURL": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "imageURL": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "youtubeURL": {
+                    "type": "string"
+                }
+            }
+        },
+        "course.ContentResponse": {
             "type": "object",
             "properties": {
                 "PDFURL": {
@@ -806,7 +826,7 @@
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentFields"
+                        "$ref": "#/definitions/course.ContentRequest"
                     }
                 },
                 "description": {
@@ -832,7 +852,7 @@
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentFields"
+                        "$ref": "#/definitions/course.ContentResponse"
                     }
                 },
                 "createdAt": {
