@@ -950,7 +950,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "Type \"Bearer\" followed by a space and JWT token. e.g: Bearer eyJhbGciO....",
+            "description": "Insert the token withou \"Bearer\" prefix.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

@@ -23,8 +23,7 @@ import (
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
 //	@name						Authorization
-//	@description				Type "Bearer" followed by a space and JWT token. e.g: Bearer eyJhbGciO....
-
+//	@description				Insert the token withou "Bearer" prefix.
 func main() {
 
 	c := components.Config()
