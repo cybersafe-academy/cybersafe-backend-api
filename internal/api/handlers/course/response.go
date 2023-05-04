@@ -27,6 +27,7 @@ func ToListResponse(courses []models.Course) []CourseResponse {
 		for _, content := range course.Contents {
 			contentsResponse = append(contentsResponse, ContentResponse{
 				ContentFields: ContentFields{
+					Title:       content.Title,
 					ContentType: content.ContentType,
 					YoutubeURL:  content.YoutubeURL,
 					PDFURL:      content.PDFURL,
