@@ -139,7 +139,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	result := dbConn.Create(user)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFAlreadyInUse)
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFOrEmailAlreadyInUse)
 			return
 		} else {
 			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
