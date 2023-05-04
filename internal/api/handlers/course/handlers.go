@@ -169,7 +169,13 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	dbConn := c.Components.DB
-	id := chi.URLParam(c.HttpRequest, "id")
+	stringCourseid := chi.URLParam(c.HttpRequest, "id")
+
+	id, err := uuid.Parse(stringCourseid)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
 
 	course := &models.Course{}
 	result := dbConn.First(course, id)

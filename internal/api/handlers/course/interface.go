@@ -43,9 +43,9 @@ type ContentResponse struct {
 type ContentFields struct {
 	Title       string `json:"title" valid:"type(string), required"`
 	ContentType string `json:"contentType" valid:"type(string), required"`
-	YoutubeURL  string `json:"youtubeURL" valid:"type(string), required"`
-	PDFURL      string `json:"PDFURL" valid:"type(string), required"`
-	ImageURL    string `json:"imageURL" valid:"type(string), required"`
+	YoutubeURL  string `json:"youtubeURL" valid:"type(string)"`
+	PDFURL      string `json:"PDFURL" valid:"type(string)"`
+	ImageURL    string `json:"imageURL" valid:"type(string)"`
 }
 
 type ResponseContent struct {
