@@ -42,8 +42,8 @@ func config(envPrefix string, files []string) *viper.Viper {
 
 		if err := v.MergeConfig(f); err != nil {
 			_ = f.Close()
-
-			panic(fmt.Errorf("could merge config file \"%s\"", files[i]))
+			fmt.Println(err.Error())
+			panic(fmt.Errorf("could not merge config file \"%s\"", files[i]))
 		}
 
 		_ = f.Close()

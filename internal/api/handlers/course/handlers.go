@@ -9,6 +9,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -169,16 +170,16 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	dbConn := c.Components.DB
-	stringCourseid := chi.URLParam(c.HttpRequest, "id")
 
-	id, err := uuid.Parse(stringCourseid)
-	if err != nil {
+	id := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(id) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
 		return
 	}
 
 	course := &models.Course{}
-	result := dbConn.First(course, id)
+	result := dbConn.First(course, uuid.MustParse(id))
 
 	if result.Error != nil {
 		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
