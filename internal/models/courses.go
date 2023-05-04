@@ -37,7 +37,7 @@ type Course struct {
 	ThumbnailURL   string
 	Level          string
 
-	Contents []Content
+	Contents []Content `gorm:"foreignKey:CourseID"`
 }
 
 type Content struct {
@@ -50,5 +50,5 @@ type Content struct {
 	ImageURL    string
 
 	CourseID uuid.UUID
-	Course   Course
+	Course   Course `gorm:"foreignKey:CourseID"`
 }

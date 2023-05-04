@@ -3,7 +3,6 @@ package jwtutil
 import (
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/settings"
 	"fmt"
 	"time"
 
@@ -32,13 +31,13 @@ func GetClaims(token jwt.Token) (*CustomClaims, error) {
 
 }
 
-func Parse(token string, claims *CustomClaims) (*jwt.Token, error) {
+func Parse(token string, claims *CustomClaims, secretKey string) (*jwt.Token, error) {
 	jwtToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(settings.ExportedSettings.String("jwt.secretKey")), nil
+		return []byte(secretKey), nil
 	})
 
 	return jwtToken, err

@@ -22,8 +22,6 @@ func ToListResponse(courses []models.Course) []CourseResponse {
 			},
 		}
 
-		coursesResponse = append(coursesResponse, courseResponse)
-
 		var contentsResponse []ContentResponse
 
 		for _, content := range course.Contents {
@@ -39,7 +37,7 @@ func ToListResponse(courses []models.Course) []CourseResponse {
 		}
 
 		courseResponse.Contents = contentsResponse
-
+		coursesResponse = append(coursesResponse, courseResponse)
 	}
 
 	return coursesResponse

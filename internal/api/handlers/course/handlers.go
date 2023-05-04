@@ -44,7 +44,10 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 	}
 
 	var courses []models.Course
-	dbConn.Offset(paginationData.Offset).Limit(paginationData.Limit).Find(&courses)
+	(dbConn.Preload(clause.Associations).
+		Offset(paginationData.Offset).
+		Limit(paginationData.Limit).
+		Find(&courses))
 
 	var count int64
 	dbConn.Model(&models.Course{}).Count(&count)

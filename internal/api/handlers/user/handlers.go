@@ -136,16 +136,15 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	user := userRequest.ToEntity()
 	dbConn := c.Components.DB
 
-	if err := dbConn.Where("cpf = ? AND email = ?", user.CPF, user.Email).First(&user).Error; err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrCPFAlreadyInUse)
-		return
-	}
-
 	result := dbConn.Create(user)
-
-	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-		return
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFAlreadyInUse)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)

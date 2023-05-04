@@ -42,20 +42,21 @@ type HTTPComponents struct {
 
 func Config() *Components {
 
+	// ENV
 	env := os.Getenv("ENV")
 
+	// Settings
 	applications := []string{"configs/application.yml"}
-
 	if environment.IsValid(env) {
 		applications = append(applications, fmt.Sprintf("configs/application_%s.yml", environment.FromString(env)))
 	}
 
 	config := settings.Config("", applications)
 
-	settings.ExportedSettings = config
-
+	//Logger
 	log := logger.Config("/", config.String("application.name"), "v1", (env == environment.Prd))
 
+	// Swagger Docs
 	docs.SwaggerInfo.Host = fmt.Sprintf(
 		"%s:%s",
 		config.StrWDefault("docs.host", "localhost"),
@@ -64,16 +65,22 @@ func Config() *Components {
 
 	docs.SwaggerInfo.BasePath = config.StrWDefault("docs.basePath", "/api")
 
+	//Cache
 	cache := cacheutil.Config(1*time.Hour, 30*time.Minute)
 
+	// Validation
 	validation.Config()
-	dbConn := db.CreateDBConnection(config)
-	err := db.AutoMigrateDB()
 
+	//Mail
 	mailer := mail.Config(config)
 
+	// Database Connection
+	dbConn := db.CreateDBConnection(config)
+
+	err := db.AutoMigrateDB()
 	if err != nil {
 		panic("Error occurred while trying to run migrations...")
+
 	}
 
 	return &Components{
@@ -94,8 +101,4 @@ func HttpComponents(writer http.ResponseWriter, request *http.Request, c *Compon
 		Components:   c,
 	}
 	return &httpComp
-}
-
-func GetSettings() {
-
 }

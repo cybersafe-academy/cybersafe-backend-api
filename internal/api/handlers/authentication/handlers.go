@@ -161,7 +161,8 @@ func LogOffHandler(c *components.HTTPComponents) {
 	jwtClaims := &jwtutil.CustomClaims{}
 
 	// This error cannot occur because the token was already parsed in the middleware
-	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims)
+	secretKey := c.Components.Settings.String("jwt.secretKey")
+	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims, secretKey)
 
 	jwtutil.AddToBlackList(
 		c.Components.Cache,

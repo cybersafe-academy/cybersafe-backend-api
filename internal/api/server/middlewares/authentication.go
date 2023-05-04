@@ -12,6 +12,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 const UserKey = Key("user")
@@ -34,7 +35,8 @@ func Authorizer(c *components.Components, allowedRoles ...string) func(next http
 
 			jwtClaims := &jwtutil.CustomClaims{}
 
-			token, err := jwtutil.Parse(authorizationHeader, jwtClaims)
+			secretKey := c.Settings.String("jwt.secretKey")
+			token, err := jwtutil.Parse(authorizationHeader, jwtClaims, secretKey)
 
 			if errors.Is(err, jwt.ErrTokenMalformed) {
 				components.HttpErrorMiddlewareResponse(
@@ -80,7 +82,21 @@ func Authorizer(c *components.Components, allowedRoles ...string) func(next http
 			userID := uuid.MustParse(jwtClaims.UserID)
 			user := models.User{}
 
-			c.DB.First(&user, userID)
+			result := c.DB.First(&user, userID)
+
+			if result.Error != nil {
+				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+					components.HttpErrorMiddlewareResponse(
+						w, r,
+						http.StatusNotFound, errutil.ErrCourseResourceNotFound)
+					return
+				} else {
+					components.HttpErrorMiddlewareResponse(
+						w, r,
+						http.StatusInternalServerError, errutil.ErrUnexpectedError)
+					return
+				}
+			}
 
 			if !govalidator.IsIn(jwtClaims.Role, allowedRoles...) && len(allowedRoles) != 0 {
 				components.HttpErrorMiddlewareResponse(
