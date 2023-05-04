@@ -10,6 +10,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -90,6 +91,11 @@ func GetAuthenticatedUserHandler(c *components.HTTPComponents) {
 func GetUserByIDHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
 	dbConn := c.Components.DB
 
 	var user models.User
@@ -159,6 +165,11 @@ func CreateUserHandler(c *components.HTTPComponents) {
 func DeleteUserHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
 	dbConn := c.Components.DB
 
 	result := dbConn.Delete(&models.User{}, uuid.MustParse(id))
@@ -195,6 +206,11 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 
 	dbConn := c.Components.DB
 	id := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
 
 	user := &models.User{}
 	result := dbConn.First(user, id)

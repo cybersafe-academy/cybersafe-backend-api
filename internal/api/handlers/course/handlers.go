@@ -69,6 +69,11 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 func GetCourseByID(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
 	dbConn := c.Components.DB
 
 	var course models.Course
@@ -134,6 +139,11 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 //	@Security	Language
 func DeleteCourseHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
 
 	dbConn := c.Components.DB
 
