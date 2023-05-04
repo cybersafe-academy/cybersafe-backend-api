@@ -23,9 +23,10 @@ var (
 	ErrInsufficientPermission = errors.New("insufficient permission for given resource")
 
 	//User
-	ErrUserResourceNotFound = errors.New("user not found with given identifier")
-	ErrInvalidUserRole      = errors.New("invalid user role")
-	ErrCPFAlreadyInUse      = errors.New("cpf already in use")
+	ErrUserResourceNotFound   = errors.New("user not found with given identifier")
+	ErrInvalidUserRole        = errors.New("invalid user role")
+	ErrCPFAlreadyInUse        = errors.New("cpf already in use")
+	ErrCPFOrEmailAlreadyInUse = errors.New("cpf or email already in use")
 
 	//Course
 	ErrInvalidCourseLevel     = errors.New("invalid course level")
