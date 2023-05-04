@@ -14,7 +14,7 @@ import (
 type CourseFields struct {
 	Title          string  `json:"title" valid:"type(string), required"`
 	Description    string  `json:"description" valid:"type(string), required"`
-	ContentInHours float64 `json:"contentInHours" valid:"type(float), required"`
+	ContentInHours float64 `json:"contentInHours" valid:"required"`
 	ThumbnailURL   string  `json:"thumbnailURL" valid:"type(string), required"`
 	Level          string  `json:"level" valid:"type(string), required"`
 }
