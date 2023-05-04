@@ -208,11 +208,10 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 	)
 
 	updatePasswordURL := fmt.Sprintf(
-		"%s:%s%s%s?t=%s",
-		c.Components.Settings.String("docs.host"),
-		c.Components.Settings.String("docs.port"),
-		c.Components.Settings.String("docs.basePath"),
-		c.Components.Settings.String("mail.updatePasswordEndpoint"),
+		"%s:%s%s?t=%s",
+		c.Components.Settings.String("frontend.host"),
+		c.Components.Settings.String("frontend.port"),
+		c.Components.Settings.String("frontend.updatePasswordEndpoint"),
 		randomToken,
 	)
 
