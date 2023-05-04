@@ -19,7 +19,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 			LogOffHandler(components.HttpComponents(w, r, c))
 		})
 
-		r.Get("/refresh", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/refresh", func(w http.ResponseWriter, r *http.Request) {
 			RefreshTokenHandler(components.HttpComponents(w, r, c))
 		})
 	})
