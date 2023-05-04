@@ -94,7 +94,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 
 	for _, content := range re.Contents {
 		course.Contents = append(course.Contents, models.Content{
-			Title:       re.Title,
+			Title:       content.Title,
 			ContentType: content.ContentType,
 			YoutubeURL:  content.YoutubeURL,
 			PDFURL:      content.PDFURL,

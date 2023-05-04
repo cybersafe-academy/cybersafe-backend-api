@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // ListUsersHandler
@@ -212,19 +213,18 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user := &models.User{}
-	result := dbConn.First(user, id)
-
-	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
-		return
-	}
-
 	updatedUser := userRequest.ToEntity()
-	result = dbConn.Model(user).Updates(updatedUser)
+
+	updatedUser.ID = uuid.MustParse(id)
+
+	result := dbConn.Model(updatedUser).Clauses(clause.Returning{}).Updates(updatedUser)
 
 	if result.Error != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+	if result.RowsAffected == 0 {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUserResourceNotFound)
 		return
 	}
 

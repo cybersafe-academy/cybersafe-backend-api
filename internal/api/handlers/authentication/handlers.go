@@ -259,7 +259,7 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		Password: updatePasswordRequest.Password,
 	}
 
-	c.Components.DB.Model(&models.User{}).Where("email = ?", email).Updates(user)
+	c.Components.DB.Model(user).Where("email = ?", email).Updates(user)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }

@@ -28,7 +28,8 @@ var (
 	ErrCPFAlreadyInUse      = errors.New("cpf already in use")
 
 	//Course
-	ErrInvalidCourseLevel = errors.New("invalid course level")
+	ErrInvalidCourseLevel     = errors.New("invalid course level")
+	ErrCourseResourceNotFound = errors.New("course not found with given identifier")
 
 	//Course
 	ErrInvalidContentType = errors.New("invalid content type")

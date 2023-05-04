@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // ListCoursesHandler
@@ -81,7 +82,7 @@ func GetCourseByID(c *components.HTTPComponents) {
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCourseResourceNotFound)
 			return
 		} else {
 			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
@@ -188,19 +189,17 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	course := &models.Course{}
-	result := dbConn.First(course, uuid.MustParse(id))
-
-	if result.Error != nil {
-		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
-		return
-	}
-
 	updatedCourse := courseRequest.ToEntity()
-	result = dbConn.Model(course).Updates(updatedCourse)
+	updatedCourse.ID = uuid.MustParse(id)
+
+	result := dbConn.Model(updatedCourse).Clauses(clause.Returning{}).Updates(updatedCourse)
 
 	if result.Error != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+	if result.RowsAffected == 0 {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
 		return
 	}
 
