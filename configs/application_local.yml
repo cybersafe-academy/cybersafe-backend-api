@@ -25,4 +25,4 @@ mail:
 frontend:
   host: http://localhost
   port: 5173
-  resetPasswordEndpoint: /update-password
+  updatePasswordEndpoint: /update-password
