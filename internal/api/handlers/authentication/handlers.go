@@ -254,6 +254,8 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	(*c.Components.Cache).Delete(randomToken)
+
 	user := &models.User{
 		Email:    email.(string),
 		Password: updatePasswordRequest.Password,
