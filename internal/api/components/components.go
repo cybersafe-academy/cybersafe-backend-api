@@ -4,6 +4,7 @@ import (
 	"cybersafe-backend-api/docs"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
+	usersdb "cybersafe-backend-api/pkg/db/users"
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/mail"
@@ -28,7 +29,7 @@ type Components struct {
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
-	Storer      db.Storer
+	DataManager db.DataManager
 	DB          *gorm.DB
 	Cache       *cacheutil.Cacher
 	Mail        *mail.Mailer
@@ -90,7 +91,9 @@ func Config() *Components {
 		DB:          dbConn,
 		Cache:       &cache,
 		Mail:        &mailer,
-		Storer:      &db.DBStorer{Conn: dbConn},
+		DataManager: db.DataManager{
+			Users: usersdb.Config(dbConn),
+		},
 	}
 }
 

@@ -1,7 +1,9 @@
 package db
 
-import "cybersafe-backend-api/internal/models"
+import (
+	"cybersafe-backend-api/pkg/db/users"
+)
 
-type Storer interface {
-	GetUserByCPF(string) (models.User, error)
+type DataManager struct {
+	Users users.Users
 }
