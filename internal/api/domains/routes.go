@@ -1,11 +1,11 @@
-package handlers
+package domains
 
 import (
 	_ "cybersafe-backend-api/docs"
 	"cybersafe-backend-api/internal/api/components"
-	"cybersafe-backend-api/internal/api/handlers/authentication"
-	"cybersafe-backend-api/internal/api/handlers/course"
-	"cybersafe-backend-api/internal/api/handlers/user"
+	"cybersafe-backend-api/internal/api/domains/authentication"
+	"cybersafe-backend-api/internal/api/domains/course"
+	"cybersafe-backend-api/internal/api/domains/user"
 	"net/http"
 
 	"github.com/go-chi/chi"
