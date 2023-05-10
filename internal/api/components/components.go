@@ -2,9 +2,10 @@ package components
 
 import (
 	"cybersafe-backend-api/docs"
+	"cybersafe-backend-api/internal/services"
+	"cybersafe-backend-api/internal/services/users"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
-	usersdb "cybersafe-backend-api/pkg/db/users"
 	"cybersafe-backend-api/pkg/environment"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/mail"
@@ -20,16 +21,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// type Services struct {
-// 	Users user.UserManager
-// }
-
 type Components struct {
 	Environment string
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
-	DataManager db.DataManager
+	Manager     services.Manager
 	DB          *gorm.DB
 	Cache       *cacheutil.Cacher
 	Mail        *mail.Mailer
@@ -91,8 +88,8 @@ func Config() *Components {
 		DB:          dbConn,
 		Cache:       &cache,
 		Mail:        &mailer,
-		DataManager: db.DataManager{
-			Users: usersdb.Config(dbConn),
+		Manager: services.Manager{
+			Users: users.Config(dbConn),
 		},
 	}
 }
