@@ -1,4 +1,4 @@
-package course
+package courses
 
 import (
 	"cybersafe-backend-api/internal/api/components"
