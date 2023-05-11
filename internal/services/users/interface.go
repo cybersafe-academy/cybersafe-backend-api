@@ -8,7 +8,7 @@ import (
 
 type UsersManager interface {
 	GetByCPF(string) (models.User, error)
-	List(int, int) ([]models.User, int64)
+	ListWithPagination(int, int) ([]models.User, int64)
 	GetByID(uuid.UUID) (models.User, error)
 	Create(*models.User) error
 	Delete(uuid.UUID) error

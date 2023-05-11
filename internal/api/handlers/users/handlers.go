@@ -40,7 +40,7 @@ func ListUsersHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	users, count := c.Components.Resources.Users.List(paginationData.Limit, paginationData.Offset)
+	users, count := c.Components.Resources.Users.ListWithPagination(paginationData.Limit, paginationData.Offset)
 
 	response := paginationData.ToResponse(
 		ToListResponse(users), int(count),

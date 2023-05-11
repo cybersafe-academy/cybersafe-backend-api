@@ -18,7 +18,7 @@ type UsersManagerMock struct {
 func (umm *UsersManagerMock) GetByCPF(cpf string) (models.User, error) {
 	return umm.GetByCPFMock(cpf)
 }
-func (umm *UsersManagerMock) List(offset, limit int) ([]models.User, int64) {
+func (umm *UsersManagerMock) ListWithPagination(offset, limit int) ([]models.User, int64) {
 	return umm.ListMock(offset, limit)
 }
 func (umm *UsersManagerMock) GetByID(id uuid.UUID) (models.User, error) {
