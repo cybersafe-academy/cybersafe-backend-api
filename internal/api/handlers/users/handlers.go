@@ -14,7 +14,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 // ListUsersHandler
@@ -31,9 +30,6 @@ import (
 //	@Security	Bearer
 //	@Security	Language
 func ListUsersHandler(c *components.HTTPComponents) {
-
-	dbConn := c.Components.DB
-
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
 	if errors.Is(err, errutil.ErrInvalidPageParam) {
@@ -44,11 +40,7 @@ func ListUsersHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	var users []models.User
-	dbConn.Offset(paginationData.Offset).Limit(paginationData.Limit).Find(&users)
-
-	var count int64
-	dbConn.Model(&models.User{}).Count(&count)
+	users, count := c.Components.Manager.Users.List(paginationData.Limit, paginationData.Offset)
 
 	response := paginationData.ToResponse(
 		ToListResponse(users), int(count),
@@ -97,13 +89,10 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
+	user, err := c.Components.Manager.Users.GetById(uuid.MustParse(id))
 
-	var user models.User
-	result := dbConn.First(&user, uuid.MustParse(id))
-
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
 			return
 		} else {
@@ -134,11 +123,11 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	}
 
 	user := userRequest.ToEntity()
-	dbConn := c.Components.DB
 
-	result := dbConn.Create(user)
-	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+	err = c.Components.Manager.Users.Create(user)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFOrEmailAlreadyInUse)
 			return
 		} else {
@@ -170,11 +159,9 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
+	err := c.Components.Manager.Users.Delete(uuid.MustParse(id))
 
-	result := dbConn.Delete(&models.User{}, uuid.MustParse(id))
-
-	if result.Error != nil {
+	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
@@ -204,7 +191,6 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
@@ -212,20 +198,20 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	updatedUser := userRequest.ToEntity()
+	user := userRequest.ToEntity()
 
-	updatedUser.ID = uuid.MustParse(id)
+	user.ID = uuid.MustParse(id)
 
-	result := dbConn.Model(updatedUser).Clauses(clause.Returning{}).Updates(updatedUser)
+	rowsAffected, err := c.Components.Manager.Users.Update(user)
 
-	if result.Error != nil {
+	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
-	if result.RowsAffected == 0 {
+	if rowsAffected == 0 {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUserResourceNotFound)
 		return
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(*updatedUser), http.StatusOK)
+	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)
 }
