@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UsersDBMock struct {
+type UsersManagerMock struct {
 	GetByCPFMock func(string) (models.User, error)
 	ListMock     func(int, int) ([]models.User, int64)
 	GetByIDMock  func(uuid.UUID) (models.User, error)
@@ -15,21 +15,21 @@ type UsersDBMock struct {
 	UpdateMock   func(*models.User) (int, error)
 }
 
-func (ubm *UsersDBMock) GetByCPF(cpf string) (models.User, error) {
-	return ubm.GetByCPFMock(cpf)
+func (umm *UsersManagerMock) GetByCPF(cpf string) (models.User, error) {
+	return umm.GetByCPFMock(cpf)
 }
-func (ubm *UsersDBMock) List(offset, limit int) ([]models.User, int64) {
-	return ubm.ListMock(offset, limit)
+func (umm *UsersManagerMock) List(offset, limit int) ([]models.User, int64) {
+	return umm.ListMock(offset, limit)
 }
-func (ubm *UsersDBMock) GetByID(id uuid.UUID) (models.User, error) {
-	return ubm.GetByIDMock(id)
+func (umm *UsersManagerMock) GetByID(id uuid.UUID) (models.User, error) {
+	return umm.GetByIDMock(id)
 }
-func (ubm *UsersDBMock) Create(user *models.User) error {
-	return ubm.CreateMock(user)
+func (umm *UsersManagerMock) Create(user *models.User) error {
+	return umm.CreateMock(user)
 }
-func (ubm *UsersDBMock) Delete(id uuid.UUID) error {
-	return ubm.DeleteMock(id)
+func (umm *UsersManagerMock) Delete(id uuid.UUID) error {
+	return umm.DeleteMock(id)
 }
-func (ubm *UsersDBMock) Update(user *models.User) (int, error) {
-	return ubm.UpdateMock(user)
+func (umm *UsersManagerMock) Update(user *models.User) (int, error) {
+	return umm.UpdateMock(user)
 }

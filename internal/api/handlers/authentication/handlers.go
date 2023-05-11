@@ -38,7 +38,7 @@ func LoginHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user, err := c.Components.Manager.Users.GetByCPF(loginRequest.CPF)
+	user, err := c.Components.Resources.Users.GetByCPF(loginRequest.CPF)
 
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrUserResourceNotFound)

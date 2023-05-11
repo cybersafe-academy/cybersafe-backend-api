@@ -2,8 +2,8 @@ package users
 
 import "gorm.io/gorm"
 
-func Config(conn *gorm.DB) Users {
-	return &UserDB{
+func Config(conn *gorm.DB) UsersManager {
+	return &UsersManagerDB{
 		DBConnection: conn,
 	}
 }

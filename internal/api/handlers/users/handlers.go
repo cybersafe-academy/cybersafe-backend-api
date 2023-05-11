@@ -40,7 +40,7 @@ func ListUsersHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	users, count := c.Components.Manager.Users.List(paginationData.Limit, paginationData.Offset)
+	users, count := c.Components.Resources.Users.List(paginationData.Limit, paginationData.Offset)
 
 	response := paginationData.ToResponse(
 		ToListResponse(users), int(count),
@@ -89,7 +89,7 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user, err := c.Components.Manager.Users.GetByID(uuid.MustParse(id))
+	user, err := c.Components.Resources.Users.GetByID(uuid.MustParse(id))
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -124,7 +124,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	user := userRequest.ToEntity()
 
-	err = c.Components.Manager.Users.Create(user)
+	err = c.Components.Resources.Users.Create(user)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
@@ -159,7 +159,7 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	err := c.Components.Manager.Users.Delete(uuid.MustParse(id))
+	err := c.Components.Resources.Users.Delete(uuid.MustParse(id))
 
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
@@ -202,7 +202,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 
 	user.ID = uuid.MustParse(id)
 
-	rowsAffected, err := c.Components.Manager.Users.Update(user)
+	rowsAffected, err := c.Components.Resources.Users.Update(user)
 
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)

@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Users interface {
+type UsersManager interface {
 	GetByCPF(string) (models.User, error)
 	List(int, int) ([]models.User, int64)
 	GetByID(uuid.UUID) (models.User, error)

@@ -26,7 +26,7 @@ type Components struct {
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
-	Manager     services.Manager
+	Resources   services.Resources
 	DB          *gorm.DB
 	Cache       *cacheutil.Cacher
 	Mail        *mail.Mailer
@@ -75,6 +75,7 @@ func Config() *Components {
 	// Database Connection
 	dbConn := db.CreateDBConnection(config)
 
+	//Migrations
 	err := db.AutoMigrateDB()
 	if err != nil {
 		panic("Error occurred while trying to run migrations...")
@@ -88,7 +89,7 @@ func Config() *Components {
 		DB:          dbConn,
 		Cache:       &cache,
 		Mail:        &mailer,
-		Manager: services.Manager{
+		Resources: services.Resources{
 			Users: users.Config(dbConn),
 		},
 	}
