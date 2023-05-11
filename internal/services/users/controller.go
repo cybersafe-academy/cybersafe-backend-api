@@ -19,7 +19,7 @@ func (ub *UserDB) GetByCPF(cpf string) (models.User, error) {
 
 }
 
-func (ub *UserDB) GetById(id uuid.UUID) (models.User, error) {
+func (ub *UserDB) GetByID(id uuid.UUID) (models.User, error) {
 	var user models.User
 	result := ub.DBConnection.First(&user, id)
 	return user, result.Error

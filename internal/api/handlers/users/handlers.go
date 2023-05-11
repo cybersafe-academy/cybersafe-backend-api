@@ -89,7 +89,7 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user, err := c.Components.Manager.Users.GetById(uuid.MustParse(id))
+	user, err := c.Components.Manager.Users.GetByID(uuid.MustParse(id))
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
