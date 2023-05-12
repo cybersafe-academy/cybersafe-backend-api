@@ -17,7 +17,15 @@ require (
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
 )
 
-require github.com/go-chi/cors v1.2.1
+require (
+	github.com/go-chi/cors v1.2.1
+	github.com/stretchr/testify v1.8.1
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

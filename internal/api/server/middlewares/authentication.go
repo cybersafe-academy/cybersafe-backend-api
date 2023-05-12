@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"cybersafe-backend-api/internal/api/components"
-	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"errors"
@@ -79,13 +78,10 @@ func Authorizer(c *components.Components, allowedRoles ...string) func(next http
 				return
 			}
 
-			userID := uuid.MustParse(jwtClaims.UserID)
-			user := models.User{}
+			user, err := c.Resources.Users.GetByID(uuid.MustParse(jwtClaims.UserID))
 
-			result := c.DB.First(&user, userID)
-
-			if result.Error != nil {
-				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
 					components.HttpErrorMiddlewareResponse(
 						w, r,
 						http.StatusNotFound, errutil.ErrCourseResourceNotFound)
