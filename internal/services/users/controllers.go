@@ -48,3 +48,8 @@ func (um *UsersManagerDB) Update(user *models.User) (int, error) {
 	result := um.DBConnection.Model(user).Clauses(clause.Returning{}).Updates(user)
 	return int(result.RowsAffected), result.Error
 }
+
+func (um *UsersManagerDB) ExistsByEmail(email string) bool {
+	result := um.DBConnection.Where("email = ?", email).First(&models.User{})
+	return result.Error == nil
+}

@@ -196,7 +196,9 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	if err := c.Components.DB.Where("email = ?", forgotPasswordRequest.Email).First(&models.User{}).Error; err != nil {
+	exists := c.Components.Resources.Users.ExistsByEmail(forgotPasswordRequest.Email)
+
+	if !exists {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
 		return
 	}
@@ -261,7 +263,7 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		Password: updatePasswordRequest.Password,
 	}
 
-	c.Components.DB.Model(user).Where("email = ?", email).Updates(user)
+	c.Components.Resources.Users.Update(user)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }

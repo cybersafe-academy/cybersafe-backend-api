@@ -13,4 +13,5 @@ type UsersManager interface {
 	Create(*models.User) error
 	Delete(uuid.UUID) error
 	Update(*models.User) (int, error)
+	ExistsByEmail(string) bool
 }
