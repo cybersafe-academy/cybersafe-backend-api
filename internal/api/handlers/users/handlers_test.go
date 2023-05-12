@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/pkg/helpers"
+	"cybersafe-backend-api/pkg/settings"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +30,13 @@ func TestListUsersHandler(t *testing.T) {
 
 			// rctx := chi.NewRouteContext()
 
-			c := &components.Components{}
+			c := &components.Components{
+				Settings: &settings.SettingsMock{
+					Source: map[string]any{
+						"teste": 1,
+					},
+				},
+			}
 
 			httpComponentens := &components.HTTPComponents{
 				Components:   c,
