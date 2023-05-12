@@ -70,7 +70,7 @@ func Authorizer(c *components.Components, allowedRoles ...string) func(next http
 				return
 			}
 
-			if jwtutil.IsBlackListed(*c.Cache, jwtClaims.RegisteredClaims.ID) {
+			if jwtutil.IsBlackListed(c.Cache, jwtClaims.RegisteredClaims.ID) {
 				components.HttpErrorMiddlewareResponse(
 					w, r,
 					http.StatusUnauthorized,

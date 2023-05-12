@@ -165,7 +165,7 @@ func LogOffHandler(c *components.HTTPComponents) {
 	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims, secretKey)
 
 	jwtutil.AddToBlackList(
-		c.Components.Cache,
+		&c.Components.Cache,
 		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Time),
 		jwtClaims.RegisteredClaims.ID,
 		token.Raw,
@@ -205,7 +205,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 
 	randomToken := helpers.MustGenerateURLEncodedRandomToken()
 
-	(*c.Components.Cache).Set(
+	c.Components.Cache.Set(
 		randomToken, forgotPasswordRequest.Email, time.Minute*15,
 	)
 
@@ -217,7 +217,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		randomToken,
 	)
 
-	(*c.Components.Mail).Send(
+	c.Components.Mail.Send(
 		[]string{forgotPasswordRequest.Email},
 		mail.DefaultForgotPasswordSubject,
 		fmt.Sprintf("Reset your password: %s", updatePasswordURL),
@@ -249,14 +249,14 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, found := (*c.Components.Cache).Get(randomToken)
+	email, found := c.Components.Cache.Get(randomToken)
 
 	if !found {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
 		return
 	}
 
-	(*c.Components.Cache).Delete(randomToken)
+	c.Components.Cache.Delete(randomToken)
 
 	user := &models.User{
 		Email:    email.(string),

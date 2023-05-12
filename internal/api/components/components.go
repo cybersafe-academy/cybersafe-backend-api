@@ -3,6 +3,7 @@ package components
 import (
 	"cybersafe-backend-api/docs"
 	"cybersafe-backend-api/internal/services"
+	"cybersafe-backend-api/internal/services/courses"
 	"cybersafe-backend-api/internal/services/users"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
@@ -28,8 +29,8 @@ type Components struct {
 	Settings    settings.Settings
 	Resources   services.Resources
 	DB          *gorm.DB
-	Cache       *cacheutil.Cacher
-	Mail        *mail.Mailer
+	Cache       cacheutil.Cacher
+	Mail        mail.Mailer
 }
 
 type HTTPComponents struct {
@@ -87,10 +88,11 @@ func Config() *Components {
 		Environment: environment.FromString(env),
 		Logger:      log,
 		DB:          dbConn,
-		Cache:       &cache,
-		Mail:        &mailer,
+		Cache:       cache,
+		Mail:        mailer,
 		Resources: services.Resources{
-			Users: users.Config(dbConn),
+			Users:   users.Config(dbConn),
+			Courses: courses.Config(dbConn),
 		},
 	}
 }
