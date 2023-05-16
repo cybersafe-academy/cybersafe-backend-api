@@ -3,8 +3,6 @@ package components
 import (
 	"cybersafe-backend-api/docs"
 	"cybersafe-backend-api/internal/services"
-	"cybersafe-backend-api/internal/services/courses"
-	"cybersafe-backend-api/internal/services/users"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
@@ -78,8 +76,10 @@ func Config() *Components {
 	err := db.AutoMigrateDB()
 	if err != nil {
 		panic("Error occurred while trying to run migrations...")
-
 	}
+
+	//Resources
+	resources := services.Config(dbConn)
 
 	return &Components{
 		Settings:    config,
@@ -87,10 +87,7 @@ func Config() *Components {
 		Logger:      log,
 		Cache:       cache,
 		Mail:        mailer,
-		Resources: services.Resources{
-			Users:   users.Config(dbConn),
-			Courses: courses.Config(dbConn),
-		},
+		Resources:   resources,
 	}
 }
 
