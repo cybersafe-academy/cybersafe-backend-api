@@ -9,14 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type M map[string]any
+
 func AssertHTTPResponse(t *testing.T, response *httptest.ResponseRecorder, expectedStatusCode int, expectedResponseBody map[string]any) {
 	result := response.Result()
 	defer result.Body.Close()
 
+	responseBody := map[string]any{}
+	err := json.NewDecoder(result.Body).Decode(&responseBody)
+
+	assert.Nil(t, err, "invalid JSON in response body")
 	assert.Equal(t, expectedStatusCode, result.StatusCode)
-
-	var responseBody map[string]any
-	_ = json.NewDecoder(result.Body).Decode(&responseBody)
-
 	assert.Equal(t, fmt.Sprint(responseBody), fmt.Sprint(expectedResponseBody))
 }

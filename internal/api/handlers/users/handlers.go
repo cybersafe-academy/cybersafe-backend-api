@@ -33,10 +33,10 @@ func ListUsersHandler(c *components.HTTPComponents) {
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
 	if errors.Is(err, errutil.ErrInvalidPageParam) {
-		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
 		return
 	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
-		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 

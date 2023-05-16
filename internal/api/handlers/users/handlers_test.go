@@ -9,30 +9,116 @@ import (
 	"cybersafe-backend-api/pkg/helpers"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestListUsersHandler(t *testing.T) {
-	cases := []struct {
-		testName             string
+	testCases := []struct {
+		name                 string
 		expectedStatusCode   int
-		expectedResponseBody map[string]any
+		expectedResponseBody helpers.M
+		queryParams          url.Values
+		resourcesMock        services.Resources
 	}{
 		{
-			testName:           "success empty result",
+			name:               "success empty result",
 			expectedStatusCode: 200,
-			expectedResponseBody: map[string]any{
+			expectedResponseBody: helpers.M{
 				"data":       nil,
 				"total":      0,
 				"limit":      10,
 				"current":    1,
 				"totalPages": 0,
 			},
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
+						return []models.User{}, 0
+					},
+				},
+			},
+		},
+		{
+			name:               "success non-empty result",
+			expectedStatusCode: 200,
+			expectedResponseBody: helpers.M{
+				"data": []helpers.M{
+					{
+						"age":       0,
+						"cpf":       "",
+						"createdAt": "0001-01-01T00:00:00Z",
+						"deletedAt": nil,
+						"email":     "",
+						"id":        uuid.Nil,
+						"name":      "Test user",
+						"updatedAt": "0001-01-01T00:00:00Z",
+					},
+				},
+				"total":      1,
+				"limit":      10,
+				"current":    1,
+				"totalPages": 1,
+			},
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
+						users := []models.User{
+							{
+								Name: "Test user",
+							},
+						}
+						return users, int64(len(users))
+					},
+				},
+			},
+		},
+		{
+			name:               "invalid query params page",
+			expectedStatusCode: 400,
+			expectedResponseBody: helpers.M{
+				"error": helpers.M{
+					"code":        400,
+					"description": "invalid page param",
+				},
+			},
+			queryParams: url.Values{
+				"page": []string{"invalid"},
+			},
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
+						return []models.User{}, 0
+					},
+				},
+			},
+		},
+		{
+			name:               "invalid query params limit",
+			expectedStatusCode: 400,
+			expectedResponseBody: helpers.M{
+				"error": helpers.M{
+					"code":        400,
+					"description": "invalid limit param",
+				},
+			},
+			queryParams: url.Values{
+				"limit": []string{"invalid"},
+			},
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
+						return []models.User{}, 0
+					},
+				},
+			},
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.testName, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
 
 			payload := bytes.NewBuffer(nil)
 
@@ -41,14 +127,12 @@ func TestListUsersHandler(t *testing.T) {
 
 			request.Header.Add("Content-Type", "application/json")
 
+			if testCase.queryParams != nil {
+				request.URL.RawQuery = testCase.queryParams.Encode()
+			}
+
 			c := &components.Components{
-				Resources: services.Resources{
-					Users: &users.UsersManagerMock{
-						ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
-							return []models.User{}, 0
-						},
-					},
-				},
+				Resources: testCase.resourcesMock,
 			}
 
 			httpComponentens := &components.HTTPComponents{
@@ -59,7 +143,7 @@ func TestListUsersHandler(t *testing.T) {
 
 			ListUsersHandler(httpComponentens)
 
-			helpers.AssertHTTPResponse(t, response, tc.expectedStatusCode, tc.expectedResponseBody)
+			helpers.AssertHTTPResponse(t, response, testCase.expectedStatusCode, testCase.expectedResponseBody)
 		})
 	}
 }
