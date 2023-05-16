@@ -19,7 +19,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
-	"gorm.io/gorm"
 )
 
 type Components struct {
@@ -28,7 +27,6 @@ type Components struct {
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
 	Resources   services.Resources
-	DB          *gorm.DB
 	Cache       cacheutil.Cacher
 	Mail        mail.Mailer
 }
@@ -87,7 +85,6 @@ func Config() *Components {
 		Settings:    config,
 		Environment: environment.FromString(env),
 		Logger:      log,
-		DB:          dbConn,
 		Cache:       cache,
 		Mail:        mailer,
 		Resources: services.Resources{
