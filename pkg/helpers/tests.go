@@ -15,7 +15,7 @@ func AssertHTTPResponse(t *testing.T, response *httptest.ResponseRecorder, expec
 	result := response.Result()
 	defer result.Body.Close()
 
-	responseBody := map[string]any{}
+	responseBody := M{}
 	err := json.NewDecoder(result.Body).Decode(&responseBody)
 
 	assert.Nil(t, err, "invalid JSON in response body")
