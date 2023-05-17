@@ -1,4 +1,4 @@
-package user
+package users
 
 import "cybersafe-backend-api/internal/models"
 

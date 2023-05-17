@@ -2,6 +2,7 @@ package components
 
 import (
 	"cybersafe-backend-api/docs"
+	"cybersafe-backend-api/internal/services"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
@@ -16,22 +17,16 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog"
-	"gorm.io/gorm"
 )
-
-// type Services struct {
-// 	Users user.UserManager
-// }
 
 type Components struct {
 	Environment string
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
 	Settings    settings.Settings
-	Storer      db.Storer
-	DB          *gorm.DB
-	Cache       *cacheutil.Cacher
-	Mail        *mail.Mailer
+	Resources   services.Resources
+	Cache       cacheutil.Cacher
+	Mail        mail.Mailer
 }
 
 type HTTPComponents struct {
@@ -77,20 +72,22 @@ func Config() *Components {
 	// Database Connection
 	dbConn := db.CreateDBConnection(config)
 
+	//Migrations
 	err := db.AutoMigrateDB()
 	if err != nil {
 		panic("Error occurred while trying to run migrations...")
-
 	}
+
+	//Resources
+	resources := services.Config(dbConn)
 
 	return &Components{
 		Settings:    config,
 		Environment: environment.FromString(env),
 		Logger:      log,
-		DB:          dbConn,
-		Cache:       &cache,
-		Mail:        &mailer,
-		Storer:      &db.DBStorer{Conn: dbConn},
+		Cache:       cache,
+		Mail:        mailer,
+		Resources:   resources,
 	}
 }
 

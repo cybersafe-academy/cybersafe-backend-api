@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 )
 
 var (
@@ -19,7 +18,6 @@ type (
 	}
 
 	Error struct {
-		ID             uuid.UUID     `json:"id,omitempty" example:"c77fa521-99b1-4c54-9a8d-4b6902912eb0"`
 		Err            error         `json:"-"`
 		HTTPStatusCode int           `json:"code,omitempty" example:"400"`
 		ErrorText      string        `json:"description,omitempty" example:"Bad Request"`
@@ -48,7 +46,6 @@ func errorResponse(httpCode int, err error) render.Renderer {
 	// Default response
 	response := &Response{
 		Error: Error{
-			ID:             uuid.New(),
 			Err:            err,
 			HTTPStatusCode: httpCode,
 			ErrorText:      err.Error(),
