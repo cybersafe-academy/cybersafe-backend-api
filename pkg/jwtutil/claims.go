@@ -1,8 +1,10 @@
 package jwtutil
 
 import (
+	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -21,9 +23,9 @@ func (c CustomClaims) Validate() error {
 		return errutil.ErrInvalidUUID
 	}
 
-	// if !govalidator.IsIn(c.Role, models.ValidUserRoles...) {
-	// 	return errutil.ErrInvalidUserRole
-	// }
+	if !govalidator.IsIn(c.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidUserRole
+	}
 
 	return nil
 }
