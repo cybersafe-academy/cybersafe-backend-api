@@ -10,10 +10,10 @@ func ToListResponse(users []models.User) []ResponseContent {
 		usersResponse = append(usersResponse, ResponseContent{
 			ID: user.ID,
 			UserFields: UserFields{
-				Name:  user.Name,
-				Age:   user.Age,
-				CPF:   user.CPF,
-				Email: user.Email,
+				Name:      user.Name,
+				BirthDate: user.BirthDate,
+				CPF:       user.CPF,
+				Email:     user.Email,
 			},
 		})
 	}
@@ -24,11 +24,11 @@ func ToListResponse(users []models.User) []ResponseContent {
 func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
 		UserFields: UserFields{
-			Name: user.Name,
-			Age:  user.Age,
-			CPF:  user.CPF,
-			// Role:  user.Role,
-			Email: user.Email,
+			Name:      user.Name,
+			BirthDate: user.BirthDate,
+			CPF:       user.CPF,
+			Role:      user.Role,
+			Email:     user.Email,
 		},
 		ID:        user.ID,
 		CreatedAt: user.CreatedAt,
