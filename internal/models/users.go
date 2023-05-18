@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -22,12 +24,12 @@ var (
 type User struct {
 	Shared
 
-	Name     string
-	Role     string `gorm:"default:'default'"`
-	Email    string `gorm:"unique"`
-	Age      int
-	CPF      string `gorm:"unique"`
-	Password string
+	Name      string
+	Role      string `gorm:"default:'default'"`
+	Email     string `gorm:"unique"`
+	BirthDate time.Time
+	CPF       string `gorm:"unique"`
+	Password  string
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
