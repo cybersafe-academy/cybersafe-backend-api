@@ -238,7 +238,7 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/course.ResponseContent"
+                                                "$ref": "#/definitions/courses.ResponseContent"
                                             }
                                         }
                                     }
@@ -277,7 +277,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/course.RequestContent"
+                            "$ref": "#/definitions/courses.RequestContent"
                         }
                     }
                 ],
@@ -285,7 +285,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -327,7 +327,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -361,7 +361,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/course.RequestContent"
+                            "$ref": "#/definitions/courses.RequestContent"
                         }
                     },
                     {
@@ -376,7 +376,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -473,7 +473,7 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/user.ResponseContent"
+                                                "$ref": "#/definitions/users.ResponseContent"
                                             }
                                         }
                                     }
@@ -504,7 +504,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.RequestContent"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     }
                 ],
@@ -512,7 +512,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -545,7 +545,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -587,7 +587,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -621,7 +621,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.RequestContent"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     },
                     {
@@ -636,7 +636,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -750,10 +750,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/components.ErrorDetail"
                     }
-                },
-                "id": {
-                    "type": "string",
-                    "example": "c77fa521-99b1-4c54-9a8d-4b6902912eb0"
                 }
             }
         },
@@ -783,7 +779,7 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ContentRequest": {
+        "courses.ContentRequest": {
             "type": "object",
             "properties": {
                 "PDFURL": {
@@ -803,7 +799,7 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ContentResponse": {
+        "courses.ContentResponse": {
             "type": "object",
             "properties": {
                 "PDFURL": {
@@ -826,7 +822,7 @@ const docTemplate = `{
                 }
             }
         },
-        "course.RequestContent": {
+        "courses.RequestContent": {
             "type": "object",
             "properties": {
                 "contentInHours": {
@@ -835,7 +831,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentRequest"
+                        "$ref": "#/definitions/courses.ContentRequest"
                     }
                 },
                 "description": {
@@ -852,7 +848,7 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ResponseContent": {
+        "courses.ResponseContent": {
             "type": "object",
             "properties": {
                 "contentInHours": {
@@ -861,7 +857,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentResponse"
+                        "$ref": "#/definitions/courses.ContentResponse"
                     }
                 },
                 "createdAt": {
@@ -916,17 +912,16 @@ const docTemplate = `{
                 }
             }
         },
-        "user.RequestContent": {
+        "users.RequestContent": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "birthDate": {
+                    "type": "string"
                 },
                 "cpf": {
                     "type": "string"
                 },
                 "email": {
-                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "name": {
@@ -934,14 +929,17 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
-        "user.ResponseContent": {
+        "users.ResponseContent": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "birthDate": {
+                    "type": "string"
                 },
                 "cpf": {
                     "type": "string"
@@ -953,13 +951,15 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
-                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "updatedAt": {

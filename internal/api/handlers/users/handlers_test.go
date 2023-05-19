@@ -124,14 +124,10 @@ func TestListUsersHandler(t *testing.T) {
 			payload := bytes.NewBuffer(nil)
 
 			request := httptest.NewRequest(http.MethodGet, "/users", payload)
-			response := httptest.NewRecorder()
-
 			request.Header.Add("Content-Type", "application/json")
+			request.URL.RawQuery = testCase.queryParams.Encode()
 
-			if testCase.queryParams != nil {
-				request.URL.RawQuery = testCase.queryParams.Encode()
-			}
-
+			response := httptest.NewRecorder()
 			c := &components.Components{
 				Resources: testCase.resourcesMock,
 			}

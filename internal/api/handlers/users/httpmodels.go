@@ -11,15 +11,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserManager interface {
+type UserFields struct {
+	Name      string    `json:"name" valid:"type(string),"`
+	Role      string    `json:"role" valid:"type(string),"`
+	Email     string    `json:"email" valid:"type(string), email, required"`
+	BirthDate time.Time `json:"birthDate" valid:"type(date),"`
+	CPF       string    `json:"cpf" valid:"type(string), cpf,"`
 }
 
-type UserFields struct {
-	Name      string    `json:"name" valid:"type(string), required"`
-	Role      string    `json:"role" valid:"type(string), required"`
+type UserFieldsUpdate struct {
+	Name      string    `json:"name" valid:"type(string),"`
+	Role      string    `json:"role" valid:"type(string),"`
 	Email     string    `json:"email" valid:"type(string), email, required"`
-	BirthDate time.Time `json:"birthDate" valid:"type(date), required"`
-	CPF       string    `json:"cpf" valid:"type(string), cpf, required"`
+	BirthDate time.Time `json:"birthDate" valid:"type(date),"`
+	CPF       string    `json:"cpf" valid:"type(string), cpf,"`
 }
 
 type ResponseContent struct {
@@ -33,6 +38,11 @@ type ResponseContent struct {
 
 type RequestContent struct {
 	UserFields
+	Password string `json:"password" valid:"stringlength(8|24)"`
+}
+
+type RequestContentUpdate struct {
+	UserFieldsUpdate
 	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 

@@ -37,9 +37,6 @@ definitions:
         items:
           $ref: '#/definitions/components.ErrorDetail'
         type: array
-      id:
-        example: c77fa521-99b1-4c54-9a8d-4b6902912eb0
-        type: string
     type: object
   components.ErrorDetail:
     properties:
@@ -58,7 +55,7 @@ definitions:
       error:
         $ref: '#/definitions/components.Error'
     type: object
-  course.ContentRequest:
+  courses.ContentRequest:
     properties:
       PDFURL:
         type: string
@@ -71,7 +68,7 @@ definitions:
       youtubeURL:
         type: string
     type: object
-  course.ContentResponse:
+  courses.ContentResponse:
     properties:
       PDFURL:
         type: string
@@ -86,13 +83,13 @@ definitions:
       youtubeURL:
         type: string
     type: object
-  course.RequestContent:
+  courses.RequestContent:
     properties:
       contentInHours:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentRequest'
+          $ref: '#/definitions/courses.ContentRequest'
         type: array
       description:
         type: string
@@ -103,13 +100,13 @@ definitions:
       title:
         type: string
     type: object
-  course.ResponseContent:
+  courses.ResponseContent:
     properties:
       contentInHours:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentResponse'
+          $ref: '#/definitions/courses.ContentResponse'
         type: array
       createdAt:
         type: string
@@ -145,24 +142,25 @@ definitions:
       page:
         type: integer
     type: object
-  user.RequestContent:
+  users.RequestContent:
     properties:
-      age:
-        type: integer
+      birthDate:
+        type: string
       cpf:
         type: string
       email:
-        description: Role  string `json:"role" valid:"type(string), required"`
         type: string
       name:
         type: string
       password:
         type: string
+      role:
+        type: string
     type: object
-  user.ResponseContent:
+  users.ResponseContent:
     properties:
-      age:
-        type: integer
+      birthDate:
+        type: string
       cpf:
         type: string
       createdAt:
@@ -170,11 +168,12 @@ definitions:
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       email:
-        description: Role  string `json:"role" valid:"type(string), required"`
         type: string
       id:
         type: string
       name:
+        type: string
+      role:
         type: string
       updatedAt:
         type: string
@@ -320,7 +319,7 @@ paths:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
                   data:
-                    $ref: '#/definitions/course.ResponseContent'
+                    $ref: '#/definitions/courses.ResponseContent'
                 type: object
             type: array
         "400":
@@ -342,12 +341,12 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/course.RequestContent'
+          $ref: '#/definitions/courses.RequestContent'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -394,7 +393,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -414,7 +413,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/course.RequestContent'
+          $ref: '#/definitions/courses.RequestContent'
       - description: ID of course to be updated
         in: path
         name: id
@@ -424,7 +423,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         "404":
@@ -459,7 +458,7 @@ paths:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
                   data:
-                    $ref: '#/definitions/user.ResponseContent'
+                    $ref: '#/definitions/users.ResponseContent'
                 type: object
             type: array
         "400":
@@ -481,12 +480,12 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.RequestContent'
+          $ref: '#/definitions/users.RequestContent'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -530,7 +529,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -550,7 +549,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.RequestContent'
+          $ref: '#/definitions/users.RequestContent'
       - description: ID of user to be updated
         in: path
         name: id
@@ -560,7 +559,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         "404":
@@ -581,7 +580,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
