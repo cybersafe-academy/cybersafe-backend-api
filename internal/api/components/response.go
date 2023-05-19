@@ -62,7 +62,7 @@ func HttpErrorResponse(components *HTTPComponents, httpCode int, err error) {
 
 func HttpErrorMiddlewareResponse(w http.ResponseWriter, r *http.Request, httpCode int, err error) {
 	log.Printf("Error %s", err.Error())
-	_ = render.Render(w, r, errorResponse(httpCode, err))
+	err = render.Render(w, r, errorResponse(httpCode, err))
 }
 
 func HttpResponse(components *HTTPComponents, httpCode int) {

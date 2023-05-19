@@ -1,6 +1,9 @@
 package users
 
-import "cybersafe-backend-api/internal/models"
+import (
+	"cybersafe-backend-api/internal/models"
+	"time"
+)
 
 func ToListResponse(users []models.User) []ResponseContent {
 
@@ -11,7 +14,7 @@ func ToListResponse(users []models.User) []ResponseContent {
 			ID: user.ID,
 			UserFields: UserFields{
 				Name:      user.Name,
-				BirthDate: user.BirthDate,
+				BirthDate: user.BirthDate.Truncate(24 * time.Hour).String(),
 				CPF:       user.CPF,
 				Email:     user.Email,
 			},
@@ -25,7 +28,7 @@ func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
 		UserFields: UserFields{
 			Name:      user.Name,
-			BirthDate: user.BirthDate,
+			BirthDate: user.BirthDate.Truncate(24 * time.Hour).String(),
 			CPF:       user.CPF,
 			Role:      user.Role,
 			Email:     user.Email,

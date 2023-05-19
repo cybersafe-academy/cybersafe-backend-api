@@ -84,7 +84,7 @@ func Authorizer(c *components.Components, allowedRoles ...string) func(next http
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					components.HttpErrorMiddlewareResponse(
 						w, r,
-						http.StatusNotFound, errutil.ErrCourseResourceNotFound)
+						http.StatusNotFound, errutil.ErrUserResourceNotFound)
 					return
 				} else {
 					components.HttpErrorMiddlewareResponse(

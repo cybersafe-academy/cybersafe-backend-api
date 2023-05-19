@@ -9,3 +9,7 @@ func DefaultTimeZone() time.Time {
 	}
 	return time.Now().In(loc)
 }
+
+func DefaultDateFormat() string {
+	return "2006-01-02"
+}

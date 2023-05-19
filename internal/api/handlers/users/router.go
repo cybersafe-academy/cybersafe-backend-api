@@ -17,9 +17,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
-		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
-			CreateUserHandler(components.HttpComponents(w, r, c))
-		})
 		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			DeleteUserHandler(components.HttpComponents(w, r, c))
 		})
@@ -40,6 +37,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
 			GetAuthenticatedUserHandler(components.HttpComponents(w, r, c))
 		})
+	})
+
+	subRouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		CreateUserHandler(components.HttpComponents(w, r, c))
 	})
 
 	return subRouter

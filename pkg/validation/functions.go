@@ -2,6 +2,7 @@ package validation
 
 import (
 	"cybersafe-backend-api/pkg/helpers"
+	"time"
 )
 
 func IsCPF(doc string) bool {
@@ -119,4 +120,9 @@ func IsCNPJ(doc string) bool {
 
 	return true
 
+}
+
+func IsDate(date string) bool {
+	_, err := time.Parse(helpers.DefaultDateFormat(), date)
+	return err == nil
 }
