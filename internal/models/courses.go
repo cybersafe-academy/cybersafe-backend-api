@@ -45,9 +45,7 @@ type Content struct {
 
 	Title       string
 	ContentType string
-	YoutubeURL  string
-	PDFURL      string
-	ImageURL    string
+	URL         string
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`

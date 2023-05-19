@@ -3,6 +3,7 @@ package users
 import (
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"net/http"
 	"time"
 
@@ -11,15 +12,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserManager interface {
+type UserFields struct {
+	Name      string `json:"name" valid:"type(string),"`
+	Role      string `json:"role" valid:"type(string),"`
+	Email     string `json:"email" valid:"type(string), email, required"`
+	BirthDate string `json:"birthDate" valid:"date"`
+	CPF       string `json:"cpf" valid:"type(string), cpf,"`
 }
 
-type UserFields struct {
-	Name      string    `json:"name" valid:"type(string), required"`
-	Role      string    `json:"role" valid:"type(string), required"`
+type UserFieldsUpdate struct {
+	Name      string    `json:"name" valid:"type(string),"`
+	Role      string    `json:"role" valid:"type(string),"`
 	Email     string    `json:"email" valid:"type(string), email, required"`
-	BirthDate time.Time `json:"birthDate" valid:"type(date), required"`
-	CPF       string    `json:"cpf" valid:"type(string), cpf, required"`
+	BirthDate time.Time `json:"birthDate" valid:"type(date)"`
+	CPF       string    `json:"cpf" valid:"type(string), cpf,"`
 }
 
 type ResponseContent struct {
@@ -33,6 +39,11 @@ type ResponseContent struct {
 
 type RequestContent struct {
 	UserFields
+	Password string `json:"password" valid:"stringlength(8|24)"`
+}
+
+type RequestContentUpdate struct {
+	UserFieldsUpdate
 	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 
@@ -51,10 +62,13 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 }
 
 func (re *RequestContent) ToEntity() *models.User {
+
+	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), re.BirthDate)
+
 	return &models.User{
 		Name:      re.Name,
 		Email:     re.Email,
-		BirthDate: re.BirthDate,
+		BirthDate: birthDate,
 		CPF:       re.CPF,
 		Role:      re.Role,
 		Password:  re.Password,

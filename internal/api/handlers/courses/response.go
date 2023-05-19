@@ -29,9 +29,7 @@ func ToListResponse(courses []models.Course) []CourseResponse {
 				ContentFields: ContentFields{
 					Title:       content.Title,
 					ContentType: content.ContentType,
-					YoutubeURL:  content.YoutubeURL,
-					PDFURL:      content.PDFURL,
-					ImageURL:    content.ImageURL,
+					URL:         content.URL,
 				},
 				ID: content.ID,
 			})
@@ -68,9 +66,7 @@ func ToResponse(course models.Course) CourseResponse {
 			ContentFields: ContentFields{
 				Title:       content.Title,
 				ContentType: content.ContentType,
-				YoutubeURL:  content.YoutubeURL,
-				PDFURL:      content.PDFURL,
-				ImageURL:    content.ImageURL,
+				URL:         content.URL,
 			},
 		})
 	}
