@@ -226,7 +226,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
-// ForgotPasswordHandler is the HTTP handler for requesting a new password
+// UpdatePasswordHandler is the HTTP handler for updating the password
 //
 //	@Summary		Update password after email verification
 //	@Description	Checks the token on the request and updates the password

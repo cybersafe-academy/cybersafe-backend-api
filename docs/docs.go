@@ -621,7 +621,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.RequestContent"
+                            "$ref": "#/definitions/users.RequestContentUpdate"
                         }
                     },
                     {
@@ -901,6 +901,29 @@ const docTemplate = `{
             }
         },
         "users.RequestContent": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string"
+                },
+                "cpf": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.RequestContentUpdate": {
             "type": "object",
             "properties": {
                 "birthDate": {

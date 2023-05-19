@@ -21,11 +21,11 @@ type UserFields struct {
 }
 
 type UserFieldsUpdate struct {
-	Name      string    `json:"name" valid:"type(string),"`
-	Role      string    `json:"role" valid:"type(string),"`
-	Email     string    `json:"email" valid:"type(string), email, required"`
-	BirthDate time.Time `json:"birthDate" valid:"type(date)"`
-	CPF       string    `json:"cpf" valid:"type(string), cpf,"`
+	Name      string `json:"name" valid:"type(string),"`
+	Role      string `json:"role" valid:"type(string),"`
+	Email     string `json:"email" valid:"type(string), email, required"`
+	BirthDate string `json:"birthDate" valid:"type(date)"`
+	CPF       string `json:"cpf" valid:"type(string), cpf,"`
 }
 
 type ResponseContent struct {
@@ -60,8 +60,35 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 
 	return err
 }
+func (re *RequestContentUpdate) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidUserRole
+	}
+
+	_, err := govalidator.ValidateStruct(*re)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
 
 func (re *RequestContent) ToEntity() *models.User {
+
+	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), re.BirthDate)
+
+	return &models.User{
+		Name:      re.Name,
+		Email:     re.Email,
+		BirthDate: birthDate,
+		CPF:       re.CPF,
+		Role:      re.Role,
+		Password:  re.Password,
+	}
+}
+
+func (re *RequestContentUpdate) ToEntity() *models.User {
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), re.BirthDate)
 

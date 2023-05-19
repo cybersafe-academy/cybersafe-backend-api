@@ -149,6 +149,21 @@ definitions:
       role:
         type: string
     type: object
+  users.RequestContentUpdate:
+    properties:
+      birthDate:
+        type: string
+      cpf:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
   users.ResponseContent:
     properties:
       birthDate:
@@ -541,7 +556,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/users.RequestContent'
+          $ref: '#/definitions/users.RequestContentUpdate'
       - description: ID of user to be updated
         in: path
         name: id
