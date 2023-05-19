@@ -57,30 +57,22 @@ definitions:
     type: object
   courses.ContentRequest:
     properties:
-      PDFURL:
+      URL:
         type: string
       contentType:
         type: string
-      imageURL:
-        type: string
       title:
-        type: string
-      youtubeURL:
         type: string
     type: object
   courses.ContentResponse:
     properties:
-      PDFURL:
+      URL:
         type: string
       contentType:
         type: string
       id:
         type: string
-      imageURL:
-        type: string
       title:
-        type: string
-      youtubeURL:
         type: string
     type: object
   courses.RequestContent:

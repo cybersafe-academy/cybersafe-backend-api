@@ -782,19 +782,13 @@ const docTemplate = `{
         "courses.ContentRequest": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }
@@ -802,7 +796,7 @@ const docTemplate = `{
         "courses.ContentResponse": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
@@ -811,13 +805,7 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }

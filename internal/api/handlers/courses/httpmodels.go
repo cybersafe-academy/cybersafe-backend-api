@@ -43,9 +43,7 @@ type ContentResponse struct {
 type ContentFields struct {
 	Title       string `json:"title" valid:"type(string), required"`
 	ContentType string `json:"contentType" valid:"type(string), required"`
-	YoutubeURL  string `json:"youtubeURL" valid:"type(string)"`
-	PDFURL      string `json:"PDFURL" valid:"type(string)"`
-	ImageURL    string `json:"imageURL" valid:"type(string)"`
+	URL         string `json:"URL" valid:"type(string)"`
 }
 
 type ResponseContent struct {
@@ -96,9 +94,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 		course.Contents = append(course.Contents, models.Content{
 			Title:       content.Title,
 			ContentType: content.ContentType,
-			YoutubeURL:  content.YoutubeURL,
-			PDFURL:      content.PDFURL,
-			ImageURL:    content.ImageURL,
+			URL:         content.URL,
 		})
 	}
 

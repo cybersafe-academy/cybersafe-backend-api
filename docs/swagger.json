@@ -773,19 +773,13 @@
         "courses.ContentRequest": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }
@@ -793,7 +787,7 @@
         "courses.ContentResponse": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
@@ -802,13 +796,7 @@
                 "id": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }

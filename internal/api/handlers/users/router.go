@@ -29,6 +29,9 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			GetUserByIDHandler(components.HttpComponents(w, r, c))
 		})
+		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+			CreateUserHandler(components.HttpComponents(w, r, c))
+		})
 	})
 
 	subRouter.Group(func(r chi.Router) {
@@ -37,10 +40,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
 			GetAuthenticatedUserHandler(components.HttpComponents(w, r, c))
 		})
-	})
-
-	subRouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
-		CreateUserHandler(components.HttpComponents(w, r, c))
 	})
 
 	return subRouter
