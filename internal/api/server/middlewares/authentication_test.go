@@ -91,7 +91,7 @@ func TestAuthorizationToken(t *testing.T) {
 		name                 string
 		allowedRoles         []string
 		jwtExpiresAt         time.Duration
-		jwtID                uuid.UUID
+		jwtID                string
 		expectedStatusCode   int
 		expectedResponseBody helpers.M
 		user                 models.User
@@ -107,7 +107,7 @@ func TestAuthorizationToken(t *testing.T) {
 				},
 			},
 			jwtExpiresAt: 1 * time.Hour,
-			jwtID:        uuid.New(),
+			jwtID:        uuid.NewString(),
 			user: models.User{
 				Shared: models.Shared{
 					ID: uuid.New(),
@@ -144,7 +144,7 @@ func TestAuthorizationToken(t *testing.T) {
 				},
 			},
 			jwtExpiresAt: 1 * time.Hour,
-			jwtID:        uuid.New(),
+			jwtID:        uuid.NewString(),
 			user: models.User{
 				Shared: models.Shared{
 					ID: uuid.New(),
@@ -174,15 +174,93 @@ func TestAuthorizationToken(t *testing.T) {
 		{
 			name:               "given user role is not allowed",
 			allowedRoles:       []string{models.AdminUserRole},
-			expectedStatusCode: http.StatusInternalServerError,
+			expectedStatusCode: http.StatusForbidden,
 			expectedResponseBody: helpers.M{
 				"error": helpers.M{
-					"code":        http.StatusInternalServerError,
-					"description": errutil.ErrUnexpectedError.Error(),
+					"code":        http.StatusForbidden,
+					"description": errutil.ErrInvalidJWT.Error(),
 				},
 			},
 			jwtExpiresAt: 1 * time.Hour,
-			jwtID:        uuid.New(),
+			jwtID:        uuid.NewString(),
+			user: models.User{
+				Shared: models.Shared{
+					ID: uuid.New(),
+				},
+				Role: models.DefaultUserRole,
+			},
+			components: components.Components{
+				Settings: &settings.SettingsMock{
+					Source: helpers.M{
+						"jwt.secretKey":      "secretKey",
+						"jwt.subject":        "userCredentials",
+						"application.issuer": "cybersafe",
+					},
+				},
+				Cache: &cacheutil.CacheMock{
+					Source: helpers.M{},
+				},
+				Resources: services.Resources{
+					Users: &users.UsersManagerMock{
+						GetByIDMock: func(u uuid.UUID) (models.User, error) {
+							return models.User{}, nil
+						},
+					},
+				},
+			},
+		},
+		{
+			name:               "token is black listed",
+			allowedRoles:       []string{models.AdminUserRole},
+			expectedStatusCode: http.StatusUnauthorized,
+			expectedResponseBody: helpers.M{
+				"error": helpers.M{
+					"code":        http.StatusUnauthorized,
+					"description": errutil.ErrInvalidJWT.Error(),
+				},
+			},
+			jwtExpiresAt: 1 * time.Hour,
+			jwtID:        "d5422a35-de9f-4347-8e09-7d291fc73f7d",
+			user: models.User{
+				Shared: models.Shared{
+					ID: uuid.New(),
+				},
+				Role: models.DefaultUserRole,
+			},
+			components: components.Components{
+				Settings: &settings.SettingsMock{
+					Source: helpers.M{
+						"jwt.secretKey":      "secretKey",
+						"jwt.subject":        "userCredentials",
+						"application.issuer": "cybersafe",
+					},
+				},
+				Cache: &cacheutil.CacheMock{
+					Source: helpers.M{
+						"d5422a35-de9f-4347-8e09-7d291fc73f7d": "foo",
+					},
+				},
+				Resources: services.Resources{
+					Users: &users.UsersManagerMock{
+						GetByIDMock: func(u uuid.UUID) (models.User, error) {
+							return models.User{}, nil
+						},
+					},
+				},
+			},
+		},
+		{
+			name:               "token is expired",
+			allowedRoles:       []string{models.AdminUserRole},
+			expectedStatusCode: http.StatusUnauthorized,
+			expectedResponseBody: helpers.M{
+				"error": helpers.M{
+					"code":        http.StatusUnauthorized,
+					"description": errutil.ErrTokenExpiredOrPending.Error(),
+				},
+			},
+			jwtExpiresAt: -1 * time.Hour,
+			jwtID:        "foo",
 			user: models.User{
 				Shared: models.Shared{
 					ID: uuid.New(),
@@ -233,7 +311,7 @@ func TestAuthorizationToken(t *testing.T) {
 					ExpiresAt: jwt.NewNumericDate(time.Now().Add(testCase.jwtExpiresAt)),
 					IssuedAt:  jwt.NewNumericDate(time.Now()),
 					NotBefore: jwt.NewNumericDate(time.Now()),
-					ID:        testCase.jwtID.String(),
+					ID:        testCase.jwtID,
 				},
 			}
 
