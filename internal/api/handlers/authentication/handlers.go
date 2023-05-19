@@ -38,7 +38,7 @@ func LoginHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user, err := c.Components.Storer.GetUserByCPF(loginRequest.CPF)
+	user, err := c.Components.Resources.Users.GetByCPF(loginRequest.CPF)
 
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrUserResourceNotFound)
@@ -165,7 +165,7 @@ func LogOffHandler(c *components.HTTPComponents) {
 	token, _ := jwtutil.Parse(authorizationHeader, jwtClaims, secretKey)
 
 	jwtutil.AddToBlackList(
-		c.Components.Cache,
+		&c.Components.Cache,
 		time.Until(jwtClaims.RegisteredClaims.ExpiresAt.Time),
 		jwtClaims.RegisteredClaims.ID,
 		token.Raw,
@@ -196,14 +196,16 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	if err := c.Components.DB.Where("email = ?", forgotPasswordRequest.Email).First(&models.User{}).Error; err != nil {
+	exists := c.Components.Resources.Users.ExistsByEmail(forgotPasswordRequest.Email)
+
+	if !exists {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
 		return
 	}
 
 	randomToken := helpers.MustGenerateURLEncodedRandomToken()
 
-	(*c.Components.Cache).Set(
+	c.Components.Cache.Set(
 		randomToken, forgotPasswordRequest.Email, time.Minute*15,
 	)
 
@@ -215,7 +217,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		randomToken,
 	)
 
-	(*c.Components.Mail).Send(
+	c.Components.Mail.Send(
 		[]string{forgotPasswordRequest.Email},
 		mail.DefaultForgotPasswordSubject,
 		fmt.Sprintf("Reset your password: %s", updatePasswordURL),
@@ -247,21 +249,21 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, found := (*c.Components.Cache).Get(randomToken)
+	email, found := c.Components.Cache.Get(randomToken)
 
 	if !found {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
 		return
 	}
 
-	(*c.Components.Cache).Delete(randomToken)
+	c.Components.Cache.Delete(randomToken)
 
 	user := &models.User{
 		Email:    email.(string),
 		Password: updatePasswordRequest.Password,
 	}
 
-	c.Components.DB.Model(user).Where("email = ?", email).Updates(user)
+	c.Components.Resources.Users.Update(user)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }

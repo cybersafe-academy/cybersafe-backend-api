@@ -7,5 +7,5 @@ import (
 )
 
 func Config(defaultExpiration, cleanupInterval time.Duration) Cacher {
-	return *cache.New(defaultExpiration, cleanupInterval)
+	return cache.New(defaultExpiration, cleanupInterval)
 }

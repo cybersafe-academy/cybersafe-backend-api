@@ -1,9 +1,8 @@
-package course
+package courses
 
 import (
 	"cybersafe-backend-api/internal/api/components"
 
-	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
@@ -13,7 +12,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 // ListCoursesHandler
@@ -30,9 +28,6 @@ import (
 //	@Security	Bearer
 //	@Security	Language
 func ListCoursesHandler(c *components.HTTPComponents) {
-
-	dbConn := c.Components.DB
-
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
 	if errors.Is(err, errutil.ErrInvalidPageParam) {
@@ -43,14 +38,7 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	var courses []models.Course
-	(dbConn.Preload(clause.Associations).
-		Offset(paginationData.Offset).
-		Limit(paginationData.Limit).
-		Find(&courses))
-
-	var count int64
-	dbConn.Model(&models.Course{}).Count(&count)
+	courses, count := c.Components.Resources.Courses.ListWithPagination(paginationData.Limit, paginationData.Offset)
 
 	response := paginationData.ToResponse(
 		ToListResponse(courses), int(count),
@@ -78,13 +66,10 @@ func GetCourseByID(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
+	course, err := c.Components.Resources.Courses.GetByID(uuid.MustParse(id))
 
-	var course models.Course
-	result := dbConn.First(&course, uuid.MustParse(id))
-
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCourseResourceNotFound)
 			return
 		} else {
@@ -117,11 +102,10 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	course := courseRequest.ToEntity()
-	dbConn := c.Components.DB
 
-	result := dbConn.Create(course)
+	err = c.Components.Resources.Courses.Create(course)
 
-	if result.Error != nil {
+	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
@@ -149,11 +133,9 @@ func DeleteCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
+	err := c.Components.Resources.Courses.Delete(uuid.MustParse(id))
 
-	result := dbConn.Delete(&models.Course{}, uuid.MustParse(id))
-
-	if result.Error != nil {
+	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
@@ -183,8 +165,6 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	dbConn := c.Components.DB
-
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
@@ -192,19 +172,19 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	updatedCourse := courseRequest.ToEntity()
-	updatedCourse.ID = uuid.MustParse(id)
+	course := courseRequest.ToEntity()
+	course.ID = uuid.MustParse(id)
 
-	result := dbConn.Model(updatedCourse).Clauses(clause.Returning{}).Updates(updatedCourse)
+	rowsAffected, err := c.Components.Resources.Courses.Update(course)
 
-	if result.Error != nil {
+	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
-	if result.RowsAffected == 0 {
+	if rowsAffected == 0 {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
 		return
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(*updatedCourse), http.StatusOK)
+	components.HttpResponseWithPayload(c, ToResponse(*course), http.StatusOK)
 }
