@@ -47,7 +47,7 @@ func TestListUsersHandler(t *testing.T) {
 			expectedResponseBody: helpers.M{
 				"data": []helpers.M{
 					{
-						"birthDate": "0001-01-01T00:00:00Z",
+						"birthDate": "0001-01-01 00:00:00 +0000 UTC",
 						"cpf":       "",
 						"createdAt": "0001-01-01T00:00:00Z",
 						"deletedAt": nil,

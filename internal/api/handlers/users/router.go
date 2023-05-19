@@ -3,7 +3,6 @@ package users
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
-	"cybersafe-backend-api/internal/models"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -15,7 +14,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 	subRouter.Group(func(r chi.Router) {
 
-		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
+		// r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			DeleteUserHandler(components.HttpComponents(w, r, c))

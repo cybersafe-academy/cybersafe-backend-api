@@ -178,13 +178,13 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"User not found"
 //	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		RequestContentUpdate	true	"Request payload for updating user information"
+//	@Param		request	body		RequestContent	true	"Request payload for updating user information"
 //	@Param		id		path		string					true	"ID of user to be updated"
 //	@Router		/users/{id} [put]
 //	@Security	Bearer
 //	@Security	Language
 func UpdateUserHandler(c *components.HTTPComponents) {
-	userRequest := RequestContentUpdate{}
+	userRequest := RequestContent{}
 	err := components.ValidateRequest(c, &userRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
