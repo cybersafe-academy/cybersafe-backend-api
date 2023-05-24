@@ -144,3 +144,58 @@ func TestListUsersHandler(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateUserHandler(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		expectedStatusCode   int
+		expectedResponseBody helpers.M
+		queryParams          url.Values
+		resourcesMock        services.Resources
+	}{
+		{
+			name:               "success empty result",
+			expectedStatusCode: 200,
+			expectedResponseBody: helpers.M{
+				"data":       nil,
+				"total":      0,
+				"limit":      10,
+				"current":    1,
+				"totalPages": 0,
+			},
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					ListWithPaginationMock: func(limit, offset int) ([]models.User, int64) {
+						return []models.User{}, 0
+					},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+
+			payload := bytes.NewBuffer(nil)
+
+			request := httptest.NewRequest(http.MethodPost, "/users", payload)
+			request.Header.Add("Content-Type", "application/json")
+			request.URL.RawQuery = testCase.queryParams.Encode()
+
+			response := httptest.NewRecorder()
+			c := &components.Components{
+				Resources: testCase.resourcesMock,
+			}
+
+			httpComponentens := &components.HTTPComponents{
+				Components:   c,
+				HttpRequest:  request,
+				HttpResponse: response,
+			}
+
+			CreateUserHandler(httpComponentens)
+
+			helpers.AssertHTTPResponse(t, response, testCase.expectedStatusCode, testCase.expectedResponseBody)
+		})
+	}
+}

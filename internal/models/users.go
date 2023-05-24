@@ -55,3 +55,16 @@ func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 
 	return nil
 }
+
+func RoleToHierarchyNumber(role string) int {
+	switch role {
+	case DefaultUserRole:
+		return 0
+	case AdminUserRole:
+		return 1
+	case MasterUserRole:
+		return 2
+	default:
+		return -1
+	}
+}

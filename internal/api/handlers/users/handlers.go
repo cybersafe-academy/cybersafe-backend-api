@@ -115,6 +115,14 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 //	@Param		request	body		RequestContent		true	"Request payload for creating a new user"
 //	@Router		/users [post]
 func CreateUserHandler(c *components.HTTPComponents) {
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
 	userRequest := RequestContent{}
 	err := components.ValidateRequest(c, &userRequest)
 	if err != nil {
@@ -123,6 +131,11 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	}
 
 	user := userRequest.ToEntity()
+
+	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
+		return
+	}
 
 	err = c.Components.Resources.Users.Create(user)
 
