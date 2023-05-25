@@ -190,9 +190,9 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 //	@success	200		{object}	ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"User not found"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		RequestContent	true	"Request payload for updating user information"
-//	@Param		id		path		string					true	"ID of user to be updated"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		request	body		RequestContent		true	"Request payload for updating user information"
+//	@Param		id		path		string				true	"ID of user to be updated"
 //	@Router		/users/{id} [put]
 //	@Security	Bearer
 //	@Security	Language

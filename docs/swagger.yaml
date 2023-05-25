@@ -1,4 +1,22 @@
 definitions:
+  authentication.FinishSignupRequest:
+    properties:
+      birthDate:
+        type: string
+      cpf:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  authentication.FirstAccessRequest:
+    properties:
+      email:
+        type: string
+    type: object
   authentication.ForgotPasswordRequest:
     properties:
       email:
@@ -149,21 +167,6 @@ definitions:
       role:
         type: string
     type: object
-  users.RequestContentUpdate:
-    properties:
-      birthDate:
-        type: string
-      cpf:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      role:
-        type: string
-    type: object
   users.ResponseContent:
     properties:
       birthDate:
@@ -198,6 +201,55 @@ info:
   title: CyberSafe Academy API
   version: "1.0"
 paths:
+  /auth/finish-signup:
+    post:
+      consumes:
+      - application/json
+      description: Checks the token on the request and fills up remaining user info
+      parameters:
+      - description: User verification token
+        in: query
+        name: t
+        required: true
+        type: string
+      - description: Finish signup info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.FinishSignupRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Fills up remaining user info
+      tags:
+      - Authentication
+  /auth/first-access:
+    post:
+      consumes:
+      - application/json
+      description: Checks if the user was pre-registered and sends an e-mail to signup
+      parameters:
+      - description: First access verification info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.FirstAccessRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Checks if the user was pre-registered
+      tags:
+      - Authentication
   /auth/forgot-password:
     post:
       consumes:
@@ -556,7 +608,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/users.RequestContentUpdate'
+          $ref: '#/definitions/users.RequestContent'
       - description: ID of user to be updated
         in: path
         name: id

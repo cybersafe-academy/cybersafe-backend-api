@@ -25,6 +25,81 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/finish-signup": {
+            "post": {
+                "description": "Checks the token on the request and fills up remaining user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Fills up remaining user info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User verification token",
+                        "name": "t",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Finish signup info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.FinishSignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/auth/first-access": {
+            "post": {
+                "description": "Checks if the user was pre-registered and sends an e-mail to signup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Checks if the user was pre-registered",
+                "parameters": [
+                    {
+                        "description": "First access verification info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.FirstAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/auth/forgot-password": {
             "post": {
                 "description": "Receives the user email and if the email is valid, send a verification via email",
@@ -621,7 +696,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.RequestContentUpdate"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     },
                     {
@@ -693,6 +768,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "authentication.FinishSignupRequest": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string"
+                },
+                "cpf": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "authentication.FirstAccessRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "authentication.ForgotPasswordRequest": {
             "type": "object",
             "properties": {
@@ -901,29 +1004,6 @@ const docTemplate = `{
             }
         },
         "users.RequestContent": {
-            "type": "object",
-            "properties": {
-                "birthDate": {
-                    "type": "string"
-                },
-                "cpf": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "users.RequestContentUpdate": {
             "type": "object",
             "properties": {
                 "birthDate": {

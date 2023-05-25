@@ -327,7 +327,7 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 //	@Tags			Authentication
 //	@Accept			json
 //	@Produce		json
-//	@Param			t		query	string					true	"User verification token"
+//	@Param			t		query	string				true	"User verification token"
 //	@Param			request	body	FinishSignupRequest	true	"Finish signup info"
 //	@Success		204		"No content"
 //	@Failure		400		"Bad Request"
