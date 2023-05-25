@@ -579,33 +579,24 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Create a user",
+                "summary": "Pre signup an user",
                 "parameters": [
                     {
-                        "description": "Request payload for creating a new user",
+                        "description": "Request payload for pre signup an user",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.RequestContent"
+                            "$ref": "#/definitions/users.PreSignupRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/users.ResponseContent"
-                        }
+                    "204": {
+                        "description": "No content"
                     },
                     "400": {
                         "description": "Bad Request"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
                     }
                 }
             }
@@ -1008,6 +999,17 @@ const docTemplate = `{
                 },
                 "page": {
                     "type": "integer"
+                }
+            }
+        },
+        "users.PreSignupRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },

@@ -34,7 +34,26 @@ type RequestContent struct {
 	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 
+type PreSignupRequest struct {
+	Role  string `json:"role" valid:"type(string),"`
+	Email string `json:"email" valid:"type(string), email, required"`
+}
+
 func (re *RequestContent) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidUserRole
+	}
+
+	_, err := govalidator.ValidateStruct(*re)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (re *PreSignupRequest) Bind(_ *http.Request) error {
 
 	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
 		return errutil.ErrInvalidUserRole

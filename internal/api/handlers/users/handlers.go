@@ -134,7 +134,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	user := userRequest.ToEntity()
 
-	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
+	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
 		return
 	}
@@ -152,6 +152,58 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)
+}
+
+// PreSignupUserHandler
+//
+//	@Summary	Pre signup an user
+//
+//	@Tags		User
+//	@Success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Param		request	body	PreSignupRequest	true	"Request payload for pre signup an user"
+//	@Router		/users [post]
+//	@Security	Bearer
+//	@Security	Language
+func PreSignupUserHandler(c *components.HTTPComponents) {
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	preSignUpRequest := PreSignupRequest{}
+	err := components.ValidateRequest(c, &preSignUpRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	user := &models.User{
+		Role:  preSignUpRequest.Role,
+		Email: preSignUpRequest.Email,
+	}
+
+	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
+		return
+	}
+
+	err = c.Components.Resources.Users.Create(user)
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrEmailAlreadyInUse)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
 }
 
 // DeleteUserHandler

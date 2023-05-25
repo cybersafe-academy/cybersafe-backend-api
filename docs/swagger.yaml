@@ -152,6 +152,13 @@ definitions:
       page:
         type: integer
     type: object
+  users.PreSignupRequest:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+    type: object
   users.RequestContent:
     properties:
       birthDate:
@@ -534,27 +541,21 @@ paths:
       - User
     post:
       parameters:
-      - description: Request payload for creating a new user
+      - description: Request payload for pre signup an user
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/users.RequestContent'
+          $ref: '#/definitions/users.PreSignupRequest'
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/users.ResponseContent'
+        "204":
+          description: No content
         "400":
           description: Bad Request
-        default:
-          description: Standard error example object
-          schema:
-            $ref: '#/definitions/components.Response'
       security:
       - Bearer: []
       - Language: []
-      summary: Create a user
+      summary: Pre signup an user
       tags:
       - User
   /users/{id}:
