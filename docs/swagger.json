@@ -559,6 +559,14 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
                 "tags": [
                     "User"
                 ],

@@ -114,6 +114,8 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		request	body		RequestContent		true	"Request payload for creating a new user"
 //	@Router		/users [post]
+//	@Security	Bearer
+//	@Security	Language
 func CreateUserHandler(c *components.HTTPComponents) {
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(models.User)

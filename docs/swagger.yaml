@@ -551,6 +551,9 @@ paths:
           description: Standard error example object
           schema:
             $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
       summary: Create a user
       tags:
       - User
