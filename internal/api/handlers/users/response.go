@@ -10,15 +10,7 @@ func ToListResponse(users []models.User) []ResponseContent {
 	var usersResponse []ResponseContent
 
 	for _, user := range users {
-		usersResponse = append(usersResponse, ResponseContent{
-			ID: user.ID,
-			UserFields: UserFields{
-				Name:      user.Name,
-				BirthDate: user.BirthDate.Truncate(24 * time.Hour).String(),
-				CPF:       user.CPF,
-				Email:     user.Email,
-			},
-		})
+		usersResponse = append(usersResponse, ToResponse(user))
 	}
 
 	return usersResponse
