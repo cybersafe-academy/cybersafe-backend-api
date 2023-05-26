@@ -162,7 +162,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 //	@Success	204		"No content"
 //	@Failure	400		"Bad Request"
 //	@Param		request	body	PreSignupRequest	true	"Request payload for pre signup an user"
-//	@Router		/users [post]
+//	@Router		/users/pre-signup [post]
 //	@Security	Bearer
 //	@Security	Language
 func PreSignupUserHandler(c *components.HTTPComponents) {

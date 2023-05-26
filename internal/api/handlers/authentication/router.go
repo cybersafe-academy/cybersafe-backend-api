@@ -27,11 +27,21 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Post("/login", func(w http.ResponseWriter, r *http.Request) {
 		LoginHandler(components.HttpComponents(w, r, c))
 	})
+
 	subRouter.Post("/forgot-password", func(w http.ResponseWriter, r *http.Request) {
 		ForgotPasswordHandler(components.HttpComponents(w, r, c))
 	})
+
 	subRouter.Post("/update-password", func(w http.ResponseWriter, r *http.Request) {
 		UpdatePasswordHandler(components.HttpComponents(w, r, c))
+	})
+
+	subRouter.Post("/first-access", func(w http.ResponseWriter, r *http.Request) {
+		FirstAccessHandler(components.HttpComponents(w, r, c))
+	})
+
+	subRouter.Post("/finish-signup", func(w http.ResponseWriter, r *http.Request) {
+		FinishSignupHandler(components.HttpComponents(w, r, c))
 	})
 
 	return subRouter

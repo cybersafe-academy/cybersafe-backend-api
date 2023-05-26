@@ -295,27 +295,23 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 	}
 
 	found := c.Components.Resources.Users.ExistsByEmail(firstAccessRequest.Email)
+	if found {
+		randomToken := cacheutil.MustGenRandomToken(cacheutil.FirstAccessPrefix)
 
-	if !found {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
-		return
+		updatePasswordURL := fmt.Sprintf(
+			"%s:%s%s?t=%s",
+			c.Components.Settings.String("frontend.host"),
+			c.Components.Settings.String("frontend.port"),
+			c.Components.Settings.String("frontend.firstAccessEndpoint"),
+			randomToken,
+		)
+
+		c.Components.Mail.Send(
+			[]string{firstAccessRequest.Email},
+			mail.DefaultForgotPasswordSubject,
+			fmt.Sprintf("Complete your signup: %s", updatePasswordURL),
+		)
 	}
-
-	randomToken := cacheutil.MustGenRandomToken(cacheutil.FirstAccessPrefix)
-
-	updatePasswordURL := fmt.Sprintf(
-		"%s:%s%s?t=%s",
-		c.Components.Settings.String("frontend.host"),
-		c.Components.Settings.String("frontend.port"),
-		c.Components.Settings.String("frontend.firstAccessEndpoint"),
-		randomToken,
-	)
-
-	c.Components.Mail.Send(
-		[]string{firstAccessRequest.Email},
-		mail.DefaultForgotPasswordSubject,
-		fmt.Sprintf("Complete your signup: %s", updatePasswordURL),
-	)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }
@@ -359,7 +355,6 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	user := &models.User{
 		Email:     email.(string),
 		Name:      finishSignupRequest.Name,
-		Role:      finishSignupRequest.Role,
 		BirthDate: birthDate,
 		CPF:       finishSignupRequest.CPF,
 		Password:  finishSignupRequest.Password,

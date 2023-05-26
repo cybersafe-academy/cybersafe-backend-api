@@ -1,8 +1,6 @@
 package authentication
 
 import (
-	"cybersafe-backend-api/internal/models"
-	"cybersafe-backend-api/pkg/errutil"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
@@ -33,18 +31,12 @@ type UpdatePasswordRequest struct {
 
 type FinishSignupRequest struct {
 	Name      string `json:"name" valid:"type(string),"`
-	Role      string `json:"role" valid:"type(string),"`
-	BirthDate string `json:"birthDate" valid:"type(date)"`
+	BirthDate string `json:"birthDate" valid:"date"`
 	CPF       string `json:"cpf" valid:"type(string), cpf,"`
 	Password  string `json:"password" valid:"stringlength(8|24)"`
 }
 
 func (re *FinishSignupRequest) Bind(_ *http.Request) error {
-
-	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
-		return errutil.ErrInvalidUserRole
-	}
-
 	_, err := govalidator.ValidateStruct(*re)
 	if err != nil {
 		return err
