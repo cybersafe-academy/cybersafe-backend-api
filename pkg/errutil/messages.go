@@ -33,6 +33,9 @@ var (
 	ErrInvalidCourseLevel     = errors.New("invalid course level")
 	ErrCourseResourceNotFound = errors.New("course not found with given identifier")
 
+	//Companies
+	ErrCNPJorEmailorBusinessNameAlreadyInUse = errors.New("cnpj or email or business name already in use")
+
 	//Course
 	ErrInvalidContentType = errors.New("invalid content type")
 )
