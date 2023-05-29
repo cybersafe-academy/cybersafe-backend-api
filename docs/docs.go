@@ -271,6 +271,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/companies": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Create a company",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a new company",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/companies.RequestContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.ResponseContent"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses": {
             "get": {
                 "security": [
@@ -877,6 +921,58 @@ const docTemplate = `{
                 }
             }
         },
+        "companies.RequestContent": {
+            "type": "object",
+            "properties": {
+                "businessName": {
+                    "type": "string"
+                },
+                "cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                }
+            }
+        },
+        "companies.ResponseContent": {
+            "type": "object",
+            "properties": {
+                "businessName": {
+                    "type": "string"
+                },
+                "cnpj": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "components.Error": {
             "type": "object",
             "properties": {
@@ -1130,6 +1226,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
