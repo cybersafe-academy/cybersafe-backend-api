@@ -41,6 +41,40 @@ definitions:
       password:
         type: string
     type: object
+  companies.RequestContent:
+    properties:
+      businessName:
+        type: string
+      cnpj:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+    type: object
+  companies.ResponseContent:
+    properties:
+      businessName:
+        type: string
+      cnpj:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   components.Error:
     properties:
       code:
@@ -363,6 +397,32 @@ paths:
       summary: Update password after email verification
       tags:
       - Authentication
+  /companies:
+    post:
+      parameters:
+      - description: Request payload for creating a new company
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.RequestContent'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create a company
+      tags:
+      - Company
   /courses:
     get:
       parameters:
