@@ -9,8 +9,6 @@ definitions:
         type: string
       password:
         type: string
-      role:
-        type: string
     type: object
   authentication.FirstAccessRequest:
     properties:
@@ -41,6 +39,40 @@ definitions:
   authentication.UpdatePasswordRequest:
     properties:
       password:
+        type: string
+    type: object
+  companies.RequestContent:
+    properties:
+      businessName:
+        type: string
+      cnpj:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+    type: object
+  companies.ResponseContent:
+    properties:
+      businessName:
+        type: string
+      cnpj:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+      updatedAt:
         type: string
     type: object
   components.Error:
@@ -365,6 +397,32 @@ paths:
       summary: Update password after email verification
       tags:
       - Authentication
+  /companies:
+    post:
+      parameters:
+      - description: Request payload for creating a new company
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.RequestContent'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create a company
+      tags:
+      - Company
   /courses:
     get:
       parameters:
@@ -541,21 +599,27 @@ paths:
       - User
     post:
       parameters:
-      - description: Request payload for pre signup an user
+      - description: Request payload for creating a new user
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/users.PreSignupRequest'
+          $ref: '#/definitions/users.RequestContent'
       responses:
-        "204":
-          description: No content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
       security:
       - Bearer: []
       - Language: []
-      summary: Pre signup an user
+      summary: Create a user
       tags:
       - User
   /users/{id}:
@@ -654,6 +718,26 @@ paths:
       - Bearer: []
       - Language: []
       summary: Get authenticated user
+      tags:
+      - User
+  /users/pre-signup:
+    post:
+      parameters:
+      - description: Request payload for pre signup an user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users.PreSignupRequest'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Pre signup an user
       tags:
       - User
 securityDefinitions:
