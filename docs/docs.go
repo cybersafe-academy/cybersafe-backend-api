@@ -579,24 +579,33 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Pre signup an user",
+                "summary": "Create a user",
                 "parameters": [
                     {
-                        "description": "Request payload for pre signup an user",
+                        "description": "Request payload for creating a new user",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.PreSignupRequest"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.ResponseContent"
+                        }
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
                     }
                 }
             }
@@ -630,6 +639,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/components.Response"
                         }
+                    }
+                }
+            }
+        },
+        "/users/pre-signup": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Pre signup an user",
+                "parameters": [
+                    {
+                        "description": "Request payload for pre signup an user",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.PreSignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
@@ -780,9 +824,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 }
             }
