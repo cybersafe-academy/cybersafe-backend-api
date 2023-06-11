@@ -43,11 +43,11 @@ definitions:
     type: object
   companies.RequestContent:
     properties:
-      businessName:
-        type: string
       cnpj:
         type: string
       email:
+        type: string
+      legalName:
         type: string
       phone:
         type: string
@@ -56,8 +56,6 @@ definitions:
     type: object
   companies.ResponseContent:
     properties:
-      businessName:
-        type: string
       cnpj:
         type: string
       createdAt:
@@ -67,6 +65,8 @@ definitions:
       email:
         type: string
       id:
+        type: string
+      legalName:
         type: string
       phone:
         type: string
@@ -398,6 +398,40 @@ paths:
       tags:
       - Authentication
   /companies:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/companies.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List companies with paginated response
+      tags:
+      - Company
     post:
       parameters:
       - description: Request payload for creating a new company

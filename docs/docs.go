@@ -272,6 +272,66 @@ const docTemplate = `{
             }
         },
         "/companies": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "List companies with paginated response",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit of elements per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/pagination.PaginationData"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/companies.ResponseContent"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -924,13 +984,13 @@ const docTemplate = `{
         "companies.RequestContent": {
             "type": "object",
             "properties": {
-                "businessName": {
-                    "type": "string"
-                },
                 "cnpj": {
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "legalName": {
                     "type": "string"
                 },
                 "phone": {
@@ -944,9 +1004,6 @@ const docTemplate = `{
         "companies.ResponseContent": {
             "type": "object",
             "properties": {
-                "businessName": {
-                    "type": "string"
-                },
                 "cnpj": {
                     "type": "string"
                 },
@@ -960,6 +1017,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "legalName": {
                     "type": "string"
                 },
                 "phone": {
