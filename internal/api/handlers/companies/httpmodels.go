@@ -12,11 +12,11 @@ import (
 
 type (
 	CompanyFields struct {
-		BusinessName string `json:"businessName" valid:"type(string), required"`
-		TradeName    string `json:"tradeName" valid:"type(string)"`
-		CNPJ         string `json:"cnpj" valid:"type(string), cnpj, required"`
-		Email        string `json:"email" valid:"type(string), email, required"`
-		Phone        string `json:"phone" valid:"type(string)"`
+		LegalName string `json:"legalName" valid:"type(string), required"`
+		TradeName string `json:"tradeName" valid:"type(string)"`
+		CNPJ      string `json:"cnpj" valid:"type(string), cnpj, required"`
+		Email     string `json:"email" valid:"type(string), email, required"`
+		Phone     string `json:"phone" valid:"type(string)"`
 	}
 
 	ResponseContent struct {
@@ -44,10 +44,10 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 
 func (re *RequestContent) ToEntity() *models.Company {
 	return &models.Company{
-		BusinessName: re.BusinessName,
-		TradeName:    re.TradeName,
-		CNPJ:         re.CNPJ,
-		Email:        re.Email,
-		Phone:        re.Phone,
+		LegalName: re.LegalName,
+		TradeName: re.TradeName,
+		CNPJ:      re.CNPJ,
+		Email:     re.Email,
+		Phone:     re.Phone,
 	}
 }
