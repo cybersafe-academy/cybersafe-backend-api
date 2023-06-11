@@ -38,7 +38,7 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	courses, count := c.Components.Resources.Courses.ListWithPagination(paginationData.Limit, paginationData.Offset)
+	courses, count := c.Components.Resources.Courses.ListWithPagination(paginationData.Offset, paginationData.Limit)
 
 	response := paginationData.ToResponse(
 		ToListResponse(courses), int(count),
