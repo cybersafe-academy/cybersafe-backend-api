@@ -3,11 +3,45 @@ package companies
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
 
 	"gorm.io/gorm"
 )
+
+// ListCompaniesHandler
+//
+//	@Summary	List companies with paginated response
+//
+//	@Tags		Company
+//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		page	query		int					false	"Page number"
+//	@Param		limit	query		int					false	"Limit of elements per page"
+//	@Router		/companies [get]
+//	@Security	Bearer
+//	@Security	Language
+func ListCompaniesHandler(c *components.HTTPComponents) {
+	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
+
+	if errors.Is(err, errutil.ErrInvalidPageParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	}
+
+	companies, count := c.Components.Resources.Companies.ListWithPagination(paginationData.Offset, paginationData.Limit)
+
+	response := paginationData.ToResponse(
+		ToListResponse(companies), int(count),
+	)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
 
 // CreateCompanyHandler
 //
@@ -41,5 +75,5 @@ func CreateCompanyHandler(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, *company, http.StatusOK)
+	components.HttpResponseWithPayload(c, ToResponse(*company), http.StatusOK)
 }
