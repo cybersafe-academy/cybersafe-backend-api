@@ -7,6 +7,7 @@ import (
 )
 
 type CompaniesManager interface {
+	ListWithPagination(int, int) ([]models.Company, int)
 	GetByCNPJ(string) (models.Company, error)
 	Create(*models.Company) error
 	Delete(uuid.UUID) error
