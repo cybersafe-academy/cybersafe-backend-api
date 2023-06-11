@@ -12,6 +12,19 @@ type CompaniesManagerDB struct {
 	DBConnection *gorm.DB
 }
 
+func (cm *CompaniesManagerDB) ListWithPagination(offset, limit int) ([]models.Company, int) {
+	var companies []models.Company
+	var count int64
+
+	cm.DBConnection.Preload(clause.Associations).
+		Offset(offset).
+		Limit(limit).
+		Find(&companies).
+		Count(&count)
+
+	return companies, int(count)
+}
+
 func (cm *CompaniesManagerDB) GetByCNPJ(cnpj string) (models.Company, error) {
 	company := models.Company{}
 	result := cm.DBConnection.Where("CNPJ = ?", cnpj).First(&company)
