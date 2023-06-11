@@ -15,6 +15,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Group(func(r chi.Router) {
 		r.Use(middlewares.Authorizer(c, models.MasterUserRole))
 
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			ListCompaniesHandler(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 			CreateCompanyHandler(components.HttpComponents(w, r, c))
 		})
