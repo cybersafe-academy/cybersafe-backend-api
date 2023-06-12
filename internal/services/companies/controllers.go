@@ -25,6 +25,12 @@ func (cm *CompaniesManagerDB) ListWithPagination(offset, limit int) ([]models.Co
 	return companies, int(count)
 }
 
+func (cm *CompaniesManagerDB) GetByID(id uuid.UUID) (models.Company, error) {
+	var company models.Company
+	result := cm.DBConnection.First(&company, id)
+	return company, result.Error
+}
+
 func (cm *CompaniesManagerDB) GetByCNPJ(cnpj string) (models.Company, error) {
 	company := models.Company{}
 	result := cm.DBConnection.Where("CNPJ = ?", cnpj).First(&company)
