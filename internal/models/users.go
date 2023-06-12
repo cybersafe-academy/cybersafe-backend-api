@@ -2,9 +2,6 @@ package models
 
 import (
 	"time"
-
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 const (
@@ -30,30 +27,6 @@ type User struct {
 	BirthDate time.Time
 	CPF       string `gorm:"unique"`
 	Password  string
-}
-
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	u.Password = string(hashedPassword)
-
-	return nil
-}
-
-func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	u.Password = string(hashedPassword)
-
-	return nil
 }
 
 func RoleToHierarchyNumber(role string) int {

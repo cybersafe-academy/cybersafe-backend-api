@@ -253,7 +253,7 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 	}
 
 	email, found := c.Components.Cache.Get(
-		fmt.Sprintf("%s%s", cacheutil.ForgotPasswordPrefix, randomToken),
+		randomToken,
 	)
 
 	if !found {
@@ -267,6 +267,14 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		Email:    email.(string),
 		Password: updatePasswordRequest.Password,
 	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	user.Password = string(hashedPassword)
 
 	c.Components.Resources.Users.Update(user)
 
@@ -298,6 +306,12 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 	if found {
 		randomToken := cacheutil.MustGenRandomToken(cacheutil.FirstAccessPrefix)
 
+		c.Components.Cache.Set(
+			randomToken,
+			firstAccessRequest.Email,
+			time.Minute*15,
+		)
+
 		updatePasswordURL := fmt.Sprintf(
 			"%s:%s%s?t=%s",
 			c.Components.Settings.String("frontend.host"),
@@ -308,7 +322,7 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 
 		c.Components.Mail.Send(
 			[]string{firstAccessRequest.Email},
-			mail.DefaultForgotPasswordSubject,
+			mail.DefaultFirstAccessSubject,
 			fmt.Sprintf("Complete your signup: %s", updatePasswordURL),
 		)
 	}
@@ -340,7 +354,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	}
 
 	email, found := c.Components.Cache.Get(
-		fmt.Sprintf("%s%s", cacheutil.FirstAccessPrefix, randomToken),
+		randomToken,
 	)
 
 	if !found {
@@ -359,6 +373,14 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		CPF:       finishSignupRequest.CPF,
 		Password:  finishSignupRequest.Password,
 	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	user.Password = string(hashedPassword)
 
 	c.Components.Resources.Users.Update(user)
 
