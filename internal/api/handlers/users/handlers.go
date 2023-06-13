@@ -289,5 +289,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)
+	response := ToResponse(*user)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }

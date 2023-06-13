@@ -69,7 +69,11 @@ func (re *PreSignupRequest) Bind(_ *http.Request) error {
 
 func (re *RequestContent) ToEntity() *models.User {
 
-	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), re.BirthDate)
+	birthDate, _ := time.ParseInLocation(
+		helpers.DefaultDateFormat(),
+		re.BirthDate,
+		helpers.MustGetAmericaSPTimeZone(),
+	)
 
 	return &models.User{
 		Name:      re.Name,
