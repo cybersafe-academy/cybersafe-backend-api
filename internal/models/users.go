@@ -25,7 +25,7 @@ type User struct {
 	Role      string `gorm:"default:'default'"`
 	Email     string `gorm:"unique"`
 	BirthDate time.Time
-	CPF       string `gorm:"unique"`
+	CPF       string `gorm:"unique;default:null"`
 	Password  string
 }
 

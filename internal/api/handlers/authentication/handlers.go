@@ -9,6 +9,7 @@ import (
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
+	"errors"
 	"fmt"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // LoginHandler is the HTTP handler for user login
@@ -362,8 +364,6 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	c.Components.Cache.Delete(randomToken)
-
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
 	user := &models.User{
@@ -382,7 +382,18 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 
 	user.Password = string(hashedPassword)
 
-	c.Components.Resources.Users.Update(user)
+	_, err = c.Components.Resources.Users.Update(user)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFAlreadyInUse)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	c.Components.Cache.Delete(randomToken)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }
