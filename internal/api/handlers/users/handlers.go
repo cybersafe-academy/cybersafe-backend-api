@@ -13,6 +13,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -139,6 +140,14 @@ func CreateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	user.Password = string(hashedPassword)
+
 	err = c.Components.Resources.Users.Create(user)
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -167,7 +176,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 //	@Security	Language
 func PreSignupUserHandler(c *components.HTTPComponents) {
 
-	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(models.User)
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
@@ -280,5 +289,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusOK)
+	response := ToResponse(*user)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }

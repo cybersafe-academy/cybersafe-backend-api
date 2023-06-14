@@ -4,8 +4,9 @@ import "errors"
 
 var (
 	//General
-	ErrUnexpectedError = errors.New("unexpected error")
-	ErrInvalidUUID     = errors.New("invalid uuid")
+	ErrUnexpectedError      = errors.New("unexpected error")
+	ErrInvalidUUID          = errors.New("invalid uuid")
+	ErrFutureDateNotAllowed = errors.New("future date not allowed")
 
 	//Pagination
 	ErrInvalidPageParam  = errors.New("invalid page param")

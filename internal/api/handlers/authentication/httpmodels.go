@@ -1,7 +1,10 @@
 package authentication
 
 import (
+	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"net/http"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 )
@@ -40,6 +43,16 @@ func (re *FinishSignupRequest) Bind(_ *http.Request) error {
 	_, err := govalidator.ValidateStruct(*re)
 	if err != nil {
 		return err
+	}
+
+	birthDate, _ := time.ParseInLocation(
+		helpers.DefaultDateFormat(),
+		re.BirthDate,
+		helpers.MustGetAmericaSPTimeZone(),
+	)
+
+	if birthDate.After(time.Now()) {
+		return errutil.ErrFutureDateNotAllowed
 	}
 
 	return err
