@@ -11,12 +11,16 @@ const (
 	FirstAccessPrefix    string = "firstAccess"
 )
 
-func MustGenRandomToken(prefix string) string {
+func KeyWithPrefix(prefix, token string) string {
+	return fmt.Sprintf("%s%s", prefix, token)
+}
+
+func MustGenRandomToken() string {
 	bytes := make([]byte, 32)
 	_, err := rand.Read(bytes)
 	if err != nil {
 		panic(err)
 	}
 	return base64.URLEncoding.EncodeToString(
-		[]byte(fmt.Sprintf("%s%s", prefix, bytes)))
+		[]byte(bytes))
 }

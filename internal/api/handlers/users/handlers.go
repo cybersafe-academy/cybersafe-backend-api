@@ -147,6 +147,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	}
 
 	user.Password = string(hashedPassword)
+	user.Enabled = true
 
 	err = c.Components.Resources.Users.Create(user)
 
@@ -212,7 +213,7 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponse(c, http.StatusNoContent)
+	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusNoContent)
 }
 
 // DeleteUserHandler
