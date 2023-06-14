@@ -206,10 +206,10 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	randomToken := cacheutil.MustGenRandomToken(cacheutil.ForgotPasswordPrefix)
+	randomToken := cacheutil.MustGenRandomToken()
 
 	c.Components.Cache.Set(
-		randomToken,
+		cacheutil.KeyWithPrefix(cacheutil.ForgotPasswordPrefix, randomToken),
 		forgotPasswordRequest.Email,
 		time.Minute*15,
 	)
@@ -222,7 +222,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		randomToken,
 	)
 
-	c.Components.Mail.Send(
+	go c.Components.Mail.Send(
 		[]string{forgotPasswordRequest.Email},
 		mail.DefaultForgotPasswordSubject,
 		fmt.Sprintf("Reset your password: %s", updatePasswordURL),
@@ -255,7 +255,7 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 	}
 
 	email, found := c.Components.Cache.Get(
-		randomToken,
+		cacheutil.KeyWithPrefix(cacheutil.ForgotPasswordPrefix, randomToken),
 	)
 
 	if !found {
@@ -304,12 +304,13 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	found := c.Components.Resources.Users.ExistsByEmail(firstAccessRequest.Email)
+	found := c.Components.Resources.Users.ExistsDisabledByEmail(firstAccessRequest.Email)
+
 	if found {
-		randomToken := cacheutil.MustGenRandomToken(cacheutil.FirstAccessPrefix)
+		randomToken := cacheutil.MustGenRandomToken()
 
 		c.Components.Cache.Set(
-			randomToken,
+			cacheutil.KeyWithPrefix(cacheutil.FirstAccessPrefix, randomToken),
 			firstAccessRequest.Email,
 			time.Minute*15,
 		)
@@ -322,13 +323,12 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 			randomToken,
 		)
 
-		c.Components.Mail.Send(
+		go c.Components.Mail.Send(
 			[]string{firstAccessRequest.Email},
 			mail.DefaultFirstAccessSubject,
 			fmt.Sprintf("Complete your signup: %s", updatePasswordURL),
 		)
 	}
-
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
@@ -356,7 +356,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	}
 
 	email, found := c.Components.Cache.Get(
-		randomToken,
+		cacheutil.KeyWithPrefix(cacheutil.FirstAccessPrefix, randomToken),
 	)
 
 	if !found {

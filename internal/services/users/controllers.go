@@ -16,7 +16,6 @@ func (um *UsersManagerDB) GetByCPF(cpf string) (models.User, error) {
 	user := models.User{}
 	result := um.DBConnection.Where("CPF = ?", cpf).First(&user)
 	return user, result.Error
-
 }
 
 func (um *UsersManagerDB) GetByID(id uuid.UUID) (models.User, error) {
@@ -55,5 +54,10 @@ func (um *UsersManagerDB) Update(user *models.User) (int, error) {
 
 func (um *UsersManagerDB) ExistsByEmail(email string) bool {
 	result := um.DBConnection.Where("email = ?", email).First(&models.User{})
+	return result.Error == nil
+}
+
+func (um *UsersManagerDB) ExistsDisabledByEmail(cpf string) bool {
+	result := um.DBConnection.Where("email = ?", cpf).Where("enabled = false").First(&models.User{})
 	return result.Error == nil
 }

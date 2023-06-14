@@ -1417,8 +1417,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {
