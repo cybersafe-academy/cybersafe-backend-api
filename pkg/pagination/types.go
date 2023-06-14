@@ -8,7 +8,7 @@ type PaginationData struct {
 	Offset int
 }
 
-type PaginteResponse struct {
+type PaginatedResponse struct {
 	Data        any `json:"data"`
 	Total       int `json:"total"`
 	Limit       int `json:"limit"`
@@ -16,8 +16,8 @@ type PaginteResponse struct {
 	TotalPages  int `json:"totalPages"`
 }
 
-func (pd *PaginationData) ToResponse(data any, total int) *PaginteResponse {
-	return &PaginteResponse{
+func (pd *PaginationData) ToResponse(data any, total int) *PaginatedResponse {
+	return &PaginatedResponse{
 		Data:        data,
 		Total:       total,
 		Limit:       pd.Limit,

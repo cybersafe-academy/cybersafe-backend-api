@@ -20,14 +20,6 @@ type UserFields struct {
 	CPF       string `json:"cpf" valid:"type(string), cpf,"`
 }
 
-type UserFieldsUpdate struct {
-	Name      string    `json:"name" valid:"type(string),"`
-	Role      string    `json:"role" valid:"type(string),"`
-	Email     string    `json:"email" valid:"type(string), email, required"`
-	BirthDate time.Time `json:"birthDate" valid:"type(date)"`
-	CPF       string    `json:"cpf" valid:"type(string), cpf,"`
-}
-
 type ResponseContent struct {
 	UserFields
 
@@ -42,9 +34,9 @@ type RequestContent struct {
 	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 
-type RequestContentUpdate struct {
-	UserFieldsUpdate
-	Password string `json:"password" valid:"stringlength(8|24)"`
+type PreSignupRequest struct {
+	Role  string `json:"role" valid:"type(string),"`
+	Email string `json:"email" valid:"type(string), email, required"`
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
@@ -61,9 +53,27 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 	return err
 }
 
+func (re *PreSignupRequest) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidUserRole
+	}
+
+	_, err := govalidator.ValidateStruct(*re)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func (re *RequestContent) ToEntity() *models.User {
 
-	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), re.BirthDate)
+	birthDate, _ := time.ParseInLocation(
+		helpers.DefaultDateFormat(),
+		re.BirthDate,
+		helpers.MustGetAmericaSPTimeZone(),
+	)
 
 	return &models.User{
 		Name:      re.Name,

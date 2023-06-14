@@ -26,3 +26,4 @@ frontend:
   host: http://localhost
   port: 5173
   updatePasswordEndpoint: /update-password
+  firstAccessEndpoint: /finish-signup

@@ -8,6 +8,7 @@ import (
 
 const (
 	DefaultForgotPasswordSubject = "CyberSafe Academy - Reset your password"
+	DefaultFirstAccessSubject    = "CyberSafe Academy - Finish your signup"
 )
 
 type GmailMailer struct {

@@ -4,8 +4,9 @@ import "errors"
 
 var (
 	//General
-	ErrUnexpectedError = errors.New("unexpected error")
-	ErrInvalidUUID     = errors.New("invalid uuid")
+	ErrUnexpectedError      = errors.New("unexpected error")
+	ErrInvalidUUID          = errors.New("invalid uuid")
+	ErrFutureDateNotAllowed = errors.New("future date not allowed")
 
 	//Pagination
 	ErrInvalidPageParam  = errors.New("invalid page param")
@@ -26,11 +27,16 @@ var (
 	ErrUserResourceNotFound   = errors.New("user not found with given identifier")
 	ErrInvalidUserRole        = errors.New("invalid user role")
 	ErrCPFAlreadyInUse        = errors.New("cpf already in use")
+	ErrEmailAlreadyInUse      = errors.New("email already in use")
 	ErrCPFOrEmailAlreadyInUse = errors.New("cpf or email already in use")
 
 	//Course
 	ErrInvalidCourseLevel     = errors.New("invalid course level")
 	ErrCourseResourceNotFound = errors.New("course not found with given identifier")
+
+	//Companies
+	ErrCNPJorEmailorBusinessNameAlreadyInUse = errors.New("cnpj or email or business name already in use")
+	ErrCompanyResourceNotFound               = errors.New("company not found with given identifier")
 
 	//Course
 	ErrInvalidContentType = errors.New("invalid content type")

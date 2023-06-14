@@ -2,7 +2,6 @@ package users
 
 import (
 	"cybersafe-backend-api/internal/models"
-	"time"
 )
 
 func ToListResponse(users []models.User) []ResponseContent {
@@ -10,15 +9,7 @@ func ToListResponse(users []models.User) []ResponseContent {
 	var usersResponse []ResponseContent
 
 	for _, user := range users {
-		usersResponse = append(usersResponse, ResponseContent{
-			ID: user.ID,
-			UserFields: UserFields{
-				Name:      user.Name,
-				BirthDate: user.BirthDate.Truncate(24 * time.Hour).String(),
-				CPF:       user.CPF,
-				Email:     user.Email,
-			},
-		})
+		usersResponse = append(usersResponse, ToResponse(user))
 	}
 
 	return usersResponse
@@ -28,7 +19,7 @@ func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
 		UserFields: UserFields{
 			Name:      user.Name,
-			BirthDate: user.BirthDate.Truncate(24 * time.Hour).String(),
+			BirthDate: user.BirthDate.Format("2006-01-02"),
 			CPF:       user.CPF,
 			Role:      user.Role,
 			Email:     user.Email,

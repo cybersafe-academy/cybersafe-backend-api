@@ -4,10 +4,12 @@ import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
+	"errors"
 	"fmt"
 	"time"
 
@@ -16,6 +18,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // LoginHandler is the HTTP handler for user login
@@ -203,10 +206,12 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	randomToken := helpers.MustGenerateURLEncodedRandomToken()
+	randomToken := cacheutil.MustGenRandomToken(cacheutil.ForgotPasswordPrefix)
 
 	c.Components.Cache.Set(
-		randomToken, forgotPasswordRequest.Email, time.Minute*15,
+		randomToken,
+		forgotPasswordRequest.Email,
+		time.Minute*15,
 	)
 
 	updatePasswordURL := fmt.Sprintf(
@@ -226,7 +231,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
-// ForgotPasswordHandler is the HTTP handler for requesting a new password
+// UpdatePasswordHandler is the HTTP handler for updating the password
 //
 //	@Summary		Update password after email verification
 //	@Description	Checks the token on the request and updates the password
@@ -249,7 +254,9 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, found := c.Components.Cache.Get(randomToken)
+	email, found := c.Components.Cache.Get(
+		randomToken,
+	)
 
 	if !found {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
@@ -263,7 +270,130 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 		Password: updatePasswordRequest.Password,
 	}
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	user.Password = string(hashedPassword)
+
 	c.Components.Resources.Users.Update(user)
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// FirstAccessHandler is the HTTP handler checking if the user was pre-registered
+//
+//	@Summary		Checks if the user was pre-registered
+//	@Description	Checks if the user was pre-registered and sends an e-mail to signup
+//	@Tags			Authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body	FirstAccessRequest	true	"First access verification info"
+//	@Success		204		"No content"
+//	@Failure		400		"Bad Request"
+//
+//	@Router			/auth/first-access [post]
+func FirstAccessHandler(c *components.HTTPComponents) {
+
+	firstAccessRequest := FirstAccessRequest{}
+	err := components.ValidateRequest(c, &firstAccessRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	found := c.Components.Resources.Users.ExistsByEmail(firstAccessRequest.Email)
+	if found {
+		randomToken := cacheutil.MustGenRandomToken(cacheutil.FirstAccessPrefix)
+
+		c.Components.Cache.Set(
+			randomToken,
+			firstAccessRequest.Email,
+			time.Minute*15,
+		)
+
+		updatePasswordURL := fmt.Sprintf(
+			"%s:%s%s?t=%s",
+			c.Components.Settings.String("frontend.host"),
+			c.Components.Settings.String("frontend.port"),
+			c.Components.Settings.String("frontend.firstAccessEndpoint"),
+			randomToken,
+		)
+
+		c.Components.Mail.Send(
+			[]string{firstAccessRequest.Email},
+			mail.DefaultFirstAccessSubject,
+			fmt.Sprintf("Complete your signup: %s", updatePasswordURL),
+		)
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// FinishSignupHandler is the HTTP handler for filling up remaining user info
+//
+//	@Summary		Fills up remaining user info
+//	@Description	Checks the token on the request and fills up remaining user info
+//	@Tags			Authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			t		query	string				true	"User verification token"
+//	@Param			request	body	FinishSignupRequest	true	"Finish signup info"
+//	@Success		204		"No content"
+//	@Failure		400		"Bad Request"
+//
+//	@Router			/auth/finish-signup [post]
+func FinishSignupHandler(c *components.HTTPComponents) {
+	randomToken := c.HttpRequest.URL.Query().Get("t")
+
+	finishSignupRequest := FinishSignupRequest{}
+	err := components.ValidateRequest(c, &finishSignupRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	email, found := c.Components.Cache.Get(
+		randomToken,
+	)
+
+	if !found {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		return
+	}
+
+	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
+
+	user := &models.User{
+		Email:     email.(string),
+		Name:      finishSignupRequest.Name,
+		BirthDate: birthDate,
+		CPF:       finishSignupRequest.CPF,
+		Password:  finishSignupRequest.Password,
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	user.Password = string(hashedPassword)
+
+	_, err = c.Components.Resources.Users.Update(user)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFAlreadyInUse)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	c.Components.Cache.Delete(randomToken)
 
 	components.HttpResponse(c, http.StatusNoContent)
 }
