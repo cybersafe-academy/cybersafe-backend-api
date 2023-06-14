@@ -152,7 +152,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFOrEmailAlreadyInUse)
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCPFOrEmailAlreadyInUse)
 			return
 		} else {
 			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
