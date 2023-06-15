@@ -202,7 +202,7 @@ func ForgotPasswordHandler(c *components.HTTPComponents) {
 	exists := c.Components.Resources.Users.ExistsByEmail(forgotPasswordRequest.Email)
 
 	if !exists {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		components.HttpResponse(c, http.StatusNoContent)
 		return
 	}
 
