@@ -2,7 +2,7 @@ package courses
 
 import "cybersafe-backend-api/internal/models"
 
-func ToListResponse(courses []models.Course) []CourseResponse {
+func ToListResponse(courses []models.CourseExtraFields) []CourseResponse {
 
 	var coursesResponse []CourseResponse
 
@@ -13,6 +13,7 @@ func ToListResponse(courses []models.Course) []CourseResponse {
 			CreatedAt: course.CreatedAt,
 			UpdatedAt: course.UpdatedAt,
 			DeletedAt: course.DeletedAt,
+			AvgRating: course.AvgRating,
 			CourseFields: CourseFields{
 				Title:          course.Title,
 				Description:    course.Description,

@@ -26,6 +26,7 @@ type CourseResponse struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+	AvgRating float64        `json:"avgRating"`
 
 	Contents []ContentResponse `json:"contents"`
 }

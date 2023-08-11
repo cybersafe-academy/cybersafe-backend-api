@@ -38,6 +38,13 @@ type Course struct {
 	Level          string
 
 	Contents []Content `gorm:"foreignKey:CourseID"`
+	Reviews  []Review  `gorm:"foreignKey:CourseID"`
+}
+
+type CourseExtraFields struct {
+	Course
+
+	AvgRating float64
 }
 
 type Content struct {
