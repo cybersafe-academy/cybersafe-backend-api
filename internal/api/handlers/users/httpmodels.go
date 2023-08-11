@@ -3,6 +3,7 @@ package users
 import (
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"net/http"
 	"time"
 
@@ -11,15 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserManager interface {
-}
-
 type UserFields struct {
-	Name      string    `json:"name" valid:"type(string), required"`
-	Role      string    `json:"role" valid:"type(string), required"`
-	Email     string    `json:"email" valid:"type(string), email, required"`
-	BirthDate time.Time `json:"birthDate" valid:"type(date), required"`
-	CPF       string    `json:"cpf" valid:"type(string), cpf, required"`
+	Name      string `json:"name" valid:"type(string),"`
+	Role      string `json:"role" valid:"type(string),"`
+	Email     string `json:"email" valid:"type(string), email, required"`
+	BirthDate string `json:"birthDate" valid:"date"`
+	CPF       string `json:"cpf" valid:"type(string), cpf,"`
 }
 
 type ResponseContent struct {
@@ -36,6 +34,11 @@ type RequestContent struct {
 	Password string `json:"password" valid:"stringlength(8|24)"`
 }
 
+type PreSignupRequest struct {
+	Role  string `json:"role" valid:"type(string),"`
+	Email string `json:"email" valid:"type(string), email, required"`
+}
+
 func (re *RequestContent) Bind(_ *http.Request) error {
 
 	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
@@ -50,11 +53,32 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 	return err
 }
 
+func (re *PreSignupRequest) Bind(_ *http.Request) error {
+
+	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
+		return errutil.ErrInvalidUserRole
+	}
+
+	_, err := govalidator.ValidateStruct(*re)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func (re *RequestContent) ToEntity() *models.User {
+
+	birthDate, _ := time.ParseInLocation(
+		helpers.DefaultDateFormat(),
+		re.BirthDate,
+		helpers.MustGetAmericaSPTimeZone(),
+	)
+
 	return &models.User{
 		Name:      re.Name,
 		Email:     re.Email,
-		BirthDate: re.BirthDate,
+		BirthDate: birthDate,
 		CPF:       re.CPF,
 		Role:      re.Role,
 		Password:  re.Password,

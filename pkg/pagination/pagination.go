@@ -7,13 +7,10 @@ import (
 )
 
 func GetPaginationData(queryParams url.Values) (*PaginationData, error) {
-
 	paginationData := PaginationData{
 		Limit: 10,
 		Page:  1,
 	}
-
-	paginationData.Offset = (paginationData.Page - 1) * paginationData.Limit
 
 	if pageParam := queryParams.Get("page"); pageParam != "" {
 		page, err := strconv.Atoi(pageParam)
@@ -36,6 +33,7 @@ func GetPaginationData(queryParams url.Values) (*PaginationData, error) {
 
 	}
 
-	return &paginationData, nil
+	paginationData.Offset = (paginationData.Page - 1) * paginationData.Limit
 
+	return &paginationData, nil
 }

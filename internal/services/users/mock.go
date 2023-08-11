@@ -7,13 +7,14 @@ import (
 )
 
 type UsersManagerMock struct {
-	GetByCPFMock           func(string) (models.User, error)
-	ListWithPaginationMock func(int, int) ([]models.User, int64)
-	GetByIDMock            func(uuid.UUID) (models.User, error)
-	CreateMock             func(*models.User) error
-	DeleteMock             func(uuid.UUID) error
-	UpdateMock             func(*models.User) (int, error)
-	ExistsByEmailMock      func(string) bool
+	GetByCPFMock              func(string) (models.User, error)
+	ListWithPaginationMock    func(int, int) ([]models.User, int64)
+	GetByIDMock               func(uuid.UUID) (models.User, error)
+	CreateMock                func(*models.User) error
+	DeleteMock                func(uuid.UUID) error
+	UpdateMock                func(*models.User) (int, error)
+	ExistsByEmailMock         func(string) bool
+	ExistsDisabledByEmailMock func(string) bool
 }
 
 func (umm *UsersManagerMock) GetByCPF(cpf string) (models.User, error) {
@@ -42,4 +43,8 @@ func (umm *UsersManagerMock) Update(user *models.User) (int, error) {
 
 func (umm *UsersManagerMock) ExistsByEmail(email string) bool {
 	return umm.ExistsByEmailMock(email)
+}
+
+func (umm *UsersManagerMock) ExistsDisabledByEmail(cpf string) bool {
+	return umm.ExistsDisabledByEmailMock(cpf)
 }

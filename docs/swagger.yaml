@@ -1,4 +1,20 @@
 definitions:
+  authentication.FinishSignupRequest:
+    properties:
+      birthDate:
+        type: string
+      cpf:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  authentication.FirstAccessRequest:
+    properties:
+      email:
+        type: string
+    type: object
   authentication.ForgotPasswordRequest:
     properties:
       email:
@@ -25,6 +41,40 @@ definitions:
       password:
         type: string
     type: object
+  companies.RequestContent:
+    properties:
+      cnpj:
+        type: string
+      email:
+        type: string
+      legalName:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+    type: object
+  companies.ResponseContent:
+    properties:
+      cnpj:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      legalName:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   components.Error:
     properties:
       code:
@@ -37,9 +87,6 @@ definitions:
         items:
           $ref: '#/definitions/components.ErrorDetail'
         type: array
-      id:
-        example: c77fa521-99b1-4c54-9a8d-4b6902912eb0
-        type: string
     type: object
   components.ErrorDetail:
     properties:
@@ -58,41 +105,33 @@ definitions:
       error:
         $ref: '#/definitions/components.Error'
     type: object
-  course.ContentRequest:
+  courses.ContentRequest:
     properties:
-      PDFURL:
+      URL:
         type: string
       contentType:
         type: string
-      imageURL:
-        type: string
       title:
         type: string
-      youtubeURL:
-        type: string
     type: object
-  course.ContentResponse:
+  courses.ContentResponse:
     properties:
-      PDFURL:
+      URL:
         type: string
       contentType:
         type: string
       id:
         type: string
-      imageURL:
-        type: string
       title:
         type: string
-      youtubeURL:
-        type: string
     type: object
-  course.RequestContent:
+  courses.RequestContent:
     properties:
       contentInHours:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentRequest'
+          $ref: '#/definitions/courses.ContentRequest'
         type: array
       description:
         type: string
@@ -103,13 +142,13 @@ definitions:
       title:
         type: string
     type: object
-  course.ResponseContent:
+  courses.ResponseContent:
     properties:
       contentInHours:
         type: number
       contents:
         items:
-          $ref: '#/definitions/course.ContentResponse'
+          $ref: '#/definitions/courses.ContentResponse'
         type: array
       createdAt:
         type: string
@@ -145,24 +184,32 @@ definitions:
       page:
         type: integer
     type: object
-  user.RequestContent:
+  users.PreSignupRequest:
     properties:
-      age:
-        type: integer
+      email:
+        type: string
+      role:
+        type: string
+    type: object
+  users.RequestContent:
+    properties:
+      birthDate:
+        type: string
       cpf:
         type: string
       email:
-        description: Role  string `json:"role" valid:"type(string), required"`
         type: string
       name:
         type: string
       password:
         type: string
+      role:
+        type: string
     type: object
-  user.ResponseContent:
+  users.ResponseContent:
     properties:
-      age:
-        type: integer
+      birthDate:
+        type: string
       cpf:
         type: string
       createdAt:
@@ -170,11 +217,12 @@ definitions:
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       email:
-        description: Role  string `json:"role" valid:"type(string), required"`
         type: string
       id:
         type: string
       name:
+        type: string
+      role:
         type: string
       updatedAt:
         type: string
@@ -192,6 +240,55 @@ info:
   title: CyberSafe Academy API
   version: "1.0"
 paths:
+  /auth/finish-signup:
+    post:
+      consumes:
+      - application/json
+      description: Checks the token on the request and fills up remaining user info
+      parameters:
+      - description: User verification token
+        in: query
+        name: t
+        required: true
+        type: string
+      - description: Finish signup info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.FinishSignupRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Fills up remaining user info
+      tags:
+      - Authentication
+  /auth/first-access:
+    post:
+      consumes:
+      - application/json
+      description: Checks if the user was pre-registered and sends an e-mail to signup
+      parameters:
+      - description: First access verification info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authentication.FirstAccessRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      summary: Checks if the user was pre-registered
+      tags:
+      - Authentication
   /auth/forgot-password:
     post:
       consumes:
@@ -300,6 +397,145 @@ paths:
       summary: Update password after email verification
       tags:
       - Authentication
+  /companies:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/companies.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List companies with paginated response
+      tags:
+      - Company
+    post:
+      parameters:
+      - description: Request payload for creating a new company
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.RequestContent'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create a company
+      tags:
+      - Company
+  /companies/{id}:
+    delete:
+      parameters:
+      - description: ID of the company to be deleted
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Delete a company by ID
+      tags:
+      - Company
+    get:
+      parameters:
+      - description: ID of the company to be retrieved
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get company by ID
+      tags:
+      - Company
+    put:
+      parameters:
+      - description: Request payload for updating company information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.RequestContent'
+      - description: ID of company to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "400":
+          description: Bad Request
+        "404":
+          description: Company not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update company by ID
+      tags:
+      - Company
   /courses:
     get:
       parameters:
@@ -320,7 +556,7 @@ paths:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
                   data:
-                    $ref: '#/definitions/course.ResponseContent'
+                    $ref: '#/definitions/courses.ResponseContent'
                 type: object
             type: array
         "400":
@@ -342,12 +578,12 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/course.RequestContent'
+          $ref: '#/definitions/courses.RequestContent'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -394,7 +630,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -414,7 +650,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/course.RequestContent'
+          $ref: '#/definitions/courses.RequestContent'
       - description: ID of course to be updated
         in: path
         name: id
@@ -424,7 +660,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/course.ResponseContent'
+            $ref: '#/definitions/courses.ResponseContent'
         "400":
           description: Bad Request
         "404":
@@ -459,7 +695,7 @@ paths:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
                   data:
-                    $ref: '#/definitions/user.ResponseContent'
+                    $ref: '#/definitions/users.ResponseContent'
                 type: object
             type: array
         "400":
@@ -481,18 +717,21 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.RequestContent'
+          $ref: '#/definitions/users.RequestContent'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
           description: Standard error example object
           schema:
             $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
       summary: Create a user
       tags:
       - User
@@ -530,7 +769,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -550,7 +789,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.RequestContent'
+          $ref: '#/definitions/users.RequestContent'
       - description: ID of user to be updated
         in: path
         name: id
@@ -560,7 +799,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         "404":
@@ -581,7 +820,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.ResponseContent'
+            $ref: '#/definitions/users.ResponseContent'
         "400":
           description: Bad Request
         default:
@@ -592,6 +831,26 @@ paths:
       - Bearer: []
       - Language: []
       summary: Get authenticated user
+      tags:
+      - User
+  /users/pre-signup:
+    post:
+      parameters:
+      - description: Request payload for pre signup an user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users.PreSignupRequest'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Pre signup an user
       tags:
       - User
 securityDefinitions:

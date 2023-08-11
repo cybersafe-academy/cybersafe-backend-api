@@ -17,29 +17,36 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
+		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
+			DeleteUserHandler(components.HttpComponents(w, r, c))
+		})
+
+		r.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
+			UpdateUserHandler(components.HttpComponents(w, r, c))
+		})
+
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			ListUsersHandler(components.HttpComponents(w, r, c))
+		})
+
+		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
+			GetUserByIDHandler(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 			CreateUserHandler(components.HttpComponents(w, r, c))
 		})
 
-		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			DeleteUserHandler(components.HttpComponents(w, r, c))
-		})
-		r.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			UpdateUserHandler(components.HttpComponents(w, r, c))
+		r.Post("/pre-signup", func(w http.ResponseWriter, r *http.Request) {
+			PreSignupUserHandler(components.HttpComponents(w, r, c))
 		})
 	})
 
 	subRouter.Group(func(r chi.Router) {
 		r.Use(middlewares.Authorizer(c))
 
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			ListUsersHandler(components.HttpComponents(w, r, c))
-		})
 		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
 			GetAuthenticatedUserHandler(components.HttpComponents(w, r, c))
-		})
-		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			GetUserByIDHandler(components.HttpComponents(w, r, c))
 		})
 	})
 

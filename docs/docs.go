@@ -25,6 +25,81 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/finish-signup": {
+            "post": {
+                "description": "Checks the token on the request and fills up remaining user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Fills up remaining user info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User verification token",
+                        "name": "t",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Finish signup info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.FinishSignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/auth/first-access": {
+            "post": {
+                "description": "Checks if the user was pre-registered and sends an e-mail to signup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Checks if the user was pre-registered",
+                "parameters": [
+                    {
+                        "description": "First access verification info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authentication.FirstAccessRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/auth/forgot-password": {
             "post": {
                 "description": "Receives the user email and if the email is valid, send a verification via email",
@@ -196,6 +271,241 @@ const docTemplate = `{
                 }
             }
         },
+        "/companies": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "List companies with paginated response",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit of elements per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/pagination.PaginationData"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/companies.ResponseContent"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Create a company",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a new company",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/companies.RequestContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.ResponseContent"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get company by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the company to be retrieved",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.ResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Update company by ID",
+                "parameters": [
+                    {
+                        "description": "Request payload for updating company information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/companies.RequestContent"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of company to be updated",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.ResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Delete a company by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the company to be deleted",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses": {
             "get": {
                 "security": [
@@ -238,7 +548,7 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/course.ResponseContent"
+                                                "$ref": "#/definitions/courses.ResponseContent"
                                             }
                                         }
                                     }
@@ -277,7 +587,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/course.RequestContent"
+                            "$ref": "#/definitions/courses.RequestContent"
                         }
                     }
                 ],
@@ -285,7 +595,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -327,7 +637,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -361,7 +671,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/course.RequestContent"
+                            "$ref": "#/definitions/courses.RequestContent"
                         }
                     },
                     {
@@ -376,7 +686,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/course.ResponseContent"
+                            "$ref": "#/definitions/courses.ResponseContent"
                         }
                     },
                     "400": {
@@ -473,7 +783,7 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/user.ResponseContent"
+                                                "$ref": "#/definitions/users.ResponseContent"
                                             }
                                         }
                                     }
@@ -493,6 +803,14 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
                 "tags": [
                     "User"
                 ],
@@ -504,7 +822,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.RequestContent"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     }
                 ],
@@ -512,7 +830,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -545,7 +863,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -556,6 +874,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/components.Response"
                         }
+                    }
+                }
+            }
+        },
+        "/users/pre-signup": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Pre signup an user",
+                "parameters": [
+                    {
+                        "description": "Request payload for pre signup an user",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.PreSignupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     }
                 }
             }
@@ -587,7 +940,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -621,7 +974,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.RequestContent"
+                            "$ref": "#/definitions/users.RequestContent"
                         }
                     },
                     {
@@ -636,7 +989,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.ResponseContent"
+                            "$ref": "#/definitions/users.ResponseContent"
                         }
                     },
                     "400": {
@@ -693,6 +1046,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "authentication.FinishSignupRequest": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string"
+                },
+                "cpf": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "authentication.FirstAccessRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "authentication.ForgotPasswordRequest": {
             "type": "object",
             "properties": {
@@ -734,6 +1112,58 @@ const docTemplate = `{
                 }
             }
         },
+        "companies.RequestContent": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "legalName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                }
+            }
+        },
+        "companies.ResponseContent": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "legalName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "components.Error": {
             "type": "object",
             "properties": {
@@ -750,10 +1180,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/components.ErrorDetail"
                     }
-                },
-                "id": {
-                    "type": "string",
-                    "example": "c77fa521-99b1-4c54-9a8d-4b6902912eb0"
                 }
             }
         },
@@ -783,30 +1209,24 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ContentRequest": {
+        "courses.ContentRequest": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }
         },
-        "course.ContentResponse": {
+        "courses.ContentResponse": {
             "type": "object",
             "properties": {
-                "PDFURL": {
+                "URL": {
                     "type": "string"
                 },
                 "contentType": {
@@ -815,18 +1235,12 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "imageURL": {
-                    "type": "string"
-                },
                 "title": {
-                    "type": "string"
-                },
-                "youtubeURL": {
                     "type": "string"
                 }
             }
         },
-        "course.RequestContent": {
+        "courses.RequestContent": {
             "type": "object",
             "properties": {
                 "contentInHours": {
@@ -835,7 +1249,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentRequest"
+                        "$ref": "#/definitions/courses.ContentRequest"
                     }
                 },
                 "description": {
@@ -852,7 +1266,7 @@ const docTemplate = `{
                 }
             }
         },
-        "course.ResponseContent": {
+        "courses.ResponseContent": {
             "type": "object",
             "properties": {
                 "contentInHours": {
@@ -861,7 +1275,7 @@ const docTemplate = `{
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/course.ContentResponse"
+                        "$ref": "#/definitions/courses.ContentResponse"
                     }
                 },
                 "createdAt": {
@@ -916,17 +1330,27 @@ const docTemplate = `{
                 }
             }
         },
-        "user.RequestContent": {
+        "users.PreSignupRequest": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.RequestContent": {
+            "type": "object",
+            "properties": {
+                "birthDate": {
+                    "type": "string"
                 },
                 "cpf": {
                     "type": "string"
                 },
                 "email": {
-                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "name": {
@@ -934,14 +1358,17 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "role": {
+                    "type": "string"
                 }
             }
         },
-        "user.ResponseContent": {
+        "users.ResponseContent": {
             "type": "object",
             "properties": {
-                "age": {
-                    "type": "integer"
+                "birthDate": {
+                    "type": "string"
                 },
                 "cpf": {
                     "type": "string"
@@ -953,13 +1380,15 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
-                    "description": "Role  string ` + "`" + `json:\"role\" valid:\"type(string), required\"` + "`" + `",
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "updatedAt": {
