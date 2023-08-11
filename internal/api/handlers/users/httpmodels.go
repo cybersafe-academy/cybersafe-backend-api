@@ -17,7 +17,7 @@ type UserFields struct {
 	Role      string `json:"role" valid:"type(string),"`
 	Email     string `json:"email" valid:"type(string), email, required"`
 	BirthDate string `json:"birthDate" valid:"date"`
-	CPF       string `json:"cpf" valid:"type(string), cpf,"`
+	CPF       string `json:"cpf" valid:"type(string), cpf"`
 }
 
 type ResponseContent struct {
