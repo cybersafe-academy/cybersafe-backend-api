@@ -86,9 +86,9 @@ func ToReviewResponse(review models.Review) ReviewResponse {
 		ReviewFields: ReviewFields{
 			Comment:  review.Comment,
 			Rating:   review.Rating,
-			UserID:   review.UserID,
 			CourseID: review.CourseID,
 		},
+		UserID: review.UserID,
 	}
 
 	return reviewResponse
