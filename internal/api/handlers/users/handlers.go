@@ -294,3 +294,41 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }
+
+// PersonalityTestHandler
+//
+//	@Summary	Store personality test result
+//
+//	@Tags		User
+//	@Success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"User not found"
+//	@Response	default	{object}	components.Response		"Standard error example object"
+//	@Param		request	body		PersonalityTestRequest	true	"Request payload for personality test result"
+//	@Router		/users/personality-test [post]
+//	@Security	Bearer
+//	@Security	Language
+func PersonalityTestHandler(c *components.HTTPComponents) {
+	personalityTestRequest := PersonalityTestRequest{}
+	err := components.ValidateRequest(c, &personalityTestRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		return
+	}
+
+	currentUser.MBTIType = personalityTestRequest.MBTIType
+
+	_, err = c.Components.Resources.Users.Update(currentUser)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
