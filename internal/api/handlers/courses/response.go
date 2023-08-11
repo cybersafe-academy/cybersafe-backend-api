@@ -75,3 +75,21 @@ func ToResponse(course models.Course) CourseResponse {
 
 	return courseResponse
 }
+
+func ToReviewResponse(review models.Review) ReviewResponse {
+
+	reviewResponse := ReviewResponse{
+		ID:        review.ID,
+		CreatedAt: review.CreatedAt,
+		UpdatedAt: review.UpdatedAt,
+		DeletedAt: review.DeletedAt,
+		ReviewFields: ReviewFields{
+			Comment:  review.Comment,
+			Rating:   review.Rating,
+			UserID:   review.UserID,
+			CourseID: review.CourseID,
+		},
+	}
+
+	return reviewResponse
+}

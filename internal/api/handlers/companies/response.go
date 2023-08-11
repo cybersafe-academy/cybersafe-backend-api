@@ -5,11 +5,12 @@ import "cybersafe-backend-api/internal/models"
 func ToResponse(company models.Company) ResponseContent {
 	return ResponseContent{
 		CompanyFields: CompanyFields{
-			LegalName: company.LegalName,
-			TradeName: company.TradeName,
-			CNPJ:      company.CNPJ,
-			Email:     company.Email,
-			Phone:     company.Phone,
+			LegalName:  company.LegalName,
+			TradeName:  company.TradeName,
+			CNPJ:       company.CNPJ,
+			Email:      company.Email,
+			WebsiteURL: company.WebsiteURL,
+			Phone:      company.Phone,
 		},
 		ID:        company.ID,
 		CreatedAt: company.CreatedAt,
@@ -24,11 +25,12 @@ func ToListResponse(companies []models.Company) []ResponseContent {
 	for _, company := range companies {
 		companyResponse := ResponseContent{
 			CompanyFields: CompanyFields{
-				LegalName: company.LegalName,
-				TradeName: company.TradeName,
-				CNPJ:      company.CNPJ,
-				Email:     company.Email,
-				Phone:     company.Phone,
+				LegalName:  company.LegalName,
+				TradeName:  company.TradeName,
+				CNPJ:       company.CNPJ,
+				Email:      company.Email,
+				WebsiteURL: company.WebsiteURL,
+				Phone:      company.Phone,
 			},
 			ID:        company.ID,
 			CreatedAt: company.CreatedAt,

@@ -188,3 +188,33 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 
 	components.HttpResponseWithPayload(c, ToResponse(*course), http.StatusOK)
 }
+
+// CreateCourseReview
+//
+//	@Summary	Create review
+//
+//	@Tags		Course
+//	@Success	200		{object}	ResponseContent	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		request	body		ReviewRequestContent		true	"Request payload for creating a review"
+//	@Router		/courses/{id}/review [post]
+//	@Security	Bearer
+//	@Security	Language
+func CreateCourseReview(c *components.HTTPComponents) {
+	var requestContent ReviewRequestContent
+	err := components.ValidateRequest(c, &requestContent)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	review := requestContent.ToEntityReview()
+	err = c.Components.Resources.Reviews.Create(review)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
+}

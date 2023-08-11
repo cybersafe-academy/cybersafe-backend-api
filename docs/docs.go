@@ -1129,6 +1129,9 @@ const docTemplate = `{
                 },
                 "tradeName": {
                     "type": "string"
+                },
+                "websiteURL": {
+                    "type": "string"
                 }
             }
         },
@@ -1160,6 +1163,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "websiteURL": {
                     "type": "string"
                 }
             }

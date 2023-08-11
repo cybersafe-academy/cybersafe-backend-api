@@ -50,3 +50,16 @@ type Content struct {
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`
 }
+
+type Review struct {
+	Shared
+
+	Comment string
+	Rating  int
+
+	UserID uuid.UUID
+	User   User `gorm:"foreignKey:UserID"`
+
+	CourseID uuid.UUID
+	Course   Course `gorm:"foreignKey:CourseID"`
+}
