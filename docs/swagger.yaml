@@ -216,6 +216,11 @@ definitions:
       page:
         type: integer
     type: object
+  users.PersonalityTestRequest:
+    properties:
+      mbtiType:
+        type: string
+    type: object
   users.PreSignupRequest:
     properties:
       email:
@@ -889,6 +894,32 @@ paths:
       - Bearer: []
       - Language: []
       summary: Get authenticated user
+      tags:
+      - User
+  /users/personality-test:
+    post:
+      parameters:
+      - description: Request payload for personality test result
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users.PersonalityTestRequest'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: User not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Store personality test result
       tags:
       - User
   /users/pre-signup:
