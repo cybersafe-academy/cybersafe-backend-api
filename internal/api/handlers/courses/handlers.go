@@ -224,9 +224,13 @@ func CreateCourseReview(c *components.HTTPComponents) {
 
 	err = c.Components.Resources.Reviews.Create(review)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-		return
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrReviewAlreadyExists)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
 	}
-
 	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
 }

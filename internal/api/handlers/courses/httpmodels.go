@@ -83,8 +83,9 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 }
 
 type ReviewFields struct {
-	Comment  string    `json:"comment" valid:"required"`
-	Rating   int       `json:"rating" valid:"range(1|5), required"`
+	Comment string `json:"comment" valid:"required"`
+	Rating  int    `json:"rating" valid:"range(1|5), required"`
+
 	CourseID uuid.UUID `json:"courseID" valid:"required"`
 }
 

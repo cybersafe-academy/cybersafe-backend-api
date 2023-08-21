@@ -64,9 +64,9 @@ type Review struct {
 	Comment string
 	Rating  int
 
-	UserID uuid.UUID
-	User   User `gorm:"foreignKey:UserID"`
+	UserID uuid.UUID `gorm:"uniqueIndex:idx_course_user"`
+	User   User      `gorm:"foreignKey:UserID"`
 
-	CourseID uuid.UUID
-	Course   Course `gorm:"foreignKey:CourseID"`
+	CourseID uuid.UUID `gorm:"uniqueIndex:idx_course_user"`
+	Course   Course    `gorm:"foreignKey:CourseID"`
 }
