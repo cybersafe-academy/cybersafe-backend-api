@@ -233,12 +233,12 @@ func TestPersonalityTestHandler(t *testing.T) {
 		expectedResponseBody helpers.M
 		queryParams          url.Values
 		resourcesMock        services.Resources
-		mbtiType             string
+		mbtiType             mbti
 	}{
 		{
 			name:               "success",
 			expectedStatusCode: http.StatusNoContent,
-			mbtiType:           "INTJ",
+			mbtiType:           INTJ,
 			resourcesMock: services.Resources{
 				Users: &users.UsersManagerMock{
 					UpdateMock: func(user *models.User) (int, error) {
@@ -264,7 +264,11 @@ func TestPersonalityTestHandler(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			payload := bytes.NewBufferString(`{"mbtiType": "` + testCase.mbtiType + `"}`)
+			requestMap := map[string]any{
+				"mbtiType": testCase.mbtiType,
+			}
+
+			payload := helpers.MustMapToBytesBuffer(requestMap)
 
 			request := httptest.NewRequest(http.MethodPost, "/personality-test", payload)
 			request.Header.Add("Content-Type", "application/json")
