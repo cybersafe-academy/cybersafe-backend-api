@@ -39,6 +39,10 @@ type PreSignupRequest struct {
 	Email string `json:"email" valid:"type(string), email, required"`
 }
 
+type PersonalityTestRequest struct {
+	MBTIType string `json:"mbtiType" valid:"required"`
+}
+
 func (re *RequestContent) Bind(_ *http.Request) error {
 
 	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
@@ -60,6 +64,20 @@ func (re *PreSignupRequest) Bind(_ *http.Request) error {
 	}
 
 	_, err := govalidator.ValidateStruct(*re)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (ptr *PersonalityTestRequest) Bind(_ *http.Request) error {
+	isValidMBTIType := isValidMBTIType(ptr.MBTIType)
+	if !isValidMBTIType {
+		return errutil.ErrInvalidMBTIType
+	}
+
+	_, err := govalidator.ValidateStruct(*ptr)
 	if err != nil {
 		return err
 	}

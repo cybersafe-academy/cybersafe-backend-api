@@ -922,6 +922,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/personality-test": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Store personality test result",
+                "parameters": [
+                    {
+                        "description": "Request payload for personality test result",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.PersonalityTestRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/users/pre-signup": {
             "post": {
                 "security": [
@@ -1423,6 +1467,14 @@ const docTemplate = `{
                 }
             }
         },
+        "users.PersonalityTestRequest": {
+            "type": "object",
+            "properties": {
+                "mbtiType": {
+                    "type": "string"
+                }
+            }
+        },
         "users.PreSignupRequest": {
             "type": "object",
             "properties": {
@@ -1510,6 +1562,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

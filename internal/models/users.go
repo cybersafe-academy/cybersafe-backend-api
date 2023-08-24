@@ -27,6 +27,7 @@ type User struct {
 	BirthDate time.Time
 	CPF       string `gorm:"unique;default:null"`
 	Password  string
+	MBTIType  string
 	Enabled   bool `gorm:"default:false;not null"`
 }
 

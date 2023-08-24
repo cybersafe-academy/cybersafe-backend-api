@@ -14,7 +14,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter := chi.NewMux()
 
 	subRouter.Group(func(r chi.Router) {
-
 		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +47,11 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Get("/me", func(w http.ResponseWriter, r *http.Request) {
 			GetAuthenticatedUserHandler(components.HttpComponents(w, r, c))
 		})
+
+		r.Post("/personality-test", func(w http.ResponseWriter, r *http.Request) {
+			PersonalityTestHandler(components.HttpComponents(w, r, c))
+		})
 	})
 
 	return subRouter
-
 }

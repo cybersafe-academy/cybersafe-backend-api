@@ -43,4 +43,7 @@ var (
 
 	//Course
 	ErrInvalidContentType = errors.New("invalid content type")
+
+	//Personality Test
+	ErrInvalidMBTIType = errors.New("invalid MBTI type")
 )
