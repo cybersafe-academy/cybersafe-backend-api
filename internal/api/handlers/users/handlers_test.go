@@ -10,7 +10,6 @@ import (
 	"cybersafe-backend-api/internal/services/users"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/validation"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -192,10 +191,9 @@ func TestCreateUserHandler(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
+			payload := helpers.MustMapToBytesBuffer(testCase.payload)
 
-			strPayload, _ := json.Marshal(testCase.payload)
-
-			request := httptest.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(strPayload))
+			request := httptest.NewRequest(http.MethodPost, "/users", payload)
 			request.Header.Add("Content-Type", "application/json")
 			request.URL.RawQuery = testCase.queryParams.Encode()
 
@@ -222,6 +220,70 @@ func TestCreateUserHandler(t *testing.T) {
 			validation.Config()
 
 			CreateUserHandler(httpComponentens)
+
+			helpers.AssertHTTPResponse(t, response, testCase.expectedStatusCode, testCase.expectedResponseBody)
+		})
+	}
+}
+
+func TestPersonalityTestHandler(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		expectedStatusCode   int
+		expectedResponseBody helpers.M
+		queryParams          url.Values
+		resourcesMock        services.Resources
+		mbtiType             string
+	}{
+		{
+			name:               "success",
+			expectedStatusCode: http.StatusNoContent,
+			mbtiType:           "INTJ",
+			resourcesMock: services.Resources{
+				Users: &users.UsersManagerMock{
+					UpdateMock: func(user *models.User) (int, error) {
+						return 1, nil
+					},
+				},
+			},
+		},
+		{
+			name:               "failed because invalid mbti type",
+			expectedStatusCode: 400,
+			expectedResponseBody: map[string]any{
+				"error": map[string]any{
+					"code":        400,
+					"description": "invalid MBTI type",
+				},
+			},
+			queryParams:   map[string][]string{},
+			resourcesMock: services.Resources{},
+			mbtiType:      "INVALID",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			payload := bytes.NewBufferString(`{"mbtiType": "` + testCase.mbtiType + `"}`)
+
+			request := httptest.NewRequest(http.MethodPost, "/personality-test", payload)
+			request.Header.Add("Content-Type", "application/json")
+			request.URL.RawQuery = testCase.queryParams.Encode()
+			ctx := context.WithValue(request.Context(), middlewares.UserKey, &models.User{})
+			request = request.WithContext(ctx)
+
+			response := httptest.NewRecorder()
+			c := &components.Components{
+				Resources: testCase.resourcesMock,
+			}
+
+			httpComponents := &components.HTTPComponents{
+				Components:   c,
+				HttpRequest:  request,
+				HttpResponse: response,
+			}
+
+			PersonalityTestHandler(httpComponents)
 
 			helpers.AssertHTTPResponse(t, response, testCase.expectedStatusCode, testCase.expectedResponseBody)
 		})
