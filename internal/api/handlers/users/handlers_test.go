@@ -1,7 +1,6 @@
 package users
 
 import (
-	"bytes"
 	"context"
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
@@ -123,8 +122,7 @@ func TestListUsersHandler(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-
-			payload := bytes.NewBuffer(nil)
+			payload := helpers.MustMapToBytesBuffer(map[string]any{})
 
 			request := httptest.NewRequest(http.MethodGet, "/users", payload)
 			request.Header.Add("Content-Type", "application/json")
@@ -191,7 +189,7 @@ func TestCreateUserHandler(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			payload := helpers.MustMapToBytesBuffer(testCase.payload)
+			payload := helpers.MustMapToBytesBuffer(map[string]any{})
 
 			request := httptest.NewRequest(http.MethodPost, "/users", payload)
 			request.Header.Add("Content-Type", "application/json")
