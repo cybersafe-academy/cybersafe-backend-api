@@ -1259,6 +1259,17 @@ const docTemplate = `{
                 }
             }
         },
+        "courses.AnswerFields": {
+            "type": "object",
+            "properties": {
+                "isCorrect": {
+                    "type": "boolean"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
         "courses.ContentRequest": {
             "type": "object",
             "properties": {
@@ -1290,6 +1301,20 @@ const docTemplate = `{
                 }
             }
         },
+        "courses.QuestionRequest": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.AnswerFields"
+                    }
+                },
+                "wording": {
+                    "type": "string"
+                }
+            }
+        },
         "courses.RequestContent": {
             "type": "object",
             "properties": {
@@ -1308,6 +1333,12 @@ const docTemplate = `{
                 "level": {
                     "type": "string"
                 },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.QuestionRequest"
+                    }
+                },
                 "thumbnailURL": {
                     "type": "string"
                 },
@@ -1319,6 +1350,9 @@ const docTemplate = `{
         "courses.ResponseContent": {
             "type": "object",
             "properties": {
+                "avgRating": {
+                    "type": "number"
+                },
                 "contentInHours": {
                     "type": "number"
                 },
@@ -1342,6 +1376,12 @@ const docTemplate = `{
                 },
                 "level": {
                     "type": "string"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.QuestionRequest"
+                    }
                 },
                 "thumbnailURL": {
                     "type": "string"

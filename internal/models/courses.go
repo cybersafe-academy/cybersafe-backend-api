@@ -37,8 +37,10 @@ type Course struct {
 	ThumbnailURL   string
 	Level          string
 
-	Contents []Content `gorm:"foreignKey:CourseID"`
-	Reviews  []Review  `gorm:"foreignKey:CourseID"`
+	Contents    []Content    `gorm:"foreignKey:CourseID"`
+	Questions   []Question   `gorm:"foreignKey:CourseID"`
+	Reviews     []Review     `gorm:"foreignKey:CourseID"`
+	Enrollments []Enrollment `gorm:"foreignKey:CourseID"`
 }
 
 type CourseExtraFields struct {
@@ -69,4 +71,25 @@ type Review struct {
 
 	CourseID uuid.UUID `gorm:"uniqueIndex:idx_course_user"`
 	Course   Course    `gorm:"foreignKey:CourseID"`
+}
+
+type Question struct {
+	Shared
+
+	Wording string
+
+	CourseID uuid.UUID
+	Course   Course `gorm:"foreignKey:CourseID"`
+
+	Answers []Answer `gorm:"foreignKey:QuestionID"`
+}
+
+type Answer struct {
+	Shared
+
+	QuestionID uuid.UUID
+	Question   Question `gorm:"foreignKey:QuestionID"`
+
+	Text      string
+	IsCorrect bool
 }

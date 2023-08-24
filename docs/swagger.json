@@ -1250,6 +1250,17 @@
                 }
             }
         },
+        "courses.AnswerFields": {
+            "type": "object",
+            "properties": {
+                "isCorrect": {
+                    "type": "boolean"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
         "courses.ContentRequest": {
             "type": "object",
             "properties": {
@@ -1281,6 +1292,20 @@
                 }
             }
         },
+        "courses.QuestionRequest": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.AnswerFields"
+                    }
+                },
+                "wording": {
+                    "type": "string"
+                }
+            }
+        },
         "courses.RequestContent": {
             "type": "object",
             "properties": {
@@ -1299,6 +1324,12 @@
                 "level": {
                     "type": "string"
                 },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.QuestionRequest"
+                    }
+                },
                 "thumbnailURL": {
                     "type": "string"
                 },
@@ -1310,6 +1341,9 @@
         "courses.ResponseContent": {
             "type": "object",
             "properties": {
+                "avgRating": {
+                    "type": "number"
+                },
                 "contentInHours": {
                     "type": "number"
                 },
@@ -1333,6 +1367,12 @@
                 },
                 "level": {
                     "type": "string"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/courses.QuestionRequest"
+                    }
                 },
                 "thumbnailURL": {
                     "type": "string"
