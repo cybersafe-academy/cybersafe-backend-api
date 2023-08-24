@@ -12,16 +12,23 @@ type CoursesManagerDB struct {
 	DBConnection *gorm.DB
 }
 
-func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Course, int) {
-	var courses []models.Course
+func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.CourseExtraFields, int) {
 
-	(cm.DBConnection.Preload(clause.Associations).
+	var courses []models.CourseExtraFields
+	var count int64
+
+	cm.DBConnection.
+		Table("courses").
+		Preload("Contents").
+		Preload("Reviews").
+		Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
+		Select("courses.*, avg(reviews.rating) as avg_rating").
+		Where("courses.deleted_at IS NULL").
+		Group("courses.id").
 		Offset(offset).
 		Limit(limit).
-		Find(&courses))
-
-	var count int64
-	cm.DBConnection.Model(&models.Course{}).Count(&count)
+		Find(&courses).
+		Count(&count)
 
 	return courses, int(count)
 }

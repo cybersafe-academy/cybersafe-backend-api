@@ -119,7 +119,7 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 //	@Security	Language
 func CreateUserHandler(c *components.HTTPComponents) {
 
-	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(models.User)
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)

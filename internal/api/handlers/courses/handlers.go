@@ -2,6 +2,8 @@ package courses
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/server/middlewares"
+	"cybersafe-backend-api/internal/models"
 
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/pagination"
@@ -187,4 +189,48 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToResponse(*course), http.StatusOK)
+}
+
+// CreateCourseReview
+//
+//	@Summary	Create review
+//
+//	@Tags		Course
+//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response		"Standard error example object"
+//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/review [post]
+//	@Security	Bearer
+//	@Security	Language
+func CreateCourseReview(c *components.HTTPComponents) {
+
+	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	var requestContent ReviewRequestContent
+	err := components.ValidateRequest(c, &requestContent)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	review := requestContent.ToEntityReview()
+	review.UserID = user.ID
+
+	err = c.Components.Resources.Reviews.Create(review)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrReviewAlreadyExists)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
 }

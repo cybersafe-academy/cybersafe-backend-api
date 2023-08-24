@@ -7,7 +7,7 @@ import (
 )
 
 type CoursesManager interface {
-	ListWithPagination(int, int) ([]models.Course, int)
+	ListWithPagination(int, int) ([]models.CourseExtraFields, int)
 	GetByID(uuid.UUID) (models.Course, error)
 	Create(*models.Course) error
 	Delete(uuid.UUID) error

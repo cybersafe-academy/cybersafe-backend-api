@@ -53,6 +53,8 @@ definitions:
         type: string
       tradeName:
         type: string
+      websiteURL:
+        type: string
     type: object
   companies.ResponseContent:
     properties:
@@ -73,6 +75,8 @@ definitions:
       tradeName:
         type: string
       updatedAt:
+        type: string
+      websiteURL:
         type: string
     type: object
   components.Error:
@@ -165,6 +169,34 @@ definitions:
       title:
         type: string
       updatedAt:
+        type: string
+    type: object
+  courses.ReviewRequestContent:
+    properties:
+      comment:
+        type: string
+      courseID:
+        type: string
+      rating:
+        type: integer
+    type: object
+  courses.ReviewResponse:
+    properties:
+      comment:
+        type: string
+      courseID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      rating:
+        type: integer
+      updatedAt:
+        type: string
+      userID:
         type: string
     type: object
   gorm.DeletedAt:
@@ -673,6 +705,32 @@ paths:
       - Bearer: []
       - Language: []
       summary: Update course by ID
+      tags:
+      - Course
+  /courses/{id}/review:
+    post:
+      parameters:
+      - description: Request payload for creating a review
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/courses.ReviewRequestContent'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/courses.ReviewResponse'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create review
       tags:
       - Course
   /users:

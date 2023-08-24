@@ -26,6 +26,7 @@ type CourseResponse struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+	AvgRating float64        `json:"avgRating"`
 
 	Contents []ContentResponse `json:"contents"`
 }
@@ -81,6 +82,38 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 	return err
 }
 
+type ReviewFields struct {
+	Comment string `json:"comment" valid:"required"`
+	Rating  int    `json:"rating" valid:"range(1|5), required"`
+
+	CourseID uuid.UUID `json:"courseID" valid:"required"`
+}
+
+type ReviewResponse struct {
+	ReviewFields
+
+	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+
+	UserID uuid.UUID `json:"userID"`
+}
+
+type ReviewRequestContent struct {
+	ReviewFields
+}
+
+func (rre *ReviewRequestContent) Bind(_ *http.Request) error {
+	_, err := govalidator.ValidateStruct(*rre)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func (re *RequestContent) ToEntity() *models.Course {
 	course := &models.Course{
 		Title:          re.Title,
@@ -99,4 +132,13 @@ func (re *RequestContent) ToEntity() *models.Course {
 	}
 
 	return course
+}
+
+func (rrc *ReviewRequestContent) ToEntityReview() *models.Review {
+	review := &models.Review{
+		Comment:  rrc.Comment,
+		Rating:   rrc.Rating,
+		CourseID: rrc.CourseID,
+	}
+	return review
 }

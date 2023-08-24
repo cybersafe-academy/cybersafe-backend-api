@@ -38,6 +38,13 @@ type Course struct {
 	Level          string
 
 	Contents []Content `gorm:"foreignKey:CourseID"`
+	Reviews  []Review  `gorm:"foreignKey:CourseID"`
+}
+
+type CourseExtraFields struct {
+	Course
+
+	AvgRating float64
 }
 
 type Content struct {
@@ -49,4 +56,17 @@ type Content struct {
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`
+}
+
+type Review struct {
+	Shared
+
+	Comment string
+	Rating  int
+
+	UserID uuid.UUID `gorm:"uniqueIndex:idx_course_user"`
+	User   User      `gorm:"foreignKey:UserID"`
+
+	CourseID uuid.UUID `gorm:"uniqueIndex:idx_course_user"`
+	Course   Course    `gorm:"foreignKey:CourseID"`
 }
