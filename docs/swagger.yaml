@@ -109,6 +109,13 @@ definitions:
       error:
         $ref: '#/definitions/components.Error'
     type: object
+  courses.AnswerFields:
+    properties:
+      isCorrect:
+        type: boolean
+      text:
+        type: string
+    type: object
   courses.ContentRequest:
     properties:
       URL:
@@ -129,6 +136,15 @@ definitions:
       title:
         type: string
     type: object
+  courses.QuestionRequest:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/courses.AnswerFields'
+        type: array
+      wording:
+        type: string
+    type: object
   courses.RequestContent:
     properties:
       contentInHours:
@@ -141,6 +157,10 @@ definitions:
         type: string
       level:
         type: string
+      questions:
+        items:
+          $ref: '#/definitions/courses.QuestionRequest'
+        type: array
       thumbnailURL:
         type: string
       title:
@@ -148,6 +168,8 @@ definitions:
     type: object
   courses.ResponseContent:
     properties:
+      avgRating:
+        type: number
       contentInHours:
         type: number
       contents:
@@ -164,6 +186,10 @@ definitions:
         type: string
       level:
         type: string
+      questions:
+        items:
+          $ref: '#/definitions/courses.QuestionRequest'
+        type: array
       thumbnailURL:
         type: string
       title:

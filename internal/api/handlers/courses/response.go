@@ -36,6 +36,21 @@ func ToListResponse(courses []models.CourseExtraFields) []CourseResponse {
 			})
 		}
 
+		for _, question := range course.Questions {
+			questionModel := models.Question{
+				Wording: question.Wording,
+			}
+
+			for _, answer := range question.Answers {
+				questionModel.Answers = append(questionModel.Answers, models.Answer{
+					Text:      answer.Text,
+					IsCorrect: answer.IsCorrect,
+				})
+			}
+
+			course.Questions = append(course.Questions, questionModel)
+		}
+
 		courseResponse.Contents = contentsResponse
 		coursesResponse = append(coursesResponse, courseResponse)
 	}
@@ -70,6 +85,28 @@ func ToResponse(course models.Course) CourseResponse {
 				URL:         content.URL,
 			},
 		})
+	}
+
+	for _, question := range course.Questions {
+		questionResponse := QuestionResponse{
+			ID: question.ID,
+			QuestionFields: QuestionFields{
+				Wording: question.Wording,
+			},
+		}
+
+		for _, answer := range question.Answers {
+			questionResponse.Answers = append(questionResponse.Answers,
+				AnswerResponse{
+					ID: answer.ID,
+					AnswerFields: AnswerFields{
+						Text:      answer.Text,
+						IsCorrect: answer.IsCorrect,
+					},
+				})
+		}
+
+		courseResponse.Questions = append(courseResponse.Questions, questionResponse)
 	}
 
 	courseResponse.Contents = contentsResponse

@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -29,6 +31,21 @@ type User struct {
 	Password  string
 	MBTIType  string
 	Enabled   bool `gorm:"default:false;not null"`
+
+	Enrollments []Enrollment `gorm:"foreignKey:UserID"`
+}
+
+type UserAnswer struct {
+	Shared
+
+	UserID uuid.UUID
+	User   User `gorm:"foreignKey:UserID"`
+
+	QuestionID uuid.UUID
+	Question   Question `gorm:"foreignKey:QuestionID"`
+
+	AnswerID uuid.UUID
+	Answer   Answer `gorm:"foreignKey:AnswerID"`
 }
 
 func RoleToHierarchyNumber(role string) int {
