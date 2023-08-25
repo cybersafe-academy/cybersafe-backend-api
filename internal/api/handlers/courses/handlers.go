@@ -2,6 +2,7 @@ package courses
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
 
@@ -96,7 +97,7 @@ func GetCourseByID(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseHandler(c *components.HTTPComponents) {
-	courseRequest := RequestContent{}
+	courseRequest := httpmodels.RequestContent{}
 	err := components.ValidateRequest(c, &courseRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -160,7 +161,7 @@ func DeleteCourseHandler(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func UpdateCourseHandler(c *components.HTTPComponents) {
-	courseRequest := RequestContent{}
+	courseRequest := httpmodels.RequestContent{}
 	err := components.ValidateRequest(c, &courseRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -212,7 +213,7 @@ func CreateCourseReview(c *components.HTTPComponents) {
 		return
 	}
 
-	var requestContent ReviewRequestContent
+	var requestContent httpmodels.ReviewRequestContent
 	err := components.ValidateRequest(c, &requestContent)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -233,4 +234,48 @@ func CreateCourseReview(c *components.HTTPComponents) {
 		}
 	}
 	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
+}
+
+// IsCorrectAnswer
+//
+//	@Summary	Is Correct Answer
+//
+//	@Tags		Course
+//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response		"Standard error example object"
+//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/review [post]
+//	@Security	Bearer
+//	@Security	Language
+func IsCorrectAnswer(c *components.HTTPComponents) {
+
+	_, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	// var requestContent ReviewRequestContent
+	// err := components.ValidateRequest(c, &requestContent)
+	// if err != nil {
+	// 	components.HttpErrorResponse(c, http.StatusBadRequest, err)
+	// 	return
+	// }
+
+	// review := requestContent.ToEntityReview()
+	// review.UserID = user.ID
+
+	// err = c.Components.Resources.Reviews.Create(review)
+	// if err != nil {
+	// 	if errors.Is(err, gorm.ErrDuplicatedKey) {
+	// 		components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrReviewAlreadyExists)
+	// 		return
+	// 	} else {
+	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+	// 		return
+	// 	}
+	// }
+	// components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
 }

@@ -1,20 +1,23 @@
 package courses
 
-import "cybersafe-backend-api/internal/models"
+import (
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
+	"cybersafe-backend-api/internal/models"
+)
 
-func ToListResponse(courses []models.CourseExtraFields) []CourseResponse {
+func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseResponse {
 
-	var coursesResponse []CourseResponse
+	var coursesResponse []httpmodels.CourseResponse
 
 	for _, course := range courses {
 
-		courseResponse := CourseResponse{
+		courseResponse := httpmodels.CourseResponse{
 			ID:        course.ID,
 			CreatedAt: course.CreatedAt,
 			UpdatedAt: course.UpdatedAt,
 			DeletedAt: course.DeletedAt,
 			AvgRating: course.AvgRating,
-			CourseFields: CourseFields{
+			CourseFields: httpmodels.CourseFields{
 				Title:          course.Title,
 				Description:    course.Description,
 				ContentInHours: course.ContentInHours,
@@ -23,11 +26,11 @@ func ToListResponse(courses []models.CourseExtraFields) []CourseResponse {
 			},
 		}
 
-		var contentsResponse []ContentResponse
+		var contentsResponse []httpmodels.ContentResponse
 
 		for _, content := range course.Contents {
-			contentsResponse = append(contentsResponse, ContentResponse{
-				ContentFields: ContentFields{
+			contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
+				ContentFields: httpmodels.ContentFields{
 					Title:       content.Title,
 					ContentType: content.ContentType,
 					URL:         content.URL,
@@ -58,14 +61,14 @@ func ToListResponse(courses []models.CourseExtraFields) []CourseResponse {
 	return coursesResponse
 }
 
-func ToResponse(course models.Course) CourseResponse {
+func ToResponse(course models.Course) httpmodels.CourseResponse {
 
-	courseResponse := CourseResponse{
+	courseResponse := httpmodels.CourseResponse{
 		ID:        course.ID,
 		CreatedAt: course.CreatedAt,
 		UpdatedAt: course.UpdatedAt,
 		DeletedAt: course.DeletedAt,
-		CourseFields: CourseFields{
+		CourseFields: httpmodels.CourseFields{
 			Title:          course.Title,
 			Description:    course.Description,
 			ContentInHours: course.ContentInHours,
@@ -74,12 +77,12 @@ func ToResponse(course models.Course) CourseResponse {
 		},
 	}
 
-	var contentsResponse []ContentResponse
+	var contentsResponse []httpmodels.ContentResponse
 
 	for _, content := range course.Contents {
-		contentsResponse = append(contentsResponse, ContentResponse{
+		contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
 			ID: content.ID,
-			ContentFields: ContentFields{
+			ContentFields: httpmodels.ContentFields{
 				Title:       content.Title,
 				ContentType: content.ContentType,
 				URL:         content.URL,
@@ -88,18 +91,18 @@ func ToResponse(course models.Course) CourseResponse {
 	}
 
 	for _, question := range course.Questions {
-		questionResponse := QuestionResponse{
+		questionResponse := httpmodels.QuestionResponse{
 			ID: question.ID,
-			QuestionFields: QuestionFields{
+			QuestionFields: httpmodels.QuestionFields{
 				Wording: question.Wording,
 			},
 		}
 
 		for _, answer := range question.Answers {
 			questionResponse.Answers = append(questionResponse.Answers,
-				AnswerResponse{
+				httpmodels.AnswerResponse{
 					ID: answer.ID,
-					AnswerFields: AnswerFields{
+					AnswerFields: httpmodels.AnswerFields{
 						Text:      answer.Text,
 						IsCorrect: answer.IsCorrect,
 					},
@@ -114,14 +117,14 @@ func ToResponse(course models.Course) CourseResponse {
 	return courseResponse
 }
 
-func ToReviewResponse(review models.Review) ReviewResponse {
+func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 
-	reviewResponse := ReviewResponse{
+	reviewResponse := httpmodels.ReviewResponse{
 		ID:        review.ID,
 		CreatedAt: review.CreatedAt,
 		UpdatedAt: review.UpdatedAt,
 		DeletedAt: review.DeletedAt,
-		ReviewFields: ReviewFields{
+		ReviewFields: httpmodels.ReviewFields{
 			Comment:  review.Comment,
 			Rating:   review.Rating,
 			CourseID: review.CourseID,

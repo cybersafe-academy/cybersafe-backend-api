@@ -1,4 +1,4 @@
-package courses
+package httpmodels
 
 import (
 	"cybersafe-backend-api/internal/models"
@@ -32,52 +32,6 @@ type CourseResponse struct {
 	Questions []QuestionResponse `json:"questions"`
 }
 
-type ContentFields struct {
-	Title       string `json:"title" valid:"type(string), required"`
-	ContentType string `json:"contentType" valid:"type(string), required"`
-	URL         string `json:"URL" valid:"type(string)"`
-}
-
-type ContentRequest struct {
-	ContentFields
-}
-
-type ContentResponse struct {
-	ContentFields
-
-	ID uuid.UUID `json:"id" valid:"uuid, required"`
-}
-
-type QuestionRequest struct {
-	QuestionFields
-	Answers []AnswerRequest `json:"answers" valid:"required"`
-}
-
-type QuestionResponse struct {
-	QuestionFields
-
-	Answers []AnswerResponse `json:"answers" valid:"required"`
-	ID      uuid.UUID        `json:"id" valid:"uuid, required"`
-}
-
-type QuestionFields struct {
-	Wording string `json:"wording"`
-}
-
-type AnswerRequest struct {
-	AnswerFields
-}
-
-type AnswerResponse struct {
-	AnswerFields
-	ID uuid.UUID `json:"id" valid:"uuid, required"`
-}
-
-type AnswerFields struct {
-	IsCorrect bool   `json:"isCorrect"`
-	Text      string `json:"text"`
-}
-
 type ResponseContent struct {
 	CourseResponse
 
@@ -107,38 +61,6 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 	}
 
 	_, err := govalidator.ValidateStruct(*re)
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type ReviewFields struct {
-	Comment string `json:"comment" valid:"required"`
-	Rating  int    `json:"rating" valid:"range(1|5), required"`
-
-	CourseID uuid.UUID `json:"courseID" valid:"required"`
-}
-
-type ReviewResponse struct {
-	ReviewFields
-
-	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `json:"deletedAt"`
-
-	UserID uuid.UUID `json:"userID"`
-}
-
-type ReviewRequestContent struct {
-	ReviewFields
-}
-
-func (rre *ReviewRequestContent) Bind(_ *http.Request) error {
-	_, err := govalidator.ValidateStruct(*rre)
-
 	if err != nil {
 		return err
 	}
@@ -179,13 +101,5 @@ func (re *RequestContent) ToEntity() *models.Course {
 	}
 
 	return course
-}
 
-func (rrc *ReviewRequestContent) ToEntityReview() *models.Review {
-	review := &models.Review{
-		Comment:  rrc.Comment,
-		Rating:   rrc.Rating,
-		CourseID: rrc.CourseID,
-	}
-	return review
 }
