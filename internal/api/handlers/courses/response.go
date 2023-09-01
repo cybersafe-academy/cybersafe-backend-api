@@ -125,12 +125,24 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 		UpdatedAt: review.UpdatedAt,
 		DeletedAt: review.DeletedAt,
 		ReviewFields: httpmodels.ReviewFields{
-			Comment:  review.Comment,
-			Rating:   review.Rating,
-			CourseID: review.CourseID,
+			Comment: review.Comment,
+			Rating:  review.Rating,
 		},
-		UserID: review.UserID,
+		CourseID: review.CourseID,
+		UserID:   review.UserID,
 	}
 
 	return reviewResponse
+}
+
+func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
+
+	enrollmentResponse := httpmodels.EnrollmentResponse{
+		EnrollmentFields: httpmodels.EnrollmentFields{
+			Status:       enrollment.Status,
+			QuizProgress: enrollment.QuizProgress,
+		},
+	}
+
+	return enrollmentResponse
 }

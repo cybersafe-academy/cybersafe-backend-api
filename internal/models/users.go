@@ -38,14 +38,14 @@ type User struct {
 type UserAnswer struct {
 	Shared
 
-	UserID uuid.UUID
-	User   User `gorm:"foreignKey:UserID"`
+	UserID uuid.UUID `gorm:"uniqueIndex:idx_question_answer_user"`
+	User   User      `gorm:"foreignKey:UserID"`
 
-	QuestionID uuid.UUID
-	Question   Question `gorm:"foreignKey:QuestionID"`
+	QuestionID uuid.UUID `gorm:"uniqueIndex:idx_question_answer_user"`
+	Question   Question  `gorm:"foreignKey:QuestionID"`
 
-	AnswerID uuid.UUID
-	Answer   Answer `gorm:"foreignKey:AnswerID"`
+	AnswerID uuid.UUID `gorm:"uniqueIndex:idx_question_answer_user"`
+	Answer   Answer    `gorm:"foreignKey:AnswerID"`
 }
 
 func RoleToHierarchyNumber(role string) int {

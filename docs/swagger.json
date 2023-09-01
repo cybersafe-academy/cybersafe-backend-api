@@ -539,7 +539,7 @@
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/courses.ResponseContent"
+                                                "$ref": "#/definitions/httpmodels.ResponseContent"
                                             }
                                         }
                                     }
@@ -578,7 +578,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/courses.RequestContent"
+                            "$ref": "#/definitions/httpmodels.RequestContent"
                         }
                     }
                 ],
@@ -586,11 +586,96 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/courses.ResponseContent"
+                            "$ref": "#/definitions/httpmodels.ResponseContent"
                         }
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/question": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Correct Answer",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a review",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CorrectAnswerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/review": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create review",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a review",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewRequestContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -628,7 +713,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/courses.ResponseContent"
+                            "$ref": "#/definitions/httpmodels.ResponseContent"
                         }
                     },
                     "400": {
@@ -662,7 +747,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/courses.RequestContent"
+                            "$ref": "#/definitions/httpmodels.RequestContent"
                         }
                     },
                     {
@@ -677,7 +762,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/courses.ResponseContent"
+                            "$ref": "#/definitions/httpmodels.ResponseContent"
                         }
                     },
                     "400": {
@@ -718,54 +803,10 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "OK"
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad Request"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/courses/{id}/review": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "Create review",
-                "parameters": [
-                    {
-                        "description": "Request payload for creating a review",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/courses.ReviewRequestContent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/courses.ReviewResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1294,7 +1335,19 @@
                 }
             }
         },
-        "courses.AnswerFields": {
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "httpmodels.AnswerRequest": {
             "type": "object",
             "properties": {
                 "isCorrect": {
@@ -1305,7 +1358,21 @@
                 }
             }
         },
-        "courses.ContentRequest": {
+        "httpmodels.AnswerResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "isCorrect": {
+                    "type": "boolean"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.ContentRequest": {
             "type": "object",
             "properties": {
                 "URL": {
@@ -1319,7 +1386,7 @@
                 }
             }
         },
-        "courses.ContentResponse": {
+        "httpmodels.ContentResponse": {
             "type": "object",
             "properties": {
                 "URL": {
@@ -1336,13 +1403,24 @@
                 }
             }
         },
-        "courses.QuestionRequest": {
+        "httpmodels.CorrectAnswerRequest": {
+            "type": "object",
+            "properties": {
+                "answerID": {
+                    "type": "string"
+                },
+                "questionID": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.QuestionRequest": {
             "type": "object",
             "properties": {
                 "answers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/courses.AnswerFields"
+                        "$ref": "#/definitions/httpmodels.AnswerRequest"
                     }
                 },
                 "wording": {
@@ -1350,7 +1428,24 @@
                 }
             }
         },
-        "courses.RequestContent": {
+        "httpmodels.QuestionResponse": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/httpmodels.AnswerResponse"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "wording": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.RequestContent": {
             "type": "object",
             "properties": {
                 "contentInHours": {
@@ -1359,7 +1454,7 @@
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/courses.ContentRequest"
+                        "$ref": "#/definitions/httpmodels.ContentRequest"
                     }
                 },
                 "description": {
@@ -1371,7 +1466,7 @@
                 "questions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/courses.QuestionRequest"
+                        "$ref": "#/definitions/httpmodels.QuestionRequest"
                     }
                 },
                 "thumbnailURL": {
@@ -1382,7 +1477,7 @@
                 }
             }
         },
-        "courses.ResponseContent": {
+        "httpmodels.ResponseContent": {
             "type": "object",
             "properties": {
                 "avgRating": {
@@ -1394,7 +1489,7 @@
                 "contents": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/courses.ContentResponse"
+                        "$ref": "#/definitions/httpmodels.ContentResponse"
                     }
                 },
                 "createdAt": {
@@ -1415,7 +1510,7 @@
                 "questions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/courses.QuestionRequest"
+                        "$ref": "#/definitions/httpmodels.QuestionResponse"
                     }
                 },
                 "thumbnailURL": {
@@ -1429,7 +1524,7 @@
                 }
             }
         },
-        "courses.ReviewRequestContent": {
+        "httpmodels.ReviewRequestContent": {
             "type": "object",
             "properties": {
                 "comment": {
@@ -1443,7 +1538,7 @@
                 }
             }
         },
-        "courses.ReviewResponse": {
+        "httpmodels.ReviewResponse": {
             "type": "object",
             "properties": {
                 "comment": {
@@ -1469,18 +1564,6 @@
                 },
                 "userID": {
                     "type": "string"
-                }
-            }
-        },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
                 }
             }
         },

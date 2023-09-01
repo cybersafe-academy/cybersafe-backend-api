@@ -22,7 +22,7 @@ import (
 //	@Summary	List courses with paginated response
 //
 //	@Tags		Course
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=httpmodels.ResponseContent}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
@@ -54,8 +54,8 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //
 //	@Summary	Get course by ID
 //	@Tags		Course
-//	@Param		id		path		string			true	"ID of the course to be retrieved"
-//	@Success	200		{object}	ResponseContent	"OK"
+//	@Param		id		path		string						true	"ID of the course to be retrieved"
+//	@Success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Router		/courses/{id} [get]
@@ -89,10 +89,10 @@ func GetCourseByID(c *components.HTTPComponents) {
 //	@Summary	Create a course
 //
 //	@Tags		Course
-//	@Success	200		{object}	ResponseContent	"OK"
+//	@Success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		RequestContent		true	"Request payload for creating a new course"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.RequestContent	true	"Request payload for creating a new course"
 //	@Router		/courses [post]
 //	@Security	Bearer
 //	@Security	Language
@@ -121,7 +121,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Delete a course by ID
 //
 //	@Tags		Course
-//	@success	204		"OK"
+//	@success	204		"No Content"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of the course to be deleted"
@@ -151,12 +151,12 @@ func DeleteCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Update course by ID
 //
 //	@Tags		Course
-//	@success	200		{object}	ResponseContent	"OK"
+//	@success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"Course not found"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		RequestContent		true	"Request payload for updating course information"
-//	@Param		id		path		string				true	"ID of course to be updated"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.RequestContent	true	"Request payload for updating course information"
+//	@Param		id		path		string						true	"ID of course to be updated"
 //	@Router		/courses/{id} [put]
 //	@Security	Bearer
 //	@Security	Language
@@ -197,17 +197,21 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Create review
 //
 //	@Tags		Course
-//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Success	200		{object}	httpmodels.ReviewResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/review [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseReview(c *components.HTTPComponents) {
+	courseID := c.HttpRequest.URL.Query().Get("id")
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
 
 	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
-
 	if !ok {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
@@ -222,6 +226,7 @@ func CreateCourseReview(c *components.HTTPComponents) {
 
 	review := requestContent.ToEntityReview()
 	review.UserID = user.ID
+	review.CourseID = uuid.MustParse(courseID)
 
 	err = c.Components.Resources.Reviews.Create(review)
 	if err != nil {
@@ -236,46 +241,94 @@ func CreateCourseReview(c *components.HTTPComponents) {
 	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
 }
 
-// IsCorrectAnswer
+// AddAnswer
 //
-//	@Summary	Is Correct Answer
+//	@Summary	Correct Answer
 //
 //	@Tags		Course
-//	@Success	200		{object}	ReviewResponse	"OK"
+//	@success	204		"No content"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/review [post]
+//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/question [post]
 //	@Security	Bearer
 //	@Security	Language
-func IsCorrectAnswer(c *components.HTTPComponents) {
+func AddAnswer(c *components.HTTPComponents) {
 
-	_, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	courseID := c.HttpRequest.URL.Query().Get("id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	var addAnswerRequest httpmodels.AddAnswerRequest
+	err := components.ValidateRequest(c, &addAnswerRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	err = c.Components.Resources.Answers.SaveUserAnswer(&models.UserAnswer{
+		QuestionID: addAnswerRequest.QuestionID,
+		AnswerID:   addAnswerRequest.QuestionID,
+		UserID:     currentUser.ID,
+	})
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrUserAlreadyAnswerdQuestion)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	c.Components.Resources.Courses.UpdateEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// GetEnrollmentInfo
+//
+//	@Summary	Get Enrollment info
+//
+//	@Tags		Course
+//	@success	200		"No content"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		request	body		httpmodels.GetEnrollmentInfoRequest	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/progress [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetEnrollmentInfo(c *components.HTTPComponents) {
+
+	courseID := c.HttpRequest.URL.Query().Get("id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
 
-	// var requestContent ReviewRequestContent
-	// err := components.ValidateRequest(c, &requestContent)
-	// if err != nil {
-	// 	components.HttpErrorResponse(c, http.StatusBadRequest, err)
-	// 	return
-	// }
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
 
-	// review := requestContent.ToEntityReview()
-	// review.UserID = user.ID
-
-	// err = c.Components.Resources.Reviews.Create(review)
-	// if err != nil {
-	// 	if errors.Is(err, gorm.ErrDuplicatedKey) {
-	// 		components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrReviewAlreadyExists)
-	// 		return
-	// 	} else {
-	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-	// 		return
-	// 	}
-	// }
-	// components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
+	components.HttpResponseWithPayload(c, ToEnrollmentRespose(enrollment), http.StatusNoContent)
 }

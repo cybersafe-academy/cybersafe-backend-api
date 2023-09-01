@@ -13,8 +13,6 @@ import (
 type ReviewFields struct {
 	Comment string `json:"comment" valid:"required"`
 	Rating  int    `json:"rating" valid:"range(1|5), required"`
-
-	CourseID uuid.UUID `json:"courseID" valid:"required"`
 }
 
 type ReviewResponse struct {
@@ -24,6 +22,8 @@ type ReviewResponse struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+
+	CourseID uuid.UUID `json:"courseID" valid:"required"`
 
 	UserID uuid.UUID `json:"userID"`
 }
@@ -44,9 +44,8 @@ func (rre *ReviewRequestContent) Bind(_ *http.Request) error {
 
 func (rrc *ReviewRequestContent) ToEntityReview() *models.Review {
 	review := &models.Review{
-		Comment:  rrc.Comment,
-		Rating:   rrc.Rating,
-		CourseID: rrc.CourseID,
+		Comment: rrc.Comment,
+		Rating:  rrc.Rating,
 	}
 	return review
 }

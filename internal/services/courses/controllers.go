@@ -55,3 +55,44 @@ func (cm *CoursesManagerDB) Update(course *models.Course) (int, error) {
 	result := cm.DBConnection.Model(course).Clauses(clause.Returning{}).Updates(course)
 	return int(result.RowsAffected), result.Error
 }
+
+func (cm *CoursesManagerDB) IsRightAnswer(answer *models.Answer) bool {
+	result := cm.DBConnection.
+		First(answer)
+	return result.Error == nil
+}
+
+func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID) {
+	var questionsIDs []int64
+	var userAnswersCount int64
+
+	cm.DBConnection.Model(&models.Question{}).
+		Where("course_id = ?", courseID).
+		Pluck("id", &questionsIDs)
+
+	if len(questionsIDs) <= 0 {
+		return
+	}
+
+	cm.DBConnection.Model(&models.UserAnswer{}).
+		Where("question_id IN(?)", questionsIDs).
+		Count(&userAnswersCount)
+
+	progress_percentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
+
+	cm.DBConnection.Model(&models.Enrollment{}).
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Update("progress", progress_percentage)
+}
+
+func (cm *CoursesManagerDB) GetEnrollmentProgress(courseID, userID uuid.UUID) (models.Enrollment, error) {
+	var enrollment models.Enrollment
+
+	result := cm.DBConnection.
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		First(&enrollment)
+
+	return enrollment, result.Error
+}

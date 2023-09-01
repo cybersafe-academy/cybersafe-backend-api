@@ -28,6 +28,9 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
+		r.Post("/question", func(w http.ResponseWriter, r *http.Request) {
+			AddAnswer(components.HttpComponents(w, r, c))
+		})
 	})
 
 	subRouter.Group(func(r chi.Router) {
