@@ -31,9 +31,8 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 		for _, content := range course.Contents {
 			contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
 				ContentFields: httpmodels.ContentFields{
-					Title:       content.Title,
-					ContentType: content.ContentType,
-					URL:         content.URL,
+					Title: content.Title,
+					URL:   content.URL,
 				},
 				ID: content.ID,
 			})
@@ -83,9 +82,8 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 		contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
 			ID: content.ID,
 			ContentFields: httpmodels.ContentFields{
-				Title:       content.Title,
-				ContentType: content.ContentType,
-				URL:         content.URL,
+				Title: content.Title,
+				URL:   content.URL,
 			},
 		})
 	}

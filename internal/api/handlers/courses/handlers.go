@@ -411,3 +411,39 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 
 	components.HttpResponseWithPayload(c, ToReviewsListResponse(reviews), http.StatusOK)
 }
+
+// FetchCourses
+//
+//	@Summary	Fetch courses
+//
+//	@Tags		Course
+//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response		"Standard error example object"
+//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/review [post]
+//	@Security	Bearer
+//	@Security	Language
+func FetchCourses(c *components.HTTPComponents) {
+	/*
+		   - Fazer um endpoint que cadastra categorias dos cursos
+			 - Alterar o endpoint de cadastro de cursos para cadastrar com categoria
+	*/
+
+}
+
+// CreateCourseCategory
+//
+//	@Summary	Create course category
+//
+//	@Tags		Course
+//	@Success	201		{object}	###	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response		"Standard error example object"
+//	@Param		request	body		###	true	"Request payload for creating a course category"
+//	@Router		/courses/category [post]
+//	@Security	Bearer
+//	@Security	Language
+func CreateCourseCategory(c *components.HTTPComponents) {
+
+}

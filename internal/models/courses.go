@@ -8,19 +8,7 @@ const (
 	AdvancedLevel     string = "advanced"
 )
 
-const (
-	ContentTypeYoutube string = "youtube"
-	ContentTypePDF     string = "pdf"
-	ContentTypeImage   string = "image"
-)
-
 var (
-	ValidContentTypes []string = []string{
-		ContentTypeYoutube,
-		ContentTypePDF,
-		ContentTypeImage,
-	}
-
 	ValidCourseLevels []string = []string{
 		BeginnerLevel,
 		IntermediateLevel,

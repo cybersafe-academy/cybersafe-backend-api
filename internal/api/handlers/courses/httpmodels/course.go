@@ -49,15 +49,8 @@ type RequestContent struct {
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
-
 	if !govalidator.IsIn(re.Level, models.ValidCourseLevels...) {
 		return errutil.ErrInvalidCourseLevel
-	}
-
-	for _, content := range re.Contents {
-		if !govalidator.IsIn(content.ContentType, models.ValidContentTypes...) {
-			return errutil.ErrInvalidContentType
-		}
 	}
 
 	_, err := govalidator.ValidateStruct(*re)
@@ -79,9 +72,8 @@ func (re *RequestContent) ToEntity() *models.Course {
 
 	for _, content := range re.Contents {
 		course.Contents = append(course.Contents, models.Content{
-			Title:       content.Title,
-			ContentType: content.ContentType,
-			URL:         content.URL,
+			Title: content.Title,
+			URL:   content.URL,
 		})
 	}
 
