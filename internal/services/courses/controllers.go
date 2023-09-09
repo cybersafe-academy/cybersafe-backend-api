@@ -21,6 +21,7 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 		Table("courses").
 		Preload("Contents").
 		Preload("Reviews").
+		Preload("Categories").
 		Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
 		Select("courses.*, avg(reviews.rating) as avg_rating").
 		Where("courses.deleted_at IS NULL").

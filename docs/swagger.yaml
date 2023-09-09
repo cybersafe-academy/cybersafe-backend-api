@@ -136,11 +136,27 @@ definitions:
       text:
         type: string
     type: object
+  httpmodels.CategoryRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  httpmodels.CategoryResponse:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   httpmodels.ContentRequest:
     properties:
       URL:
-        type: string
-      contentType:
         type: string
       title:
         type: string
@@ -148,8 +164,6 @@ definitions:
   httpmodels.ContentResponse:
     properties:
       URL:
-        type: string
-      contentType:
         type: string
       id:
         type: string
@@ -178,6 +192,8 @@ definitions:
     type: object
   httpmodels.RequestContent:
     properties:
+      categoryID:
+        type: string
       contentInHours:
         type: number
       contents:
@@ -201,6 +217,8 @@ definitions:
     properties:
       avgRating:
         type: number
+      category:
+        $ref: '#/definitions/httpmodels.CategoryResponse'
       contentInHours:
         type: number
       contents:
@@ -860,7 +878,33 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: Create review
+      summary: Fetch courses
+      tags:
+      - Course
+  /courses/category:
+    post:
+      parameters:
+      - description: Request payload for creating a course category
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpmodels.CategoryRequest'
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CategoryResponse'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create course category
       tags:
       - Course
   /courses/{id}/reviews:

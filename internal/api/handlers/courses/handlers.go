@@ -417,10 +417,10 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 //	@Summary	Fetch courses
 //
 //	@Tags		Course
-//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Success	200		{object}	httpmodels.ReviewResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/review [post]
 //	@Security	Bearer
 //	@Security	Language
@@ -437,13 +437,34 @@ func FetchCourses(c *components.HTTPComponents) {
 //	@Summary	Create course category
 //
 //	@Tags		Course
-//	@Success	201		{object}	###	"OK"
+//	@Success	201		{object}	httpmodels.CategoryResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		###	true	"Request payload for creating a course category"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for creating a course category"
 //	@Router		/courses/category [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseCategory(c *components.HTTPComponents) {
+	categoryRequest := httpmodels.CategoryRequest{}
 
+	err := components.ValidateRequest(c, &categoryRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	category := categoryRequest.ToEntity()
+
+	err = c.Components.Resources.Categories.Create(category)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCategoryAlreadyExists)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToCategoryResponse(*category), http.StatusCreated)
 }

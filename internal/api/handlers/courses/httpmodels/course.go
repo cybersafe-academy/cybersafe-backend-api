@@ -28,6 +28,8 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
+	Category CategoryResponse `json:"category"`
+
 	Contents  []ContentResponse  `json:"contents"`
 	Questions []QuestionResponse `json:"questions"`
 }
@@ -46,6 +48,41 @@ type RequestContent struct {
 
 	Contents  []ContentRequest  `json:"contents"`
 	Questions []QuestionRequest `json:"questions"`
+}
+
+type CategoryFields struct {
+	Name string `json:"name" valid:"required"`
+}
+
+type CategoryResponse struct {
+	CategoryFields
+
+	ID        uuid.UUID      `json:"id"`
+	CreatedAt time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt time.Time      `json:"updatedAt,omitempty"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt,omitempty"`
+}
+
+type CategoryRequest struct {
+	CategoryFields
+}
+
+func (cr *CategoryRequest) Bind(_ *http.Request) error {
+	_, err := govalidator.ValidateStruct(*cr)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (cr *CategoryRequest) ToEntity() *models.Category {
+	category := &models.Category{
+		Name: cr.Name,
+	}
+
+	return category
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
@@ -68,6 +105,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 		ContentInHours: re.ContentInHours,
 		ThumbnailURL:   re.ThumbnailURL,
 		Level:          re.Level,
+		CategoryID:     re.CategoryID,
 	}
 
 	for _, content := range re.Contents {

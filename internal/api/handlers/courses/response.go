@@ -24,6 +24,12 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				ThumbnailURL:   course.Description,
 				Level:          course.Level,
 			},
+			Category: httpmodels.CategoryResponse{
+				ID: course.CategoryID,
+				CategoryFields: httpmodels.CategoryFields{
+					Name: course.Category.Name,
+				},
+			},
 		}
 
 		var contentsResponse []httpmodels.ContentResponse
@@ -73,6 +79,12 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			ContentInHours: course.ContentInHours,
 			ThumbnailURL:   course.Description,
 			Level:          course.Level,
+		},
+		Category: httpmodels.CategoryResponse{
+			ID: course.CategoryID,
+			CategoryFields: httpmodels.CategoryFields{
+				Name: course.Category.Name,
+			},
 		},
 	}
 
@@ -133,7 +145,21 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 	return reviewResponse
 }
 
-func ToEnrollmentResponse(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
+func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
+	categoryResponse := httpmodels.CategoryResponse{
+		ID: category.ID,
+		CategoryFields: httpmodels.CategoryFields{
+			Name: category.Name,
+		},
+		CreatedAt: category.CreatedAt,
+		UpdatedAt: category.UpdatedAt,
+		DeletedAt: category.DeletedAt,
+	}
+
+	return categoryResponse
+}
+
+func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
 
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{

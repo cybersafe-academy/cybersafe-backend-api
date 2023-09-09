@@ -609,6 +609,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/courses/category": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create course category",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a course category",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CategoryResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{id}": {
             "get": {
                 "security": [
@@ -876,7 +920,7 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-                "summary": "Create review",
+                "summary": "Fetch courses",
                 "parameters": [
                     {
                         "type": "string",
@@ -1516,13 +1560,38 @@ const docTemplate = `{
                 }
             }
         },
+        "httpmodels.CategoryRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "httpmodels.ContentRequest": {
             "type": "object",
             "properties": {
                 "URL": {
-                    "type": "string"
-                },
-                "contentType": {
                     "type": "string"
                 },
                 "title": {
@@ -1534,9 +1603,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "URL": {
-                    "type": "string"
-                },
-                "contentType": {
                     "type": "string"
                 },
                 "id": {
@@ -1581,6 +1647,9 @@ const docTemplate = `{
         "httpmodels.RequestContent": {
             "type": "object",
             "properties": {
+                "categoryID": {
+                    "type": "string"
+                },
                 "contentInHours": {
                     "type": "number"
                 },
@@ -1615,6 +1684,9 @@ const docTemplate = `{
             "properties": {
                 "avgRating": {
                     "type": "number"
+                },
+                "category": {
+                    "$ref": "#/definitions/httpmodels.CategoryResponse"
                 },
                 "contentInHours": {
                     "type": "number"

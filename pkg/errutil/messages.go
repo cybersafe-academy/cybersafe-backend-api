@@ -49,4 +49,7 @@ var (
 
 	//Personality Test
 	ErrInvalidMBTIType = errors.New("invalid MBTI type")
+
+	//Categories
+	ErrCategoryAlreadyExists = errors.New("category already exists")
 )
