@@ -63,8 +63,12 @@ func SetupRoutes(c *components.Components) http.Handler {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/category", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/categories", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseCategory(components.HttpComponents(w, r, c))
+		})
+
+		r.Get("/categories", func(w http.ResponseWriter, r *http.Request) {
+			ListCategoriesHandler(components.HttpComponents(w, r, c))
 		})
 	})
 

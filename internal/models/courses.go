@@ -25,8 +25,8 @@ type Course struct {
 	ThumbnailURL   string
 	Level          string
 
-	CategoryID uuid.UUID
-	Category   Category `gorm:"foreignKey:CategoryID"`
+	CategoryID uuid.UUID `gorm:""`
+	Category   Category  `gorm:"foreignKey:CategoryID"`
 
 	Contents    []Content    `gorm:"foreignKey:CourseID"`
 	Questions   []Question   `gorm:"foreignKey:CourseID"`

@@ -432,6 +432,39 @@ func FetchCourses(c *components.HTTPComponents) {
 
 }
 
+// ListCategoriesHandler
+//
+//	@Summary	List categories with paginated response
+//
+//	@Tags		Course
+//	@success	200		{array}	pagination.PaginationData{data=CategoryResponse}	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		page	query		int					false	"Page number"
+//	@Param		limit	query		int					false	"Limit of elements per page"
+//	@Router		/courses/categories [get]
+//	@Security	Bearer
+//	@Security	Language
+func ListCategoriesHandler(c *components.HTTPComponents) {
+	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
+
+	if errors.Is(err, errutil.ErrInvalidPageParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	}
+
+	categories, count := c.Components.Resources.Categories.ListWithPagination(paginationData.Offset, paginationData.Limit)
+
+	response := paginationData.ToResponse(
+		ToCategoryListResponse(categories), int(count),
+	)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
+
 // CreateCourseCategory
 //
 //	@Summary	Create course category
@@ -439,9 +472,9 @@ func FetchCourses(c *components.HTTPComponents) {
 //	@Tags		Course
 //	@Success	201		{object}	httpmodels.CategoryResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response			"Standard error example object"
-//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for creating a course category"
-//	@Router		/courses/category [post]
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		request	body		CategoryRequest		true	"Request payload for creating a course category"
+//	@Router		/courses/categories [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseCategory(c *components.HTTPComponents) {

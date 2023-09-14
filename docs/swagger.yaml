@@ -881,7 +881,41 @@ paths:
       summary: Fetch courses
       tags:
       - Course
-  /courses/category:
+  /courses/categories:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/courses.CategoryResponse'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List categories with paginated response
+      tags:
+      - Course
     post:
       parameters:
       - description: Request payload for creating a course category

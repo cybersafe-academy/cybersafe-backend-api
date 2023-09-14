@@ -24,8 +24,8 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				ThumbnailURL:   course.Description,
 				Level:          course.Level,
 			},
-			Category: httpmodels.CategoryResponse{
-				ID: course.CategoryID,
+			Category: httpmodels.CourseCategoryResponse{
+				ID: course.Category.ID,
 				CategoryFields: httpmodels.CategoryFields{
 					Name: course.Category.Name,
 				},
@@ -80,8 +80,8 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			ThumbnailURL:   course.Description,
 			Level:          course.Level,
 		},
-		Category: httpmodels.CategoryResponse{
-			ID: course.CategoryID,
+		Category: httpmodels.CourseCategoryResponse{
+			ID: course.Category.ID,
 			CategoryFields: httpmodels.CategoryFields{
 				Name: course.Category.Name,
 			},
@@ -147,9 +147,11 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 
 func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
 	categoryResponse := httpmodels.CategoryResponse{
-		ID: category.ID,
-		CategoryFields: httpmodels.CategoryFields{
-			Name: category.Name,
+		CourseCategoryResponse: httpmodels.CourseCategoryResponse{
+			ID: category.ID,
+			CategoryFields: httpmodels.CategoryFields{
+				Name: category.Name,
+			},
 		},
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
@@ -226,5 +228,26 @@ func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse 
 	}
 
 	return reviewsResponse
+}
 
+func ToCategoryListResponse(categories []models.Category) []httpmodels.CategoryResponse {
+	var categoriesResponse []httpmodels.CategoryResponse
+
+	for _, category := range categories {
+		categoryResponse := httpmodels.CategoryResponse{
+			CourseCategoryResponse: httpmodels.CourseCategoryResponse{
+				ID: category.ID,
+				CategoryFields: httpmodels.CategoryFields{
+					Name: category.Name,
+				},
+			},
+			CreatedAt: category.CreatedAt,
+			UpdatedAt: category.UpdatedAt,
+			DeletedAt: category.DeletedAt,
+		}
+
+		categoriesResponse = append(categoriesResponse, categoryResponse)
+	}
+
+	return categoriesResponse
 }
