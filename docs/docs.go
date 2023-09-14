@@ -610,91 +610,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/question": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "Correct Answer",
-                "parameters": [
-                    {
-                        "description": "Request payload for creating a review",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.CorrectAnswerRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No content"
-                    },
-                    "409": {
-                        "description": "Conflict"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/courses/review": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "Create review",
-                "parameters": [
-                    {
-                        "description": "Request payload for creating a review",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.ReviewRequestContent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.ReviewResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/courses/{id}": {
             "get": {
                 "security": [
@@ -816,6 +731,133 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/enrollment": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get Enrollment info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Course not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/question": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Correct Answer",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a review",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.AddAnswerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/review": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create review",
+                "parameters": [
+                    {
+                        "description": "Request payload for creating a review",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewRequestContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1356,6 +1398,17 @@ const docTemplate = `{
                 }
             }
         },
+        "httpmodels.AddAnswerRequest": {
+            "type": "object",
+            "properties": {
+                "answerID": {
+                    "type": "string"
+                },
+                "questionID": {
+                    "type": "string"
+                }
+            }
+        },
         "httpmodels.AnswerRequest": {
             "type": "object",
             "properties": {
@@ -1408,17 +1461,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "httpmodels.CorrectAnswerRequest": {
-            "type": "object",
-            "properties": {
-                "answerID": {
-                    "type": "string"
-                },
-                "questionID": {
                     "type": "string"
                 }
             }
@@ -1537,9 +1579,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "comment": {
-                    "type": "string"
-                },
-                "courseID": {
                     "type": "string"
                 },
                 "rating": {

@@ -117,6 +117,13 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  httpmodels.AddAnswerRequest:
+    properties:
+      answerID:
+        type: string
+      questionID:
+        type: string
+    type: object
   httpmodels.AnswerRequest:
     properties:
       isCorrect:
@@ -151,13 +158,6 @@ definitions:
       id:
         type: string
       title:
-        type: string
-    type: object
-  httpmodels.CorrectAnswerRequest:
-    properties:
-      answerID:
-        type: string
-      questionID:
         type: string
     type: object
   httpmodels.QuestionRequest:
@@ -235,8 +235,6 @@ definitions:
   httpmodels.ReviewRequestContent:
     properties:
       comment:
-        type: string
-      courseID:
         type: string
       rating:
         type: integer
@@ -765,7 +763,32 @@ paths:
       summary: Update course by ID
       tags:
       - Course
-  /courses/question:
+  /courses/{id}/enrollment:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get Enrollment info
+      tags:
+      - Course
+  /courses/{id}/question:
     post:
       parameters:
       - description: Request payload for creating a review
@@ -773,7 +796,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/httpmodels.CorrectAnswerRequest'
+          $ref: '#/definitions/httpmodels.AddAnswerRequest'
       responses:
         "204":
           description: No content
@@ -789,7 +812,7 @@ paths:
       summary: Correct Answer
       tags:
       - Course
-  /courses/review:
+  /courses/{id}/review:
     post:
       parameters:
       - description: Request payload for creating a review

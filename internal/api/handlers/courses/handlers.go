@@ -248,14 +248,14 @@ func CreateCourseReview(c *components.HTTPComponents) {
 //	@Tags		Course
 //	@success	204		"No content"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Response	default	{object}	components.Response			"Standard error example object"
 //	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/question [post]
 //	@Security	Bearer
 //	@Security	Language
 func AddAnswer(c *components.HTTPComponents) {
 
-	courseID := c.HttpRequest.URL.Query().Get("id")
+	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
@@ -277,7 +277,7 @@ func AddAnswer(c *components.HTTPComponents) {
 
 	err = c.Components.Resources.Answers.SaveUserAnswer(&models.UserAnswer{
 		QuestionID: addAnswerRequest.QuestionID,
-		AnswerID:   addAnswerRequest.QuestionID,
+		AnswerID:   addAnswerRequest.AnswerID,
 		UserID:     currentUser.ID,
 	})
 
@@ -302,15 +302,16 @@ func AddAnswer(c *components.HTTPComponents) {
 //
 //	@Tags		Course
 //	@success	200		"No content"
-//	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response				"Standard error example object"
-//	@Param		request	body		httpmodels.GetEnrollmentInfoRequest	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/progress [get]
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/enrollment [get]
 //	@Security	Bearer
 //	@Security	Language
 func GetEnrollmentInfo(c *components.HTTPComponents) {
 
-	courseID := c.HttpRequest.URL.Query().Get("id")
+	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
@@ -326,8 +327,13 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 
 	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-		return
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
 	}
 
 	components.HttpResponseWithPayload(c, ToEnrollmentRespose(enrollment), http.StatusNoContent)

@@ -31,6 +31,9 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Post("/question", func(w http.ResponseWriter, r *http.Request) {
 			AddAnswer(components.HttpComponents(w, r, c))
 		})
+		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrollmentInfo(components.HttpComponents(w, r, c))
+		})
 	})
 
 	subRouter.Group(func(r chi.Router) {

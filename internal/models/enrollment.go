@@ -2,10 +2,6 @@ package models
 
 import "github.com/google/uuid"
 
-//aprovado
-//reprovado
-//in progress
-
 const (
 	ApprovedStatus   string = "beginner"
 	FailedStatus     string = "intermediate"
