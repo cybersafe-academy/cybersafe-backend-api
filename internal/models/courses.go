@@ -25,8 +25,8 @@ type Course struct {
 	ThumbnailURL   string
 	Level          string
 
-	CategoryID uuid.UUID `gorm:"default:null"`
-	Category   Category  `gorm:"foreignKey:CategoryID"`
+	CategoryID uuid.UUID
+	Category   Category `gorm:"foreignKey:CategoryID"`
 
 	Contents    []Content    `gorm:"foreignKey:CourseID"`
 	Questions   []Question   `gorm:"foreignKey:CourseID"`
@@ -40,18 +40,10 @@ type CourseExtraFields struct {
 	AvgRating float64
 }
 
-type CourseByCategoryFields struct {
-	Course
-
-	AvgRating float64
-}
-
 type Category struct {
 	Shared
 
 	Name string `gorm:"uniqueIndex:idx_course_name"`
-
-	Course []Course
 }
 
 type Content struct {

@@ -12,11 +12,11 @@ import (
 )
 
 type CourseFields struct {
-	Title          string  `json:"title" valid:"type(string), required"`
-	Description    string  `json:"description" valid:"type(string), required"`
+	Title          string  `json:"title" valid:"required"`
+	Description    string  `json:"description" valid:"required"`
 	ContentInHours float64 `json:"contentInHours" valid:"required"`
-	ThumbnailURL   string  `json:"thumbnailURL" valid:"type(string), required"`
-	Level          string  `json:"level" valid:"type(string), required"`
+	ThumbnailURL   string  `json:"thumbnailURL" valid:"required"`
+	Level          string  `json:"level" valid:"required"`
 }
 
 type CourseResponse struct {
@@ -28,7 +28,7 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
-	Category CourseCategoryResponse `json:"category"`
+	Category CourseCategoryResponse `json:"category,omitempty"`
 
 	Contents  []ContentResponse  `json:"contents"`
 	Questions []QuestionResponse `json:"questions"`
@@ -46,50 +46,35 @@ type ResponseContent struct {
 type RequestContent struct {
 	CourseFields
 
+	CategoryID uuid.UUID `valid:"required"`
+
 	Contents  []ContentRequest  `json:"contents"`
 	Questions []QuestionRequest `json:"questions"`
 }
 
-type CourseCategoryResponse struct {
-	CategoryFields
+type CourseExtraFields struct {
+	ID        uuid.UUID `json:"id"`
+	AvgRating float64   `json:"avgRating"`
 
-	ID uuid.UUID `json:"id"`
+	CourseFields
 }
 
-type CategoryFields struct {
-	Name string `json:"name" valid:"required"`
+type CourseByCategory struct {
+	CategoryName string              `json:"name"`
+	Courses      []CourseExtraFields `json:"courses"`
 }
 
-type CategoryResponse struct {
-	CategoryFields
+type RawCoursesByCategory struct {
+	CourseID uuid.UUID
 
-	ID        uuid.UUID      `json:"id"`
-	CreatedAt time.Time      `json:"createdAt,omitempty"`
-	UpdatedAt time.Time      `json:"updatedAt,omitempty"`
-	DeletedAt gorm.DeletedAt `json:"deletedAt,omitempty"`
+	CourseTitle        string
+	CourseThumbnailURL string
+	AvgRating          float64
+
+	CategoryName string
 }
 
-type CategoryRequest struct {
-	CategoryFields
-}
-
-func (cr *CategoryRequest) Bind(_ *http.Request) error {
-	_, err := govalidator.ValidateStruct(*cr)
-
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-func (cr *CategoryRequest) ToEntity() *models.Category {
-	category := &models.Category{
-		Name: cr.Name,
-	}
-
-	return category
-}
+type CourseByCategoryResponse map[string][]map[string]any
 
 func (re *RequestContent) Bind(_ *http.Request) error {
 	if !govalidator.IsIn(re.Level, models.ValidCourseLevels...) {
@@ -137,5 +122,4 @@ func (re *RequestContent) ToEntity() *models.Course {
 	}
 
 	return course
-
 }

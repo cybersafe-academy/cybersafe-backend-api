@@ -1071,8 +1071,15 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-                "summary": "Fetch courses",
+                "summary": "Create review",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Request payload for creating a review",
                         "name": "request",
@@ -1134,6 +1141,39 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Course not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/fetch-courses": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "List all courses grouped by category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1757,6 +1797,16 @@ const docTemplate = `{
                 }
             }
         },
+        "httpmodels.CourseByCategoryResponse": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            }
+        },
         "httpmodels.CourseCategoryResponse": {
             "type": "object",
             "properties": {
@@ -1802,6 +1852,9 @@ const docTemplate = `{
         "httpmodels.RequestContent": {
             "type": "object",
             "properties": {
+                "categoryID": {
+                    "type": "string"
+                },
                 "contentInHours": {
                     "type": "number"
                 },

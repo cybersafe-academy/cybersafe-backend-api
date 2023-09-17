@@ -6,7 +6,6 @@ import (
 )
 
 func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseResponse {
-
 	var coursesResponse []httpmodels.CourseResponse
 
 	for _, course := range courses {
@@ -67,7 +66,6 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 }
 
 func ToResponse(course models.Course) httpmodels.CourseResponse {
-
 	courseResponse := httpmodels.CourseResponse{
 		ID:        course.ID,
 		CreatedAt: course.CreatedAt,
@@ -81,7 +79,7 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			Level:          course.Level,
 		},
 		Category: httpmodels.CourseCategoryResponse{
-			ID: course.Category.ID,
+			ID: course.CategoryID,
 			CategoryFields: httpmodels.CategoryFields{
 				Name: course.Category.Name,
 			},
@@ -128,7 +126,6 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 }
 
 func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
-
 	reviewResponse := httpmodels.ReviewResponse{
 		ID:        review.ID,
 		CreatedAt: review.CreatedAt,
@@ -160,7 +157,6 @@ func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
 }
 
 func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
-
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{
 			Status:       enrollment.Status,

@@ -50,6 +50,23 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }
 
+// ListCoursesHandler
+//
+//	@Summary	List all courses grouped by category
+//
+//	@Tags		Course
+//	@success	200		{object}	httpmodels.CourseByCategoryResponse	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Router		/fetch-courses [get]
+//	@Security	Bearer
+//	@Security	Language
+func FetchCoursesHandler(c *components.HTTPComponents) {
+	courses := c.Components.Resources.Courses.ListByCategory()
+
+	components.HttpResponseWithPayload(c, courses, http.StatusOK)
+}
+
 // GetCourseByID retrieves a course by ID
 //
 //	@Summary	Get course by ID
@@ -410,26 +427,6 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToReviewsListResponse(reviews), http.StatusOK)
-}
-
-// FetchCourses
-//
-//	@Summary	Fetch courses
-//
-//	@Tags		Course
-//	@Success	200		{object}	httpmodels.ReviewResponse	"OK"
-//	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response				"Standard error example object"
-//	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/review [post]
-//	@Security	Bearer
-//	@Security	Language
-func FetchCourses(c *components.HTTPComponents) {
-	/*
-		   - Fazer um endpoint que cadastra categorias dos cursos
-			 - Alterar o endpoint de cadastro de cursos para cadastrar com categoria
-	*/
-
 }
 
 // ListCategoriesHandler

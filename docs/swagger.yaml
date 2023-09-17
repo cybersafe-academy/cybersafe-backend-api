@@ -170,6 +170,13 @@ definitions:
       title:
         type: string
     type: object
+  httpmodels.CourseByCategoryResponse:
+    additionalProperties:
+      items:
+        additionalProperties: {}
+        type: object
+      type: array
+    type: object
   httpmodels.CourseCategoryResponse:
     properties:
       id:
@@ -199,6 +206,8 @@ definitions:
     type: object
   httpmodels.RequestContent:
     properties:
+      categoryID:
+        type: string
       contentInHours:
         type: number
       contents:
@@ -858,6 +867,11 @@ paths:
   /courses/{id}/review:
     post:
       parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Request payload for creating a review
         in: body
         name: request
@@ -878,7 +892,7 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: Fetch courses
+      summary: Create review
       tags:
       - Course
   /courses/{id}/reviews:
@@ -1019,6 +1033,25 @@ paths:
       - Bearer: []
       - Language: []
       summary: Update category by ID
+      tags:
+      - Course
+  /fetch-courses:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CourseByCategoryResponse'
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List all courses grouped by category
       tags:
       - Course
   /users:

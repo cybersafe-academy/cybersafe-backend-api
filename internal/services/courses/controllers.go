@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
 
 	"github.com/google/uuid"
@@ -13,7 +14,6 @@ type CoursesManagerDB struct {
 }
 
 func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.CourseExtraFields, int) {
-
 	var courses []models.CourseExtraFields
 	var count int64
 
@@ -34,11 +34,27 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 	return courses, int(count)
 }
 
-func (cm *CoursesManagerDB) ListByCategoryWithPagination(offset, limit int) ([]models.CourseByCategoryFields, int) {
-	var courses []models.CourseByCategoryFields
-	var count int64
+func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryResponse {
+	var results []httpmodels.RawCoursesByCategory
 
-	return courses, int(count)
+	cm.DBConnection.Raw(`
+		SELECT ct.name AS category_name,
+				AVG(r.rating) AS avg_rating,
+				c.id AS course_id,
+				c.title AS course_title,
+				c.description AS course_description,
+				c.content_in_hours AS course_content_in_hours,
+				c.thumbnail_url AS course_thumbnail_url,
+				c.level AS course_level
+		FROM categories ct
+		LEFT JOIN courses c ON c.category_id = ct.id
+		LEFT JOIN reviews r ON r.course_id = c.id
+	GROUP BY ct.name, c.id, c.title, c.description, c.content_in_hours, c.thumbnail_url, c.level;
+	`).Scan(&results)
+
+	response := GroupCoursesByCategory(results)
+
+	return &response
 }
 
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
