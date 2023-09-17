@@ -518,41 +518,12 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-                "summary": "List courses with paginated response",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit of elements per page",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
+                "summary": "List all courses grouped by category",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/httpmodels.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
+                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
                         }
                     },
                     "400": {
@@ -1141,39 +1112,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Course not found"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/fetch-courses": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "List all courses grouped by category",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
                     },
                     "default": {
                         "description": "Standard error example object",

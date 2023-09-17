@@ -58,7 +58,7 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //	@success	200		{object}	httpmodels.CourseByCategoryResponse	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Router		/fetch-courses [get]
+//	@Router		/courses [get]
 //	@Security	Bearer
 //	@Security	Language
 func FetchCoursesHandler(c *components.HTTPComponents) {
