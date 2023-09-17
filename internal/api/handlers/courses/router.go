@@ -26,8 +26,29 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Put("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			UpdateCourseHandler(components.HttpComponents(w, r, c))
 		})
+
 		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
+		})
+
+		r.Post("/question", func(w http.ResponseWriter, r *http.Request) {
+			AddAnswer(components.HttpComponents(w, r, c))
+		})
+
+		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrollmentInfo(components.HttpComponents(w, r, c))
+		})
+
+		r.Post("/categories", func(w http.ResponseWriter, r *http.Request) {
+			CreateCourseCategory(components.HttpComponents(w, r, c))
+		})
+
+		r.Put("/categories/{id}", func(w http.ResponseWriter, r *http.Request) {
+			UpdateCategoryHandler(components.HttpComponents(w, r, c))
+		})
+
+		r.Delete("/categories/{id}", func(w http.ResponseWriter, r *http.Request) {
+			DeleteCategoryHandler(components.HttpComponents(w, r, c))
 		})
 
 	})
@@ -61,10 +82,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
-		})
-
-		r.Post("/categories", func(w http.ResponseWriter, r *http.Request) {
-			CreateCourseCategory(components.HttpComponents(w, r, c))
 		})
 
 		r.Get("/categories", func(w http.ResponseWriter, r *http.Request) {

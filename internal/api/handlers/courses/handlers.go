@@ -501,3 +501,76 @@ func CreateCourseCategory(c *components.HTTPComponents) {
 
 	components.HttpResponseWithPayload(c, ToCategoryResponse(*category), http.StatusCreated)
 }
+
+// UpdateCategoryHandler
+//
+//	@Summary	Update category by ID
+//
+//	@Tags		Course
+//	@success	200		{object}	CategoryResponse	"OK"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Category not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		request	body		CategoryRequest		true	"Request payload for updating category information"
+//	@Param		id		path		string				true	"ID of category to be updated"
+//	@Router		/courses/categories/{id} [put]
+//	@Security	Bearer
+//	@Security	Language
+func UpdateCategoryHandler(c *components.HTTPComponents) {
+	categoryRequest := CategoryRequest{}
+	err := components.ValidateRequest(c, &categoryRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	category := categoryRequest.ToEntity()
+	category.ID = uuid.MustParse(id)
+
+	rowsAffected, err := c.Components.Resources.Categories.Update(category)
+
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+	if rowsAffected == 0 {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToCategoryResponse(*category), http.StatusOK)
+}
+
+// DeleteCategoryHandler
+//
+//	@Summary	Delete a category by ID
+//
+//	@Tags		Course
+//	@success	204		"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of the category to be deleted"
+//	@Router		/courses/categories/{id} [delete]
+//	@Security	Bearer
+//	@Security	Language
+func DeleteCategoryHandler(c *components.HTTPComponents) {
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	err := c.Components.Resources.Categories.Delete(uuid.MustParse(id))
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
