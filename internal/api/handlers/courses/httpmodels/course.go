@@ -17,6 +17,7 @@ type CourseFields struct {
 	ContentInHours float64 `json:"contentInHours" valid:"required"`
 	ThumbnailURL   string  `json:"thumbnailURL" valid:"required"`
 	Level          string  `json:"level" valid:"required"`
+	ContentURL     string  `json:"contentURL" valid:"required"`
 }
 
 type CourseResponse struct {
@@ -30,7 +31,6 @@ type CourseResponse struct {
 
 	Category CourseCategoryResponse `json:"category,omitempty"`
 
-	Contents  []ContentResponse  `json:"contents"`
 	Questions []QuestionResponse `json:"questions"`
 }
 
@@ -48,8 +48,7 @@ type RequestContent struct {
 
 	CategoryID uuid.UUID `valid:"required"`
 
-	Contents  []ContentRequest  `json:"contents"`
-	Questions []QuestionRequest `json:"questions"`
+	Contents []ContentRequest `json:"contents"`
 }
 
 type CourseExtraFields struct {
@@ -69,6 +68,7 @@ type RawCoursesByCategory struct {
 
 	CourseTitle        string
 	CourseThumbnailURL string
+	CourseContentURL   string
 	AvgRating          float64
 
 	CategoryName string
@@ -97,13 +97,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 		ThumbnailURL:   re.ThumbnailURL,
 		Level:          re.Level,
 		CategoryID:     re.CategoryID,
-	}
-
-	for _, content := range re.Contents {
-		course.Contents = append(course.Contents, models.Content{
-			Title: content.Title,
-			URL:   content.URL,
-		})
+		ContentURL:     re.ContentURL,
 	}
 
 	for _, question := range re.Questions {

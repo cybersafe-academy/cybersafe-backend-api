@@ -1702,31 +1702,6 @@
                 }
             }
         },
-        "httpmodels.ContentRequest": {
-            "type": "object",
-            "properties": {
-                "URL": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "httpmodels.ContentResponse": {
-            "type": "object",
-            "properties": {
-                "URL": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
         "httpmodels.CourseByCategoryResponse": {
             "type": "object",
             "additionalProperties": {
@@ -1788,11 +1763,8 @@
                 "contentInHours": {
                     "type": "number"
                 },
-                "contents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/httpmodels.ContentRequest"
-                    }
+                "contentURL": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -1826,11 +1798,8 @@
                 "contentInHours": {
                     "type": "number"
                 },
-                "contents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/httpmodels.ContentResponse"
-                    }
+                "contentURL": {
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"

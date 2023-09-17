@@ -154,22 +154,6 @@ definitions:
       updatedAt:
         type: string
     type: object
-  httpmodels.ContentRequest:
-    properties:
-      URL:
-        type: string
-      title:
-        type: string
-    type: object
-  httpmodels.ContentResponse:
-    properties:
-      URL:
-        type: string
-      id:
-        type: string
-      title:
-        type: string
-    type: object
   httpmodels.CourseByCategoryResponse:
     additionalProperties:
       items:
@@ -210,10 +194,8 @@ definitions:
         type: string
       contentInHours:
         type: number
-      contents:
-        items:
-          $ref: '#/definitions/httpmodels.ContentRequest'
-        type: array
+      contentURL:
+        type: string
       description:
         type: string
       level:
@@ -235,10 +217,8 @@ definitions:
         $ref: '#/definitions/httpmodels.CourseCategoryResponse'
       contentInHours:
         type: number
-      contents:
-        items:
-          $ref: '#/definitions/httpmodels.ContentResponse'
-        type: array
+      contentURL:
+        type: string
       createdAt:
         type: string
       deletedAt:

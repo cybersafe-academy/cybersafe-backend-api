@@ -13,6 +13,7 @@ func GroupCoursesByCategory(rawCourses []httpmodels.RawCoursesByCategory) httpmo
 			"title":        course.CourseTitle,
 			"thumbnailURL": course.CourseThumbnailURL,
 			"avgRating":    course.AvgRating,
+			"contentURL":   course.CourseContentURL,
 		}
 
 		responseMap[categoryName] = append(responseMap[categoryName], courseData)

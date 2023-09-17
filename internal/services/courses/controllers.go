@@ -45,7 +45,8 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 				c.description AS course_description,
 				c.content_in_hours AS course_content_in_hours,
 				c.thumbnail_url AS course_thumbnail_url,
-				c.level AS course_level
+				c.level AS course_level,
+				c.content_url as course_content_url
 		FROM categories ct
 		LEFT JOIN courses c ON c.category_id = ct.id
 		LEFT JOIN reviews r ON r.course_id = c.id

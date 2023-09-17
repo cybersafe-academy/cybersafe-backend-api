@@ -28,7 +28,8 @@ type Course struct {
 	CategoryID uuid.UUID
 	Category   Category `gorm:"foreignKey:CategoryID"`
 
-	Contents    []Content    `gorm:"foreignKey:CourseID"`
+	ContentURL string
+
 	Questions   []Question   `gorm:"foreignKey:CourseID"`
 	Reviews     []Review     `gorm:"foreignKey:CourseID"`
 	Enrollments []Enrollment `gorm:"foreignKey:CourseID"`
@@ -49,9 +50,8 @@ type Category struct {
 type Content struct {
 	Shared
 
-	Title       string
-	ContentType string
-	URL         string
+	Title string
+	URL   string
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`

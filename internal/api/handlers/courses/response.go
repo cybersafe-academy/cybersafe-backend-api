@@ -22,6 +22,7 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				ContentInHours: course.ContentInHours,
 				ThumbnailURL:   course.Description,
 				Level:          course.Level,
+				ContentURL:     course.ContentURL,
 			},
 			Category: httpmodels.CourseCategoryResponse{
 				ID: course.Category.ID,
@@ -29,18 +30,6 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 					Name: course.Category.Name,
 				},
 			},
-		}
-
-		var contentsResponse []httpmodels.ContentResponse
-
-		for _, content := range course.Contents {
-			contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
-				ContentFields: httpmodels.ContentFields{
-					Title: content.Title,
-					URL:   content.URL,
-				},
-				ID: content.ID,
-			})
 		}
 
 		for _, question := range course.Questions {
@@ -58,7 +47,6 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 			course.Questions = append(course.Questions, questionModel)
 		}
 
-		courseResponse.Contents = contentsResponse
 		coursesResponse = append(coursesResponse, courseResponse)
 	}
 
@@ -77,6 +65,7 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			ContentInHours: course.ContentInHours,
 			ThumbnailURL:   course.Description,
 			Level:          course.Level,
+			ContentURL:     course.ContentURL,
 		},
 		Category: httpmodels.CourseCategoryResponse{
 			ID: course.CategoryID,
@@ -84,18 +73,6 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 				Name: course.Category.Name,
 			},
 		},
-	}
-
-	var contentsResponse []httpmodels.ContentResponse
-
-	for _, content := range course.Contents {
-		contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
-			ID: content.ID,
-			ContentFields: httpmodels.ContentFields{
-				Title: content.Title,
-				URL:   content.URL,
-			},
-		})
 	}
 
 	for _, question := range course.Questions {
@@ -119,8 +96,6 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 
 		courseResponse.Questions = append(courseResponse.Questions, questionResponse)
 	}
-
-	courseResponse.Contents = contentsResponse
 
 	return courseResponse
 }

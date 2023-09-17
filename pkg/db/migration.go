@@ -11,7 +11,6 @@ func AutoMigrateDB() error {
 	modelsSlice := []any{
 		&models.User{},
 		&models.Course{},
-		&models.Content{},
 		&models.Company{},
 		&models.Review{},
 		&models.Enrollment{},

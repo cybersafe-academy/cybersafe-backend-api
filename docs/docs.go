@@ -1710,31 +1710,6 @@ const docTemplate = `{
                 }
             }
         },
-        "httpmodels.ContentRequest": {
-            "type": "object",
-            "properties": {
-                "URL": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "httpmodels.ContentResponse": {
-            "type": "object",
-            "properties": {
-                "URL": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
         "httpmodels.CourseByCategoryResponse": {
             "type": "object",
             "additionalProperties": {
@@ -1796,11 +1771,8 @@ const docTemplate = `{
                 "contentInHours": {
                     "type": "number"
                 },
-                "contents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/httpmodels.ContentRequest"
-                    }
+                "contentURL": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -1834,11 +1806,8 @@ const docTemplate = `{
                 "contentInHours": {
                     "type": "number"
                 },
-                "contents": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/httpmodels.ContentResponse"
-                    }
+                "contentURL": {
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
