@@ -34,6 +34,13 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 	return courses, int(count)
 }
 
+func (cm *CoursesManagerDB) ListByCategoryWithPagination(offset, limit int) ([]models.CourseByCategoryFields, int) {
+	var courses []models.CourseByCategoryFields
+	var count int64
+
+	return courses, int(count)
+}
+
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
 	var course models.Course
 

@@ -170,6 +170,13 @@ definitions:
       title:
         type: string
     type: object
+  httpmodels.CourseCategoryResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
   httpmodels.QuestionRequest:
     properties:
       answers:
@@ -192,8 +199,6 @@ definitions:
     type: object
   httpmodels.RequestContent:
     properties:
-      categoryID:
-        type: string
       contentInHours:
         type: number
       contents:
@@ -218,7 +223,7 @@ definitions:
       avgRating:
         type: number
       category:
-        $ref: '#/definitions/httpmodels.CategoryResponse'
+        $ref: '#/definitions/httpmodels.CourseCategoryResponse'
       contentInHours:
         type: number
       contents:
@@ -853,11 +858,6 @@ paths:
   /courses/{id}/review:
     post:
       parameters:
-      - description: ID of course
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Request payload for creating a review
         in: body
         name: request
@@ -881,6 +881,31 @@ paths:
       summary: Fetch courses
       tags:
       - Course
+  /courses/{id}/reviews:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get the reviews by the course ID
+      tags:
+      - Course
   /courses/categories:
     get:
       parameters:
@@ -901,7 +926,7 @@ paths:
               - $ref: '#/definitions/pagination.PaginationData'
               - properties:
                   data:
-                    $ref: '#/definitions/courses.CategoryResponse'
+                    $ref: '#/definitions/httpmodels.CategoryResponse'
                 type: object
             type: array
         "400":
@@ -941,21 +966,19 @@ paths:
       summary: Create course category
       tags:
       - Course
-  /courses/{id}/reviews:
-    get:
+  /courses/categories/{id}:
+    delete:
       parameters:
-      - description: ID of course
+      - description: ID of the category to be deleted
         in: path
         name: id
         required: true
         type: string
       responses:
-        "200":
-          description: No content
+        "204":
+          description: OK
         "400":
           description: Bad Request
-        "404":
-          description: Course not found
         default:
           description: Standard error example object
           schema:
@@ -963,7 +986,39 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: Get the reviews by the course ID
+      summary: Delete a category by ID
+      tags:
+      - Course
+    put:
+      parameters:
+      - description: Request payload for updating category information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpmodels.CategoryRequest'
+      - description: ID of category to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CategoryResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Category not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update category by ID
       tags:
       - Course
   /users:

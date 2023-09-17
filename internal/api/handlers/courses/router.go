@@ -50,7 +50,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Delete("/categories/{id}", func(w http.ResponseWriter, r *http.Request) {
 			DeleteCategoryHandler(components.HttpComponents(w, r, c))
 		})
-
 	})
 
 	subRouter.Group(func(r chi.Router) {

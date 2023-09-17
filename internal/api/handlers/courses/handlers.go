@@ -437,7 +437,7 @@ func FetchCourses(c *components.HTTPComponents) {
 //	@Summary	List categories with paginated response
 //
 //	@Tags		Course
-//	@success	200		{array}	pagination.PaginationData{data=CategoryResponse}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=httpmodels.CategoryResponse}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
@@ -472,8 +472,8 @@ func ListCategoriesHandler(c *components.HTTPComponents) {
 //	@Tags		Course
 //	@Success	201		{object}	httpmodels.CategoryResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		CategoryRequest		true	"Request payload for creating a course category"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for creating a course category"
 //	@Router		/courses/categories [post]
 //	@Security	Bearer
 //	@Security	Language
@@ -507,17 +507,17 @@ func CreateCourseCategory(c *components.HTTPComponents) {
 //	@Summary	Update category by ID
 //
 //	@Tags		Course
-//	@success	200		{object}	CategoryResponse	"OK"
+//	@success	200		{object}	httpmodels.CategoryResponse	"OK"
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"Category not found"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		CategoryRequest		true	"Request payload for updating category information"
-//	@Param		id		path		string				true	"ID of category to be updated"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for updating category information"
+//	@Param		id		path		string						true	"ID of category to be updated"
 //	@Router		/courses/categories/{id} [put]
 //	@Security	Bearer
 //	@Security	Language
 func UpdateCategoryHandler(c *components.HTTPComponents) {
-	categoryRequest := CategoryRequest{}
+	categoryRequest := httpmodels.CategoryRequest{}
 	err := components.ValidateRequest(c, &categoryRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)

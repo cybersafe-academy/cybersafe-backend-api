@@ -28,7 +28,7 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
-	Category CategoryResponse `json:"category"`
+	Category CourseCategoryResponse `json:"category"`
 
 	Contents  []ContentResponse  `json:"contents"`
 	Questions []QuestionResponse `json:"questions"`
@@ -48,6 +48,12 @@ type RequestContent struct {
 
 	Contents  []ContentRequest  `json:"contents"`
 	Questions []QuestionRequest `json:"questions"`
+}
+
+type CourseCategoryResponse struct {
+	CategoryFields
+
+	ID uuid.UUID `json:"id"`
 }
 
 type CategoryFields struct {

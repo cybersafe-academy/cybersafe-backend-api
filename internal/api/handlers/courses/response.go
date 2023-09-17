@@ -147,12 +147,10 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 
 func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
 	categoryResponse := httpmodels.CategoryResponse{
-		CourseCategoryResponse: httpmodels.CourseCategoryResponse{
-			ID: category.ID,
-			CategoryFields: httpmodels.CategoryFields{
-				Name: category.Name,
-			},
+		CategoryFields: httpmodels.CategoryFields{
+			Name: category.Name,
 		},
+		ID:        category.ID,
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
 		DeletedAt: category.DeletedAt,
@@ -235,12 +233,10 @@ func ToCategoryListResponse(categories []models.Category) []httpmodels.CategoryR
 
 	for _, category := range categories {
 		categoryResponse := httpmodels.CategoryResponse{
-			CourseCategoryResponse: httpmodels.CourseCategoryResponse{
-				ID: category.ID,
-				CategoryFields: httpmodels.CategoryFields{
-					Name: category.Name,
-				},
+			CategoryFields: httpmodels.CategoryFields{
+				Name: category.Name,
 			},
+			ID:        category.ID,
 			CreatedAt: category.CreatedAt,
 			UpdatedAt: category.UpdatedAt,
 			DeletedAt: category.DeletedAt,

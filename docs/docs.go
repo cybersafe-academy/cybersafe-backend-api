@@ -651,7 +651,7 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/courses.CategoryResponse"
+                                                "$ref": "#/definitions/httpmodels.CategoryResponse"
                                             }
                                         }
                                     }
@@ -703,6 +703,97 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/categories/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Update category by ID",
+                "parameters": [
+                    {
+                        "description": "Request payload for updating category information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CategoryRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of category to be updated",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Delete a category by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the category to be deleted",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -982,13 +1073,6 @@ const docTemplate = `{
                 ],
                 "summary": "Fetch courses",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of course",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "Request payload for creating a review",
                         "name": "request",
@@ -1673,6 +1757,17 @@ const docTemplate = `{
                 }
             }
         },
+        "httpmodels.CourseCategoryResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "httpmodels.QuestionRequest": {
             "type": "object",
             "properties": {
@@ -1707,9 +1802,6 @@ const docTemplate = `{
         "httpmodels.RequestContent": {
             "type": "object",
             "properties": {
-                "categoryID": {
-                    "type": "string"
-                },
                 "contentInHours": {
                     "type": "number"
                 },
@@ -1746,7 +1838,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "category": {
-                    "$ref": "#/definitions/httpmodels.CategoryResponse"
+                    "$ref": "#/definitions/httpmodels.CourseCategoryResponse"
                 },
                 "contentInHours": {
                     "type": "number"
