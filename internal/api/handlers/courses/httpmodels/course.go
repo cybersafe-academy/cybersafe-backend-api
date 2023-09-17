@@ -66,10 +66,13 @@ type CourseByCategory struct {
 type RawCoursesByCategory struct {
 	CourseID uuid.UUID
 
-	CourseTitle        string
-	CourseThumbnailURL string
-	CourseContentURL   string
-	AvgRating          float64
+	CourseTitle          string
+	CourseThumbnailURL   string
+	CourseContentURL     string
+	AvgRating            float64
+	CourseDescription    string
+	CourseLevel          string
+	CourseContentInHours float64
 
 	CategoryName string
 }
