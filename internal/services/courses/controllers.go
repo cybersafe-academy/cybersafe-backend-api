@@ -96,3 +96,14 @@ func (cm *CoursesManagerDB) GetEnrollmentProgress(courseID, userID uuid.UUID) (m
 
 	return enrollment, result.Error
 }
+
+func (cm *CoursesManagerDB) GetQuestionsByCourseID(courseID uuid.UUID) ([]models.Question, error) {
+	var questions []models.Question
+
+	result := cm.DBConnection.
+		Preload(clause.Associations).
+		Where("course_id = ?", courseID).
+		Find(&questions)
+
+	return questions, result.Error
+}

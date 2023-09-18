@@ -15,4 +15,5 @@ type CoursesManager interface {
 	IsRightAnswer(*models.Answer) bool
 	UpdateEnrollmentProgress(uuid.UUID, uuid.UUID)
 	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
+	GetQuestionsByCourseID(uuid.UUID) ([]models.Question, error)
 }

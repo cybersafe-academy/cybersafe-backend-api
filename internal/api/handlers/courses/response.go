@@ -135,7 +135,7 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 	return reviewResponse
 }
 
-func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
+func ToEnrollmentResponse(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
 
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{
@@ -145,4 +145,34 @@ func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResp
 	}
 
 	return enrollmentResponse
+}
+
+func ToQuestionsListResponse(questions []models.Question) []httpmodels.QuestionResponse {
+	var questionsResponse []httpmodels.QuestionResponse
+
+	for _, question := range questions {
+
+		questionResponse := httpmodels.QuestionResponse{
+			QuestionFields: httpmodels.QuestionFields{
+				Wording: question.Wording,
+			}}
+
+		questionsResponse = append(questionsResponse, questionResponse)
+
+		var answerResponse []httpmodels.AnswerResponse
+
+		for _, answer := range question.Answers {
+			answerResponse = append(answerResponse, httpmodels.AnswerResponse{
+				AnswerFields: httpmodels.AnswerFields{
+					Text: answer.Text,
+				},
+			})
+		}
+
+		questionResponse.Answers = answerResponse
+
+	}
+
+	return questionsResponse
+
 }

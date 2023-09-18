@@ -17,7 +17,7 @@ type AnswerResponse struct {
 }
 
 type AnswerFields struct {
-	IsCorrect bool   `json:"isCorrect"`
+	IsCorrect bool   `json:"-"`
 	Text      string `json:"text"`
 }
 

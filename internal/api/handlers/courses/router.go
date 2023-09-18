@@ -28,7 +28,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
-		r.Post("/question", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/questions", func(w http.ResponseWriter, r *http.Request) {
 			AddAnswer(components.HttpComponents(w, r, c))
 		})
 		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
