@@ -16,6 +16,7 @@ type CoursesManagerMock struct {
 	UpdateEnrollmentProgressMock func(uuid.UUID, uuid.UUID)
 	GetEnrollmentProgressMock    func(uuid.UUID, uuid.UUID) (models.Enrollment, error)
 	GetQuestionsByCourseIDMock   func(uuid.UUID) ([]models.Question, error)
+	GetReviewsByCourseIDMock     func(uuid.UUID) ([]models.Review, error)
 }
 
 func (cm *CoursesManagerMock) ListWithPagination(limit, offset int) ([]models.Course, int) {
@@ -49,6 +50,11 @@ func (cm *CoursesManagerMock) UpdateEnrollmentProgress(courseID, userID uuid.UUI
 func (cm *CoursesManagerMock) GetEnrollmentProgress(courseID, userID uuid.UUID) (models.Enrollment, error) {
 	return cm.GetEnrollmentProgressMock(courseID, userID)
 }
+
 func (cm *CoursesManagerMock) GetQuestionsByCourseID(courseID uuid.UUID) ([]models.Question, error) {
 	return cm.GetQuestionsByCourseIDMock(courseID)
+}
+
+func (cm *CoursesManagerMock) GetReviewsByCourseID(courseID uuid.UUID) ([]models.Review, error) {
+	return cm.GetReviewsByCourseIDMock(courseID)
 }

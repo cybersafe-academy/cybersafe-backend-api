@@ -155,9 +155,9 @@ func ToQuestionsListResponse(questions []models.Question) []httpmodels.QuestionR
 		questionResponse := httpmodels.QuestionResponse{
 			QuestionFields: httpmodels.QuestionFields{
 				Wording: question.Wording,
-			}}
-
-		questionsResponse = append(questionsResponse, questionResponse)
+			},
+			ID: question.ID,
+		}
 
 		var answerResponse []httpmodels.AnswerResponse
 
@@ -166,13 +166,41 @@ func ToQuestionsListResponse(questions []models.Question) []httpmodels.QuestionR
 				AnswerFields: httpmodels.AnswerFields{
 					Text: answer.Text,
 				},
+				ID: answer.ID,
 			})
 		}
 
 		questionResponse.Answers = answerResponse
+		questionsResponse = append(questionsResponse, questionResponse)
 
 	}
 
 	return questionsResponse
+
+}
+
+func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse {
+	var reviewsResponse []httpmodels.ReviewResponse
+
+	for _, review := range reviews {
+
+		reviewResponse := httpmodels.ReviewResponse{
+			ReviewFields: httpmodels.ReviewFields{
+				Comment: review.Comment,
+				Rating:  review.Rating,
+			},
+			CreatedAt: review.CreatedAt,
+			UpdatedAt: review.UpdatedAt,
+			DeletedAt: review.DeletedAt,
+			CourseID:  review.CourseID,
+			UserID:    review.UserID,
+			ID:        review.ID,
+		}
+
+		reviewsResponse = append(reviewsResponse, reviewResponse)
+
+	}
+
+	return reviewsResponse
 
 }

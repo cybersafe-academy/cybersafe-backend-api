@@ -126,8 +126,6 @@ definitions:
     type: object
   httpmodels.AnswerRequest:
     properties:
-      isCorrect:
-        type: boolean
       text:
         type: string
     type: object
@@ -135,8 +133,6 @@ definitions:
     properties:
       id:
         type: string
-      isCorrect:
-        type: boolean
       text:
         type: string
     type: object
@@ -788,7 +784,31 @@ paths:
       summary: Get Enrollment info
       tags:
       - Course
-  /courses/{id}/question:
+  /courses/{id}/questions:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get the questions by the course ID
+      tags:
+      - Course
     post:
       parameters:
       - description: Request payload for creating a review
@@ -815,6 +835,11 @@ paths:
   /courses/{id}/review:
     post:
       parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Request payload for creating a review
         in: body
         name: request
@@ -836,6 +861,31 @@ paths:
       - Bearer: []
       - Language: []
       summary: Create review
+      tags:
+      - Course
+  /courses/{id}/reviews:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get the reviews by the course ID
       tags:
       - Course
   /users:

@@ -200,12 +200,13 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 //	@Success	200		{object}	httpmodels.ReviewResponse	"OK"
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		id		path		string							true	"ID of course"
 //	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/review [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseReview(c *components.HTTPComponents) {
-	courseID := c.HttpRequest.URL.Query().Get("id")
+	courseID := chi.URLParam(c.HttpRequest, "id")
 	if !govalidator.IsUUID(courseID) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
 		return
@@ -372,5 +373,41 @@ func GetQuestionsByCourseID(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, ToQuestionsListResponse(questions), http.StatusNoContent)
+	components.HttpResponseWithPayload(c, ToQuestionsListResponse(questions), http.StatusOK)
+}
+
+// GetReviewsByCourseID
+//
+//	@Summary	Get the reviews by the course ID
+//
+//	@Tags		Course
+//	@success	200		"No content"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/reviews [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetReviewsByCourseID(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	reviews, err := c.Components.Resources.Courses.GetReviewsByCourseID(uuid.MustParse(courseID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToReviewsListResponse(reviews), http.StatusOK)
 }

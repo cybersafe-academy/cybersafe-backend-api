@@ -783,7 +783,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/question": {
+        "/courses/{id}/questions": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get the questions by the course ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Course not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -840,6 +880,13 @@ const docTemplate = `{
                 "summary": "Create review",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Request payload for creating a review",
                         "name": "request",
                         "in": "body",
@@ -858,6 +905,48 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/reviews": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get the reviews by the course ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Course not found"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1412,9 +1501,6 @@ const docTemplate = `{
         "httpmodels.AnswerRequest": {
             "type": "object",
             "properties": {
-                "isCorrect": {
-                    "type": "boolean"
-                },
                 "text": {
                     "type": "string"
                 }
@@ -1425,9 +1511,6 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
-                },
-                "isCorrect": {
-                    "type": "boolean"
                 },
                 "text": {
                     "type": "string"

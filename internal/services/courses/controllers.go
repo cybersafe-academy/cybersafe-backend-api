@@ -107,3 +107,14 @@ func (cm *CoursesManagerDB) GetQuestionsByCourseID(courseID uuid.UUID) ([]models
 
 	return questions, result.Error
 }
+
+func (cm *CoursesManagerDB) GetReviewsByCourseID(courseID uuid.UUID) ([]models.Review, error) {
+	var reviews []models.Review
+
+	result := cm.DBConnection.
+		Preload(clause.Associations).
+		Where("course_id = ?", courseID).
+		Find(&reviews)
+
+	return reviews, result.Error
+}
