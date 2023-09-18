@@ -689,6 +689,34 @@ paths:
       summary: Create a course
       tags:
       - Course
+  /courses/{courseID}/comments/{commentID}/likes:
+    post:
+      parameters:
+      - description: ID of course
+        in: path
+        name: courseID
+        required: true
+        type: string
+      - description: ID of course
+        in: path
+        name: commentID
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Add like to comment
+      tags:
+      - Course
   /courses/{id}:
     delete:
       parameters:
@@ -768,7 +796,7 @@ paths:
       summary: Update course by ID
       tags:
       - Course
-  /courses/{id}/comment:
+  /courses/{id}/comments:
     get:
       parameters:
       - description: ID of course
@@ -819,30 +847,7 @@ paths:
       summary: Add a comment to a course
       tags:
       - Course
-  /courses/{id}/comment/like:
-    post:
-      parameters:
-      - description: ID of course
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No content
-        "400":
-          description: Bad Request
-        default:
-          description: Standard error example object
-          schema:
-            $ref: '#/definitions/components.Response'
-      security:
-      - Bearer: []
-      - Language: []
-      summary: Add like to comment
-      tags:
-      - Course
-  /courses/{id}/enrollment:
+  /courses/{id}/enrollments:
     get:
       parameters:
       - description: ID of course
@@ -865,7 +870,7 @@ paths:
       summary: Get Enrollment info
       tags:
       - Course
-  /courses/{id}/question:
+  /courses/{id}/questions:
     post:
       parameters:
       - description: Request payload for creating a review
@@ -889,7 +894,7 @@ paths:
       summary: Add answer to question
       tags:
       - Course
-  /courses/{id}/review:
+  /courses/{id}/reviews:
     post:
       parameters:
       - description: Request payload for creating a review

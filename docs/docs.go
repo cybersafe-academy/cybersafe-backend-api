@@ -610,6 +610,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/courses/{courseID}/comments/{commentID}/likes": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Add like to comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "courseID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "commentID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{id}": {
             "get": {
                 "security": [
@@ -741,7 +787,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/comment": {
+        "/courses/{id}/comments": {
             "get": {
                 "security": [
                     {
@@ -826,46 +872,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/comment/like": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "Add like to comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of course",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No content"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/courses/{id}/enrollment": {
+        "/courses/{id}/enrollments": {
             "get": {
                 "security": [
                     {
@@ -904,7 +911,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/question": {
+        "/courses/{id}/questions": {
             "post": {
                 "security": [
                     {
@@ -945,7 +952,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/review": {
+        "/courses/{id}/reviews": {
             "post": {
                 "security": [
                     {

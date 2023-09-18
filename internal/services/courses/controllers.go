@@ -104,12 +104,13 @@ func (cm *CoursesManagerDB) AddLikeToComment(commentID, userID uuid.UUID) error 
 
 	stmnt := cm.DBConnection.
 		Where("comment_id = ?", commentID).
-		Where("user_id_id = ?", userID)
+		Where("user_id = ?", userID)
 
 	result := stmnt.
 		First(&models.Comment{})
 
 	if result.Error == nil {
+		// If the comment was found, remove it
 		result := stmnt.
 			Delete(&models.Like{})
 

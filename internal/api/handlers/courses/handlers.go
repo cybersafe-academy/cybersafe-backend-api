@@ -201,7 +201,7 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response				"Standard error example object"
 //	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/review [post]
+//	@Router		/courses/{id}/reviews [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseReview(c *components.HTTPComponents) {
@@ -250,7 +250,7 @@ func CreateCourseReview(c *components.HTTPComponents) {
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response			"Standard error example object"
 //	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/question [post]
+//	@Router		/courses/{id}/questions [post]
 //	@Security	Bearer
 //	@Security	Language
 func AddAnswer(c *components.HTTPComponents) {
@@ -306,7 +306,7 @@ func AddAnswer(c *components.HTTPComponents) {
 //	@Response	default	{object}	components.Response			"Standard error example object"
 //	@Param		id		path		string						true	"ID of course"
 //	@Param		request	body		httpmodels.CommentRequest	true	"Request payload for creating a comment"
-//	@Router		/courses/{id}/comment [post]
+//	@Router		/courses/{id}/comments [post]
 //	@Security	Bearer
 //	@Security	Language
 func AddComment(c *components.HTTPComponents) {
@@ -353,7 +353,7 @@ func AddComment(c *components.HTTPComponents) {
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of course"
-//	@Router		/courses/{id}/comment [get]
+//	@Router		/courses/{id}/comments [get]
 //	@Security	Bearer
 //	@Security	Language
 func GetCommentsByCourse(c *components.HTTPComponents) {
@@ -375,18 +375,20 @@ func GetCommentsByCourse(c *components.HTTPComponents) {
 //	@Summary	Add like to comment
 //
 //	@Tags		Course
-//	@success	204		"No content"
-//	@Failure	400		"Bad Request"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		id		path		string				true	"ID of course"
-//	@Router		/courses/{id}/comment/like [post]
+//	@success	204			"No content"
+//	@Failure	400			"Bad Request"
+//	@Response	default		{object}	components.Response	"Standard error example object"
+//	@Param		courseID	path		string				true	"ID of course"
+//	@Param		commentID	path		string				true	"ID of course"
+//	@Router		/courses/{courseID}/comments/{commentID}/likes [post]
 //	@Security	Bearer
 //	@Security	Language
 func AddLikeToComment(c *components.HTTPComponents) {
 
-	courseID := chi.URLParam(c.HttpRequest, "id")
+	courseID := chi.URLParam(c.HttpRequest, "courseID")
+	commentID := chi.URLParam(c.HttpRequest, "commentID")
 
-	if !govalidator.IsUUID(courseID) {
+	if !govalidator.IsUUID(courseID) || !govalidator.IsUUID(commentID) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
 		return
 	}
@@ -397,18 +399,7 @@ func AddLikeToComment(c *components.HTTPComponents) {
 		return
 	}
 
-	var commentRequest httpmodels.CommentRequest
-	err := components.ValidateRequest(c, &commentRequest)
-	if err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, err)
-		return
-	}
-
-	comment := commentRequest.ToEntity()
-	comment.UserID = currentUser.ID
-	comment.CourseID = uuid.MustParse(courseID)
-
-	err = c.Components.Resources.Courses.AddLikeToComment(comment)
+	err := c.Components.Resources.Courses.AddLikeToComment(uuid.MustParse(commentID), currentUser.ID)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
@@ -426,7 +417,7 @@ func AddLikeToComment(c *components.HTTPComponents) {
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of course"
-//	@Router		/courses/{id}/enrollment [get]
+//	@Router		/courses/{id}/enrollments [get]
 //	@Security	Bearer
 //	@Security	Language
 func GetEnrollmentInfo(c *components.HTTPComponents) {
