@@ -15,4 +15,7 @@ type CoursesManager interface {
 	IsRightAnswer(*models.Answer) bool
 	UpdateEnrollmentProgress(uuid.UUID, uuid.UUID)
 	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
+	AddComment(*models.Comment) error
+	ListCommentsByCourse(uuid.UUID) []models.Comment
+	AddLikeToComment(*models.Comment) error
 }

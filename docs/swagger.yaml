@@ -140,6 +140,11 @@ definitions:
       text:
         type: string
     type: object
+  httpmodels.CommentRequest:
+    properties:
+      text:
+        type: string
+    type: object
   httpmodels.ContentRequest:
     properties:
       URL:
@@ -763,6 +768,80 @@ paths:
       summary: Update course by ID
       tags:
       - Course
+  /courses/{id}/comment:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get comments by course
+      tags:
+      - Course
+    post:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request payload for creating a comment
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpmodels.CommentRequest'
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Add a comment to a course
+      tags:
+      - Course
+  /courses/{id}/comment/like:
+    post:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Add like to comment
+      tags:
+      - Course
   /courses/{id}/enrollment:
     get:
       parameters:
@@ -773,11 +852,9 @@ paths:
         type: string
       responses:
         "200":
-          description: No content
+          description: OK
         "400":
           description: Bad Request
-        "404":
-          description: Course not found
         default:
           description: Standard error example object
           schema:
@@ -809,7 +886,7 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: Correct Answer
+      summary: Add answer to question
       tags:
       - Course
   /courses/{id}/review:

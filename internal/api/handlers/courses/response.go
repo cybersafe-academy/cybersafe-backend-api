@@ -146,3 +146,22 @@ func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResp
 
 	return enrollmentResponse
 }
+
+func ToCommentsListResponse(comments []models.Comment) []httpmodels.CommentResponse {
+
+	var commentsResponse []httpmodels.CommentResponse
+
+	for _, comment := range comments {
+		commentsResponse = append(commentsResponse, httpmodels.CommentResponse{
+			ID: comment.ID,
+			CommentFields: httpmodels.CommentFields{
+				Text: comment.Text,
+			},
+			UserID:     comment.UserID,
+			CourseID:   comment.CourseID,
+			LikesCount: len(comment.Likes),
+		})
+	}
+
+	return commentsResponse
+}
