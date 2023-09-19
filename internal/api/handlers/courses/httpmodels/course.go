@@ -31,7 +31,7 @@ type CourseResponse struct {
 
 	Category CourseCategoryResponse `json:"category,omitempty"`
 
-	Questions []QuestionResponse `json:"questions"`
+	Questions []QuestionRequest `json:"questions"`
 }
 
 type ResponseContent struct {
@@ -48,7 +48,7 @@ type RequestContent struct {
 
 	CategoryID uuid.UUID `valid:"required"`
 
-	Contents []ContentRequest `json:"contents"`
+	Questions []QuestionRequest `json:"questions"`
 }
 
 type CourseExtraFields struct {
