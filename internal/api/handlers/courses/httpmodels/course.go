@@ -44,8 +44,8 @@ type ResponseContent struct {
 type RequestContent struct {
 	CourseFields
 
-	Contents  []ContentRequest
-	Questions []QuestionRequest
+	Contents  []ContentRequest  `json:"contents"`
+	Questions []QuestionRequest `json:"questions"`
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
