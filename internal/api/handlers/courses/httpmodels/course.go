@@ -31,7 +31,7 @@ type CourseResponse struct {
 
 	Category CourseCategoryResponse `json:"category,omitempty"`
 
-	Questions []QuestionRequest `json:"questions"`
+	Questions []QuestionResponse `json:"questions"`
 }
 
 type ResponseContent struct {
