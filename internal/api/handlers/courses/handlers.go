@@ -354,7 +354,7 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, ToEnrollmentResponse(enrollment), http.StatusNoContent)
+	components.HttpResponseWithPayload(c, ToEnrollmentRespose(enrollment), http.StatusNoContent)
 }
 
 // GetQuestionsByCourseID
