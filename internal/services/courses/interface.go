@@ -12,4 +12,9 @@ type CoursesManager interface {
 	Create(*models.Course) error
 	Delete(uuid.UUID) error
 	Update(*models.Course) (int, error)
+	IsRightAnswer(*models.Answer) bool
+	UpdateEnrollmentProgress(uuid.UUID, uuid.UUID)
+	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
+	GetQuestionsByCourseID(uuid.UUID) ([]models.Question, error)
+	GetReviewsByCourseID(uuid.UUID) ([]models.Review, error)
 }

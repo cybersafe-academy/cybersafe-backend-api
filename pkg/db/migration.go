@@ -14,6 +14,10 @@ func AutoMigrateDB() error {
 		&models.Content{},
 		&models.Company{},
 		&models.Review{},
+		&models.Enrollment{},
+		&models.Question{},
+		&models.Answer{},
+		&models.UserAnswer{},
 	}
 
 	err := db.AutoMigrate(modelsSlice...)

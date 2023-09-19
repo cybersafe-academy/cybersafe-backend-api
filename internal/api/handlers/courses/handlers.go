@@ -2,6 +2,7 @@ package courses
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
 
@@ -21,7 +22,7 @@ import (
 //	@Summary	List courses with paginated response
 //
 //	@Tags		Course
-//	@success	200		{array}	pagination.PaginationData{data=ResponseContent}	"OK"
+//	@success	200		{array}	pagination.PaginationData{data=httpmodels.ResponseContent}	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
@@ -53,8 +54,8 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //
 //	@Summary	Get course by ID
 //	@Tags		Course
-//	@Param		id		path		string			true	"ID of the course to be retrieved"
-//	@Success	200		{object}	ResponseContent	"OK"
+//	@Param		id		path		string						true	"ID of the course to be retrieved"
+//	@Success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Router		/courses/{id} [get]
@@ -88,15 +89,15 @@ func GetCourseByID(c *components.HTTPComponents) {
 //	@Summary	Create a course
 //
 //	@Tags		Course
-//	@Success	200		{object}	ResponseContent	"OK"
+//	@Success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		RequestContent		true	"Request payload for creating a new course"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.RequestContent	true	"Request payload for creating a new course"
 //	@Router		/courses [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseHandler(c *components.HTTPComponents) {
-	courseRequest := RequestContent{}
+	courseRequest := httpmodels.RequestContent{}
 	err := components.ValidateRequest(c, &courseRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -120,7 +121,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Delete a course by ID
 //
 //	@Tags		Course
-//	@success	204		"OK"
+//	@success	204		"No Content"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of the course to be deleted"
@@ -150,17 +151,17 @@ func DeleteCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Update course by ID
 //
 //	@Tags		Course
-//	@success	200		{object}	ResponseContent	"OK"
+//	@success	200		{object}	httpmodels.ResponseContent	"OK"
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"Course not found"
-//	@Response	default	{object}	components.Response	"Standard error example object"
-//	@Param		request	body		RequestContent		true	"Request payload for updating course information"
-//	@Param		id		path		string				true	"ID of course to be updated"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.RequestContent	true	"Request payload for updating course information"
+//	@Param		id		path		string						true	"ID of course to be updated"
 //	@Router		/courses/{id} [put]
 //	@Security	Bearer
 //	@Security	Language
 func UpdateCourseHandler(c *components.HTTPComponents) {
-	courseRequest := RequestContent{}
+	courseRequest := httpmodels.RequestContent{}
 	err := components.ValidateRequest(c, &courseRequest)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -196,23 +197,28 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 //	@Summary	Create review
 //
 //	@Tags		Course
-//	@Success	200		{object}	ReviewResponse	"OK"
+//	@Success	200		{object}	httpmodels.ReviewResponse	"OK"
 //	@Failure	409		"Conflict"
-//	@Response	default	{object}	components.Response		"Standard error example object"
-//	@Param		request	body		ReviewRequestContent	true	"Request payload for creating a review"
+//	@Response	default	{object}	components.Response				"Standard error example object"
+//	@Param		id		path		string							true	"ID of course"
+//	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/review [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseReview(c *components.HTTPComponents) {
+	courseID := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
 
 	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
-
 	if !ok {
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
 
-	var requestContent ReviewRequestContent
+	var requestContent httpmodels.ReviewRequestContent
 	err := components.ValidateRequest(c, &requestContent)
 	if err != nil {
 		components.HttpErrorResponse(c, http.StatusBadRequest, err)
@@ -221,6 +227,7 @@ func CreateCourseReview(c *components.HTTPComponents) {
 
 	review := requestContent.ToEntityReview()
 	review.UserID = user.ID
+	review.CourseID = uuid.MustParse(courseID)
 
 	err = c.Components.Resources.Reviews.Create(review)
 	if err != nil {
@@ -233,4 +240,174 @@ func CreateCourseReview(c *components.HTTPComponents) {
 		}
 	}
 	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
+}
+
+// AddAnswer
+//
+//	@Summary	Correct Answer
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
+//	@Router		/courses/{id}/questions [post]
+//	@Security	Bearer
+//	@Security	Language
+func AddAnswer(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	var addAnswerRequest httpmodels.AddAnswerRequest
+	err := components.ValidateRequest(c, &addAnswerRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	err = c.Components.Resources.Answers.SaveUserAnswer(&models.UserAnswer{
+		QuestionID: addAnswerRequest.QuestionID,
+		AnswerID:   addAnswerRequest.AnswerID,
+		UserID:     currentUser.ID,
+	})
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrUserAlreadyAnswerdQuestion)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	c.Components.Resources.Courses.UpdateEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// GetEnrollmentInfo
+//
+//	@Summary	Get Enrollment info
+//
+//	@Tags		Course
+//	@success	200		"No content"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/enrollment [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetEnrollmentInfo(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToEnrollmentResponse(enrollment), http.StatusNoContent)
+}
+
+// GetQuestionsByCourseID
+//
+//	@Summary	Get the questions by the course ID
+//
+//	@Tags		Course
+//	@success	200		"No content"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/questions [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetQuestionsByCourseID(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	questions, err := c.Components.Resources.Courses.GetQuestionsByCourseID(uuid.MustParse(courseID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToQuestionsListResponse(questions), http.StatusOK)
+}
+
+// GetReviewsByCourseID
+//
+//	@Summary	Get the reviews by the course ID
+//
+//	@Tags		Course
+//	@success	200		"No content"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Course not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/reviews [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetReviewsByCourseID(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	reviews, err := c.Components.Resources.Courses.GetReviewsByCourseID(uuid.MustParse(courseID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToReviewsListResponse(reviews), http.StatusOK)
 }

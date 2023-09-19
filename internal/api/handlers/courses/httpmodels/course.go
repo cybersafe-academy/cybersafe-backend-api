@@ -1,4 +1,4 @@
-package courses
+package httpmodels
 
 import (
 	"cybersafe-backend-api/internal/models"
@@ -28,23 +28,8 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
-	Contents []ContentResponse `json:"contents"`
-}
-
-type ContentRequest struct {
-	ContentFields
-}
-
-type ContentResponse struct {
-	ContentFields
-
-	ID uuid.UUID `json:"id" valid:"uuid, required"`
-}
-
-type ContentFields struct {
-	Title       string `json:"title" valid:"type(string), required"`
-	ContentType string `json:"contentType" valid:"type(string), required"`
-	URL         string `json:"URL" valid:"type(string)"`
+	Contents  []ContentResponse  `json:"contents"`
+	Questions []QuestionResponse `json:"questions"`
 }
 
 type ResponseContent struct {
@@ -59,7 +44,8 @@ type ResponseContent struct {
 type RequestContent struct {
 	CourseFields
 
-	Contents []ContentRequest
+	Contents  []ContentRequest  `json:"contents"`
+	Questions []QuestionRequest `json:"questions"`
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
@@ -75,38 +61,6 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 	}
 
 	_, err := govalidator.ValidateStruct(*re)
-	if err != nil {
-		return err
-	}
-
-	return err
-}
-
-type ReviewFields struct {
-	Comment string `json:"comment" valid:"required"`
-	Rating  int    `json:"rating" valid:"range(1|5), required"`
-
-	CourseID uuid.UUID `json:"courseID" valid:"required"`
-}
-
-type ReviewResponse struct {
-	ReviewFields
-
-	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `json:"deletedAt"`
-
-	UserID uuid.UUID `json:"userID"`
-}
-
-type ReviewRequestContent struct {
-	ReviewFields
-}
-
-func (rre *ReviewRequestContent) Bind(_ *http.Request) error {
-	_, err := govalidator.ValidateStruct(*rre)
-
 	if err != nil {
 		return err
 	}
@@ -131,14 +85,21 @@ func (re *RequestContent) ToEntity() *models.Course {
 		})
 	}
 
-	return course
-}
+	for _, question := range re.Questions {
+		questionModel := models.Question{
+			Wording: question.Wording,
+		}
 
-func (rrc *ReviewRequestContent) ToEntityReview() *models.Review {
-	review := &models.Review{
-		Comment:  rrc.Comment,
-		Rating:   rrc.Rating,
-		CourseID: rrc.CourseID,
+		for _, answer := range question.Answers {
+			questionModel.Answers = append(questionModel.Answers, models.Answer{
+				Text:      answer.Text,
+				IsCorrect: answer.IsCorrect,
+			})
+		}
+
+		course.Questions = append(course.Questions, questionModel)
 	}
-	return review
+
+	return course
+
 }

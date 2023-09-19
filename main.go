@@ -20,10 +20,10 @@ import (
 //	@license.name	MIT
 //	@license.url	https://opensource.org/license/mit/
 
-//	@securityDefinitions.apikey	Bearer
-//	@in							header
-//	@name						Authorization
-//	@description				Insert the token withou "Bearer" prefix.
+// @securityDefinitions.apikey	Bearer
+// @in							header
+// @name						Authorization
+// @description				Insert the token withou "Bearer" prefix.
 func main() {
 
 	c := components.Config()

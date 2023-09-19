@@ -28,6 +28,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
+
 	})
 
 	subRouter.Group(func(r chi.Router) {
@@ -38,6 +39,19 @@ func SetupRoutes(c *components.Components) http.Handler {
 		})
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			GetCourseByID(components.HttpComponents(w, r, c))
+		})
+
+		r.Post("/questions", func(w http.ResponseWriter, r *http.Request) {
+			AddAnswer(components.HttpComponents(w, r, c))
+		})
+		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrollmentInfo(components.HttpComponents(w, r, c))
+		})
+		r.Get("/{id}/questions", func(w http.ResponseWriter, r *http.Request) {
+			GetQuestionsByCourseID(components.HttpComponents(w, r, c))
+		})
+		r.Get("/{id}/reviews", func(w http.ResponseWriter, r *http.Request) {
+			GetReviewsByCourseID(components.HttpComponents(w, r, c))
 		})
 	})
 

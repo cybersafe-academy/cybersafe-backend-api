@@ -44,6 +44,9 @@ var (
 	//Course
 	ErrInvalidContentType = errors.New("invalid content type")
 
+	//Answer
+	ErrUserAlreadyAnswerdQuestion = errors.New("user already answerd question")
+
 	//Personality Test
 	ErrInvalidMBTIType = errors.New("invalid MBTI type")
 )

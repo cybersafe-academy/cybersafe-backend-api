@@ -1,6 +1,7 @@
 package services
 
 import (
+	"cybersafe-backend-api/internal/services/answers"
 	"cybersafe-backend-api/internal/services/companies"
 	"cybersafe-backend-api/internal/services/courses"
 	"cybersafe-backend-api/internal/services/reviews"
@@ -15,5 +16,6 @@ func Config(conn *gorm.DB) Resources {
 		Courses:   courses.Config(conn),
 		Companies: companies.Config(conn),
 		Reviews:   reviews.Config(conn),
+		Answers:   answers.Config(conn),
 	}
 }
