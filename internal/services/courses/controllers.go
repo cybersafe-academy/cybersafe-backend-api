@@ -52,6 +52,7 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 		FROM categories ct
 		LEFT JOIN courses c ON c.category_id = ct.id
 		LEFT JOIN reviews r ON r.course_id = c.id
+		WHERE c.deleted_at IS NULL
 	GROUP BY ct.name, c.id, c.title, c.description, c.content_in_hours, c.thumbnail_url, c.level;
 	`).Scan(&results)
 
@@ -79,6 +80,15 @@ func (cm *CoursesManagerDB) Delete(id uuid.UUID) error {
 }
 
 func (cm *CoursesManagerDB) Update(course *models.Course) (int, error) {
+	questions := course.Questions
+
+	err := cm.DBConnection.Model(course).Association("Questions").Clear()
+	if err != nil {
+		return 0, err
+	}
+
+	course.Questions = questions
+
 	result := cm.DBConnection.Model(course).Clauses(clause.Returning{}).Updates(course)
 	return int(result.RowsAffected), result.Error
 }
