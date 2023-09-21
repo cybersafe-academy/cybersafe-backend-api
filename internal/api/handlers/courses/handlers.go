@@ -362,7 +362,7 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 //	@Summary	Get the questions by the course ID
 //
 //	@Tags		Course
-//	@success	200		"No content"
+//	@success	200		{array}	httpmodels.QuestionResponse
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"Course not found"
 //	@Response	default	{object}	components.Response	"Standard error example object"

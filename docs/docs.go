@@ -1036,7 +1036,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "No content"
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/httpmodels.QuestionResponse"
+                            }
+                        }
                     },
                     "400": {
                         "description": "Bad Request"
