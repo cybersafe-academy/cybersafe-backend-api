@@ -126,6 +126,8 @@ definitions:
     type: object
   httpmodels.AnswerRequest:
     properties:
+      isCorrect:
+        type: boolean
       text:
         type: string
     type: object
@@ -790,7 +792,11 @@ paths:
         type: string
       responses:
         "200":
-          description: No content
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/httpmodels.QuestionResponse'
+            type: array
         "400":
           description: Bad Request
         "404":
