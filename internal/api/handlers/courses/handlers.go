@@ -27,7 +27,7 @@ import (
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
 //	@Param		limit	query		int					false	"Limit of elements per page"
-//	@Router		/courses [get]
+//	@Router		/courses/management [get]
 //	@Security	Bearer
 //	@Security	Language
 func ListCoursesHandler(c *components.HTTPComponents) {

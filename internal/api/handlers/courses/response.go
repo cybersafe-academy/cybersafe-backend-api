@@ -33,18 +33,24 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 		}
 
 		for _, question := range course.Questions {
-			questionModel := models.Question{
-				Wording: question.Wording,
+			questionModel := httpmodels.QuestionResponse{
+				QuestionFields: httpmodels.QuestionFields{
+					Wording: question.Wording,
+				},
+				ID: question.CourseID,
 			}
 
 			for _, answer := range question.Answers {
-				questionModel.Answers = append(questionModel.Answers, models.Answer{
-					Text:      answer.Text,
-					IsCorrect: answer.IsCorrect,
+				questionModel.Answers = append(questionModel.Answers, httpmodels.AnswerResponse{
+					AnswerFields: httpmodels.AnswerFields{
+						IsCorrect: answer.IsCorrect,
+						Text:      answer.Text,
+					},
+					ID: answer.ID,
 				})
 			}
 
-			course.Questions = append(course.Questions, questionModel)
+			courseResponse.Questions = append(courseResponse.Questions, questionModel)
 		}
 
 		coursesResponse = append(coursesResponse, courseResponse)
