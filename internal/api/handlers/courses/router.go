@@ -31,14 +31,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/question", func(w http.ResponseWriter, r *http.Request) {
-			AddAnswer(components.HttpComponents(w, r, c))
-		})
-
-		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
-			GetEnrollmentInfo(components.HttpComponents(w, r, c))
-		})
-
 		r.Post("/categories", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseCategory(components.HttpComponents(w, r, c))
 		})
@@ -55,12 +47,12 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Group(func(r chi.Router) {
 		r.Use(middlewares.Authorizer(c))
 
-		r.Get("/management", func(w http.ResponseWriter, r *http.Request) {
-			ListCoursesHandler(components.HttpComponents(w, r, c))
-		})
+		// r.Get("/management", func(w http.ResponseWriter, r *http.Request) {
+		// 	ListCoursesHandler(components.HttpComponents(w, r, c))
+		// })
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			FetchCoursesHandler(components.HttpComponents(w, r, c))
+			ListCoursesHandler(components.HttpComponents(w, r, c))
 		})
 
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {

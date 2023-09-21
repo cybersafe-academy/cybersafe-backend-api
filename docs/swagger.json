@@ -1720,6 +1720,9 @@
         "httpmodels.AnswerRequest": {
             "type": "object",
             "properties": {
+                "isCorrect": {
+                    "type": "boolean"
+                },
                 "text": {
                     "type": "string"
                 }
@@ -1730,6 +1733,9 @@
             "properties": {
                 "id": {
                     "type": "string"
+                },
+                "isCorrect": {
+                    "type": "boolean"
                 },
                 "text": {
                     "type": "string"
@@ -1930,7 +1936,18 @@
                 "updatedAt": {
                     "type": "string"
                 },
-                "userID": {
+                "user": {
+                    "$ref": "#/definitions/httpmodels.UserReviewFields"
+                }
+            }
+        },
+        "httpmodels.UserReviewFields": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

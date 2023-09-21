@@ -1729,6 +1729,9 @@ const docTemplate = `{
         "httpmodels.AnswerRequest": {
             "type": "object",
             "properties": {
+                "isCorrect": {
+                    "type": "boolean"
+                },
                 "text": {
                     "type": "string"
                 }
@@ -1739,6 +1742,9 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
+                },
+                "isCorrect": {
+                    "type": "boolean"
                 },
                 "text": {
                     "type": "string"
@@ -1939,7 +1945,18 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
-                "userID": {
+                "user": {
+                    "$ref": "#/definitions/httpmodels.UserReviewFields"
+                }
+            }
+        },
+        "httpmodels.UserReviewFields": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -2053,8 +2070,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

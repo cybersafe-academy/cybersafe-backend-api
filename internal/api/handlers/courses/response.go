@@ -117,7 +117,10 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 			Rating:  review.Rating,
 		},
 		CourseID: review.CourseID,
-		UserID:   review.UserID,
+		User: httpmodels.UserReviewFields{
+			ID:   review.User.ID,
+			Name: review.User.Name,
+		},
 	}
 
 	return reviewResponse
@@ -194,8 +197,11 @@ func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse 
 			UpdatedAt: review.UpdatedAt,
 			DeletedAt: review.DeletedAt,
 			CourseID:  review.CourseID,
-			UserID:    review.UserID,
-			ID:        review.ID,
+			User: httpmodels.UserReviewFields{
+				ID:   review.User.ID,
+				Name: review.User.Name,
+			},
+			ID: review.ID,
 		}
 
 		reviewsResponse = append(reviewsResponse, reviewResponse)

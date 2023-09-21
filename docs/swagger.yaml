@@ -126,6 +126,8 @@ definitions:
     type: object
   httpmodels.AnswerRequest:
     properties:
+      isCorrect:
+        type: boolean
       text:
         type: string
     type: object
@@ -133,6 +135,8 @@ definitions:
     properties:
       id:
         type: string
+      isCorrect:
+        type: boolean
       text:
         type: string
     type: object
@@ -263,7 +267,14 @@ definitions:
         type: integer
       updatedAt:
         type: string
-      userID:
+      user:
+        $ref: '#/definitions/httpmodels.UserReviewFields'
+    type: object
+  httpmodels.UserReviewFields:
+    properties:
+      id:
+        type: string
+      name:
         type: string
     type: object
   pagination.PaginationData:
