@@ -19,9 +19,8 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 
 	cm.DBConnection.
 		Table("courses").
-		Preload("Contents").
 		Preload("Reviews").
-		Preload("Categories").
+		Preload("Category").
 		Preload("Questions").
 		Preload("Questions.Answers").
 		Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
