@@ -23,14 +23,15 @@ var (
 type User struct {
 	Shared
 
-	Name      string
-	Role      string `gorm:"default:'default'"`
-	Email     string `gorm:"unique"`
-	BirthDate time.Time
-	CPF       string `gorm:"unique;default:null"`
-	Password  string
-	MBTIType  string
-	Enabled   bool `gorm:"default:false;not null"`
+	Name              string
+	Role              string `gorm:"default:'default'"`
+	Email             string `gorm:"unique"`
+	BirthDate         time.Time
+	CPF               string `gorm:"unique;default:null"`
+	ProfilePictureURL string
+	Password          string
+	MBTIType          string
+	Enabled           bool `gorm:"default:false;not null"`
 
 	Enrollments []Enrollment `gorm:"foreignKey:UserID"`
 }

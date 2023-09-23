@@ -52,7 +52,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		// })
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			ListCoursesHandler(components.HttpComponents(w, r, c))
+			FetchCoursesHandler(components.HttpComponents(w, r, c))
 		})
 
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {

@@ -1,11 +1,19 @@
 package courses
 
-import "cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
+import (
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
+
+	"github.com/google/uuid"
+)
 
 func GroupCoursesByCategory(rawCourses []httpmodels.RawCoursesByCategory) httpmodels.CourseByCategoryResponse {
 	responseMap := make(httpmodels.CourseByCategoryResponse)
 
 	for _, course := range rawCourses {
+		if course.CourseID == uuid.Nil {
+			continue
+		}
+
 		categoryName := course.CategoryName
 
 		courseData := map[string]any{
