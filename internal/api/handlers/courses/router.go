@@ -47,12 +47,12 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Group(func(r chi.Router) {
 		r.Use(middlewares.Authorizer(c))
 
-		// r.Get("/management", func(w http.ResponseWriter, r *http.Request) {
-		// 	ListCoursesHandler(components.HttpComponents(w, r, c))
-		// })
-
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			FetchCoursesHandler(components.HttpComponents(w, r, c))
+		})
+
+		r.Get("/management", func(w http.ResponseWriter, r *http.Request) {
+			ListCoursesHandler(components.HttpComponents(w, r, c))
 		})
 
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {

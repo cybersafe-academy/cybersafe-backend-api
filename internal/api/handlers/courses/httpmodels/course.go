@@ -23,7 +23,7 @@ type CourseFields struct {
 type CourseResponse struct {
 	CourseFields
 
-	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
+	ID        uuid.UUID      `json:"id"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
@@ -37,7 +37,7 @@ type CourseResponse struct {
 type ResponseContent struct {
 	CourseResponse
 
-	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
+	ID        uuid.UUID      `json:"id"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
