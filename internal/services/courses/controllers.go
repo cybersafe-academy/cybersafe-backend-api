@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
 
 	"github.com/google/uuid"
@@ -13,14 +14,15 @@ type CoursesManagerDB struct {
 }
 
 func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.CourseExtraFields, int) {
-
 	var courses []models.CourseExtraFields
 	var count int64
 
 	cm.DBConnection.
 		Table("courses").
-		Preload("Contents").
 		Preload("Reviews").
+		Preload("Category").
+		Preload("Questions").
+		Preload("Questions.Answers").
 		Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
 		Select("courses.*, avg(reviews.rating) as avg_rating").
 		Where("courses.deleted_at IS NULL").
@@ -31,6 +33,31 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 		Count(&count)
 
 	return courses, int(count)
+}
+
+func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryResponse {
+	var results []httpmodels.RawCoursesByCategory
+
+	cm.DBConnection.Raw(`
+		SELECT ct.name AS category_name,
+				AVG(r.rating) AS avg_rating,
+				c.id AS course_id,
+				c.title AS course_title,
+				c.description AS course_description,
+				c.content_in_hours AS course_content_in_hours,
+				c.thumbnail_url AS course_thumbnail_url,
+				c.level AS course_level,
+				c.content_url as course_content_url
+		FROM categories ct
+		LEFT JOIN courses c ON c.category_id = ct.id
+		LEFT JOIN reviews r ON r.course_id = c.id
+		WHERE c.deleted_at IS NULL
+	GROUP BY ct.name, c.id, c.title, c.description, c.content_in_hours, c.thumbnail_url, c.level;
+	`).Scan(&results)
+
+	response := GroupCoursesByCategory(results)
+
+	return &response
 }
 
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
@@ -52,6 +79,15 @@ func (cm *CoursesManagerDB) Delete(id uuid.UUID) error {
 }
 
 func (cm *CoursesManagerDB) Update(course *models.Course) (int, error) {
+	questions := course.Questions
+
+	err := cm.DBConnection.Model(course).Association("Questions").Clear()
+	if err != nil {
+		return 0, err
+	}
+
+	course.Questions = questions
+
 	result := cm.DBConnection.Model(course).Clauses(clause.Returning{}).Updates(course)
 	return int(result.RowsAffected), result.Error
 }

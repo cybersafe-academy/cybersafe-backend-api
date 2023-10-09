@@ -1,6 +1,7 @@
 package courses
 
 import (
+	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
 
 	"github.com/google/uuid"
@@ -8,6 +9,7 @@ import (
 
 type CoursesManager interface {
 	ListWithPagination(int, int) ([]models.CourseExtraFields, int)
+	ListByCategory() *httpmodels.CourseByCategoryResponse
 	GetByID(uuid.UUID) (models.Course, error)
 	Create(*models.Course) error
 	Delete(uuid.UUID) error

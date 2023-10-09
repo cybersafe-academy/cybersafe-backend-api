@@ -6,7 +6,6 @@ import (
 )
 
 func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseResponse {
-
 	var coursesResponse []httpmodels.CourseResponse
 
 	for _, course := range courses {
@@ -23,38 +22,36 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				ContentInHours: course.ContentInHours,
 				ThumbnailURL:   course.Description,
 				Level:          course.Level,
+				ContentURL:     course.ContentURL,
+			},
+			Category: httpmodels.CourseCategoryResponse{
+				ID: course.Category.ID,
+				CategoryFields: httpmodels.CategoryFields{
+					Name: course.Category.Name,
+				},
 			},
 		}
 
-		var contentsResponse []httpmodels.ContentResponse
-
-		for _, content := range course.Contents {
-			contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
-				ContentFields: httpmodels.ContentFields{
-					Title:       content.Title,
-					ContentType: content.ContentType,
-					URL:         content.URL,
-				},
-				ID: content.ID,
-			})
-		}
-
 		for _, question := range course.Questions {
-			questionModel := models.Question{
-				Wording: question.Wording,
+			questionModel := httpmodels.QuestionResponse{
+				QuestionFields: httpmodels.QuestionFields{
+					Wording: question.Wording,
+				},
+				ID: question.CourseID,
 			}
 
 			for _, answer := range question.Answers {
-				questionModel.Answers = append(questionModel.Answers, models.Answer{
-					Text:      answer.Text,
-					IsCorrect: answer.IsCorrect,
+				questionModel.Answers = append(questionModel.Answers, httpmodels.AnswerResponse{
+					AnswerFields: httpmodels.AnswerFields{
+						Text: answer.Text,
+					},
+					ID: answer.ID,
 				})
 			}
 
-			course.Questions = append(course.Questions, questionModel)
+			courseResponse.Questions = append(courseResponse.Questions, questionModel)
 		}
 
-		courseResponse.Contents = contentsResponse
 		coursesResponse = append(coursesResponse, courseResponse)
 	}
 
@@ -62,7 +59,6 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 }
 
 func ToResponse(course models.Course) httpmodels.CourseResponse {
-
 	courseResponse := httpmodels.CourseResponse{
 		ID:        course.ID,
 		CreatedAt: course.CreatedAt,
@@ -74,20 +70,14 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			ContentInHours: course.ContentInHours,
 			ThumbnailURL:   course.Description,
 			Level:          course.Level,
+			ContentURL:     course.ContentURL,
 		},
-	}
-
-	var contentsResponse []httpmodels.ContentResponse
-
-	for _, content := range course.Contents {
-		contentsResponse = append(contentsResponse, httpmodels.ContentResponse{
-			ID: content.ID,
-			ContentFields: httpmodels.ContentFields{
-				Title:       content.Title,
-				ContentType: content.ContentType,
-				URL:         content.URL,
+		Category: httpmodels.CourseCategoryResponse{
+			ID: course.CategoryID,
+			CategoryFields: httpmodels.CategoryFields{
+				Name: course.Category.Name,
 			},
-		})
+		},
 	}
 
 	for _, question := range course.Questions {
@@ -103,8 +93,7 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 				httpmodels.AnswerResponse{
 					ID: answer.ID,
 					AnswerFields: httpmodels.AnswerFields{
-						Text:      answer.Text,
-						IsCorrect: answer.IsCorrect,
+						Text: answer.Text,
 					},
 				})
 		}
@@ -112,13 +101,10 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 		courseResponse.Questions = append(courseResponse.Questions, questionResponse)
 	}
 
-	courseResponse.Contents = contentsResponse
-
 	return courseResponse
 }
 
 func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
-
 	reviewResponse := httpmodels.ReviewResponse{
 		ID:        review.ID,
 		CreatedAt: review.CreatedAt,
@@ -129,14 +115,30 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 			Rating:  review.Rating,
 		},
 		CourseID: review.CourseID,
-		UserID:   review.UserID,
+		User: httpmodels.UserReviewFields{
+			ID:   review.User.ID,
+			Name: review.User.Name,
+		},
 	}
 
 	return reviewResponse
 }
 
-func ToEnrollmentResponse(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
+func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
+	categoryResponse := httpmodels.CategoryResponse{
+		CategoryFields: httpmodels.CategoryFields{
+			Name: category.Name,
+		},
+		ID:        category.ID,
+		CreatedAt: category.CreatedAt,
+		UpdatedAt: category.UpdatedAt,
+		DeletedAt: category.DeletedAt,
+	}
 
+	return categoryResponse
+}
+
+func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{
 			Status:       enrollment.Status,
@@ -193,8 +195,11 @@ func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse 
 			UpdatedAt: review.UpdatedAt,
 			DeletedAt: review.DeletedAt,
 			CourseID:  review.CourseID,
-			UserID:    review.UserID,
-			ID:        review.ID,
+			User: httpmodels.UserReviewFields{
+				ID:   review.User.ID,
+				Name: review.User.Name,
+			},
+			ID: review.ID,
 		}
 
 		reviewsResponse = append(reviewsResponse, reviewResponse)
@@ -202,5 +207,24 @@ func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse 
 	}
 
 	return reviewsResponse
+}
 
+func ToCategoryListResponse(categories []models.Category) []httpmodels.CategoryResponse {
+	var categoriesResponse []httpmodels.CategoryResponse
+
+	for _, category := range categories {
+		categoryResponse := httpmodels.CategoryResponse{
+			CategoryFields: httpmodels.CategoryFields{
+				Name: category.Name,
+			},
+			ID:        category.ID,
+			CreatedAt: category.CreatedAt,
+			UpdatedAt: category.UpdatedAt,
+			DeletedAt: category.DeletedAt,
+		}
+
+		categoriesResponse = append(categoriesResponse, categoryResponse)
+	}
+
+	return categoriesResponse
 }

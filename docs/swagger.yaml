@@ -126,6 +126,8 @@ definitions:
     type: object
   httpmodels.AnswerRequest:
     properties:
+      isCorrect:
+        type: boolean
       text:
         type: string
     type: object
@@ -133,27 +135,41 @@ definitions:
     properties:
       id:
         type: string
+      isCorrect:
+        type: boolean
       text:
         type: string
     type: object
-  httpmodels.ContentRequest:
+  httpmodels.CategoryRequest:
     properties:
-      URL:
-        type: string
-      contentType:
-        type: string
-      title:
+      name:
         type: string
     type: object
-  httpmodels.ContentResponse:
+  httpmodels.CategoryResponse:
     properties:
-      URL:
+      createdAt:
         type: string
-      contentType:
-        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: string
-      title:
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  httpmodels.CourseByCategoryResponse:
+    additionalProperties:
+      items:
+        additionalProperties: {}
+        type: object
+      type: array
+    type: object
+  httpmodels.CourseCategoryResponse:
+    properties:
+      id:
+        type: string
+      name:
         type: string
     type: object
   httpmodels.QuestionRequest:
@@ -178,12 +194,12 @@ definitions:
     type: object
   httpmodels.RequestContent:
     properties:
+      categoryID:
+        type: string
       contentInHours:
         type: number
-      contents:
-        items:
-          $ref: '#/definitions/httpmodels.ContentRequest'
-        type: array
+      contentURL:
+        type: string
       description:
         type: string
       level:
@@ -201,12 +217,12 @@ definitions:
     properties:
       avgRating:
         type: number
+      category:
+        $ref: '#/definitions/httpmodels.CourseCategoryResponse'
       contentInHours:
         type: number
-      contents:
-        items:
-          $ref: '#/definitions/httpmodels.ContentResponse'
-        type: array
+      contentURL:
+        type: string
       createdAt:
         type: string
       deletedAt:
@@ -251,7 +267,14 @@ definitions:
         type: integer
       updatedAt:
         type: string
-      userID:
+      user:
+        $ref: '#/definitions/httpmodels.UserReviewFields'
+    type: object
+  httpmodels.UserReviewFields:
+    properties:
+      id:
+        type: string
+      name:
         type: string
     type: object
   pagination.PaginationData:
@@ -622,27 +645,11 @@ paths:
       - Company
   /courses:
     get:
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Limit of elements per page
-        in: query
-        name: limit
-        type: integer
       responses:
         "200":
           description: OK
           schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/httpmodels.ResponseContent'
-                type: object
-            type: array
+            $ref: '#/definitions/httpmodels.CourseByCategoryResponse'
         "400":
           description: Bad Request
         default:
@@ -652,7 +659,7 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: List courses with paginated response
+      summary: List all courses grouped by category
       tags:
       - Course
     post:
@@ -794,7 +801,11 @@ paths:
         type: string
       responses:
         "200":
-          description: No content
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/httpmodels.QuestionResponse'
+            type: array
         "400":
           description: Bad Request
         "404":
@@ -886,6 +897,156 @@ paths:
       - Bearer: []
       - Language: []
       summary: Get the reviews by the course ID
+      tags:
+      - Course
+  /courses/categories:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/httpmodels.CategoryResponse'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List categories with paginated response
+      tags:
+      - Course
+    post:
+      parameters:
+      - description: Request payload for creating a course category
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpmodels.CategoryRequest'
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CategoryResponse'
+        "409":
+          description: Conflict
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Create course category
+      tags:
+      - Course
+  /courses/categories/{id}:
+    delete:
+      parameters:
+      - description: ID of the category to be deleted
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: OK
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Delete a category by ID
+      tags:
+      - Course
+    put:
+      parameters:
+      - description: Request payload for updating category information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/httpmodels.CategoryRequest'
+      - description: ID of category to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CategoryResponse'
+        "400":
+          description: Bad Request
+        "404":
+          description: Category not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update category by ID
+      tags:
+      - Course
+  /courses/management:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/httpmodels.ResponseContent'
+                type: object
+            type: array
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List courses with paginated response
       tags:
       - Course
   /users:

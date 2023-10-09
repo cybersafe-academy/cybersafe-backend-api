@@ -8,6 +8,7 @@ import (
 )
 
 type AnswerRequest struct {
+	IsCorrect bool `json:"isCorrect"`
 	AnswerFields
 }
 
@@ -17,8 +18,7 @@ type AnswerResponse struct {
 }
 
 type AnswerFields struct {
-	IsCorrect bool   `json:"-"`
-	Text      string `json:"text"`
+	Text string `json:"text"`
 }
 
 type AddAnswerRequest struct {

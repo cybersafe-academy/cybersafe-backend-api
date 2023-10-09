@@ -5,7 +5,6 @@ import (
 )
 
 func ToListResponse(users []models.User) []ResponseContent {
-
 	var usersResponse []ResponseContent
 
 	for _, user := range users {
@@ -18,11 +17,12 @@ func ToListResponse(users []models.User) []ResponseContent {
 func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
 		UserFields: UserFields{
-			Name:      user.Name,
-			BirthDate: user.BirthDate.Format("2006-01-02"),
-			CPF:       user.CPF,
-			Role:      user.Role,
-			Email:     user.Email,
+			Name:              user.Name,
+			Role:              user.Role,
+			Email:             user.Email,
+			BirthDate:         user.BirthDate.Format("2006-01-02"),
+			CPF:               user.CPF,
+			ProfilePictureURL: user.ProfilePictureURL,
 		},
 		ID:        user.ID,
 		CreatedAt: user.CreatedAt,

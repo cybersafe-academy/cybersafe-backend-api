@@ -27,7 +27,7 @@ import (
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		page	query		int					false	"Page number"
 //	@Param		limit	query		int					false	"Limit of elements per page"
-//	@Router		/courses [get]
+//	@Router		/courses/management [get]
 //	@Security	Bearer
 //	@Security	Language
 func ListCoursesHandler(c *components.HTTPComponents) {
@@ -48,6 +48,23 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 	)
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
+
+// ListCoursesHandler
+//
+//	@Summary	List all courses grouped by category
+//
+//	@Tags		Course
+//	@success	200		{object}	httpmodels.CourseByCategoryResponse	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Router		/courses [get]
+//	@Security	Bearer
+//	@Security	Language
+func FetchCoursesHandler(c *components.HTTPComponents) {
+	courses := c.Components.Resources.Courses.ListByCategory()
+
+	components.HttpResponseWithPayload(c, courses, http.StatusOK)
 }
 
 // GetCourseByID retrieves a course by ID
@@ -337,7 +354,7 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, ToEnrollmentResponse(enrollment), http.StatusNoContent)
+	components.HttpResponseWithPayload(c, ToEnrollmentRespose(enrollment), http.StatusNoContent)
 }
 
 // GetQuestionsByCourseID
@@ -345,7 +362,7 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 //	@Summary	Get the questions by the course ID
 //
 //	@Tags		Course
-//	@success	200		"No content"
+//	@success	200		{array}	httpmodels.QuestionResponse
 //	@Failure	400		"Bad Request"
 //	@Failure	404		"Course not found"
 //	@Response	default	{object}	components.Response	"Standard error example object"
@@ -410,4 +427,147 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToReviewsListResponse(reviews), http.StatusOK)
+}
+
+// ListCategoriesHandler
+//
+//	@Summary	List categories with paginated response
+//
+//	@Tags		Course
+//	@success	200		{array}	pagination.PaginationData{data=httpmodels.CategoryResponse}	"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		page	query		int					false	"Page number"
+//	@Param		limit	query		int					false	"Limit of elements per page"
+//	@Router		/courses/categories [get]
+//	@Security	Bearer
+//	@Security	Language
+func ListCategoriesHandler(c *components.HTTPComponents) {
+	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
+
+	if errors.Is(err, errutil.ErrInvalidPageParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
+		components.HttpErrorResponse(c, http.StatusNotFound, err)
+		return
+	}
+
+	categories, count := c.Components.Resources.Categories.ListWithPagination(paginationData.Offset, paginationData.Limit)
+
+	response := paginationData.ToResponse(
+		ToCategoryListResponse(categories), int(count),
+	)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
+
+// CreateCourseCategory
+//
+//	@Summary	Create course category
+//
+//	@Tags		Course
+//	@Success	201		{object}	httpmodels.CategoryResponse	"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for creating a course category"
+//	@Router		/courses/categories [post]
+//	@Security	Bearer
+//	@Security	Language
+func CreateCourseCategory(c *components.HTTPComponents) {
+	categoryRequest := httpmodels.CategoryRequest{}
+
+	err := components.ValidateRequest(c, &categoryRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	category := categoryRequest.ToEntity()
+
+	err = c.Components.Resources.Categories.Create(category)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCategoryAlreadyExists)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			return
+		}
+	}
+
+	components.HttpResponseWithPayload(c, ToCategoryResponse(*category), http.StatusCreated)
+}
+
+// UpdateCategoryHandler
+//
+//	@Summary	Update category by ID
+//
+//	@Tags		Course
+//	@success	200		{object}	httpmodels.CategoryResponse	"OK"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Category not found"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		request	body		httpmodels.CategoryRequest	true	"Request payload for updating category information"
+//	@Param		id		path		string						true	"ID of category to be updated"
+//	@Router		/courses/categories/{id} [put]
+//	@Security	Bearer
+//	@Security	Language
+func UpdateCategoryHandler(c *components.HTTPComponents) {
+	categoryRequest := httpmodels.CategoryRequest{}
+	err := components.ValidateRequest(c, &categoryRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	category := categoryRequest.ToEntity()
+	category.ID = uuid.MustParse(id)
+
+	rowsAffected, err := c.Components.Resources.Categories.Update(category)
+
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+	if rowsAffected == 0 {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToCategoryResponse(*category), http.StatusOK)
+}
+
+// DeleteCategoryHandler
+//
+//	@Summary	Delete a category by ID
+//
+//	@Tags		Course
+//	@success	204		"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of the category to be deleted"
+//	@Router		/courses/categories/{id} [delete]
+//	@Security	Bearer
+//	@Security	Language
+func DeleteCategoryHandler(c *components.HTTPComponents) {
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	err := c.Components.Resources.Categories.Delete(uuid.MustParse(id))
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
 }

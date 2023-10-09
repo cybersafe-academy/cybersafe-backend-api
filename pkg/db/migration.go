@@ -11,13 +11,13 @@ func AutoMigrateDB() error {
 	modelsSlice := []any{
 		&models.User{},
 		&models.Course{},
-		&models.Content{},
 		&models.Company{},
 		&models.Review{},
 		&models.Enrollment{},
 		&models.Question{},
 		&models.Answer{},
 		&models.UserAnswer{},
+		&models.Category{},
 	}
 
 	err := db.AutoMigrate(modelsSlice...)

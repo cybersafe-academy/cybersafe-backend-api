@@ -8,19 +8,7 @@ const (
 	AdvancedLevel     string = "advanced"
 )
 
-const (
-	ContentTypeYoutube string = "youtube"
-	ContentTypePDF     string = "pdf"
-	ContentTypeImage   string = "image"
-)
-
 var (
-	ValidContentTypes []string = []string{
-		ContentTypeYoutube,
-		ContentTypePDF,
-		ContentTypeImage,
-	}
-
 	ValidCourseLevels []string = []string{
 		BeginnerLevel,
 		IntermediateLevel,
@@ -37,7 +25,11 @@ type Course struct {
 	ThumbnailURL   string
 	Level          string
 
-	Contents    []Content    `gorm:"foreignKey:CourseID"`
+	CategoryID uuid.UUID
+	Category   Category `gorm:"foreignKey:CategoryID"`
+
+	ContentURL string
+
 	Questions   []Question   `gorm:"foreignKey:CourseID"`
 	Reviews     []Review     `gorm:"foreignKey:CourseID"`
 	Enrollments []Enrollment `gorm:"foreignKey:CourseID"`
@@ -49,12 +41,17 @@ type CourseExtraFields struct {
 	AvgRating float64
 }
 
+type Category struct {
+	Shared
+
+	Name string `gorm:"uniqueIndex:idx_course_name"`
+}
+
 type Content struct {
 	Shared
 
-	Title       string
-	ContentType string
-	URL         string
+	Title string
+	URL   string
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`

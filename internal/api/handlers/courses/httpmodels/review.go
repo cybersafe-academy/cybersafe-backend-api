@@ -15,6 +15,11 @@ type ReviewFields struct {
 	Rating  int    `json:"rating" valid:"range(1|5), required"`
 }
 
+type UserReviewFields struct {
+	ID   uuid.UUID `json:"id" valid:"uuid"`
+	Name string    `json:"name" valid:"type(string)"`
+}
+
 type ReviewResponse struct {
 	ReviewFields
 
@@ -25,7 +30,7 @@ type ReviewResponse struct {
 
 	CourseID uuid.UUID `json:"courseID" valid:"required"`
 
-	UserID uuid.UUID `json:"userID"`
+	User UserReviewFields `json:"user"`
 }
 
 type ReviewRequestContent struct {
