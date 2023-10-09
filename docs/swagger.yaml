@@ -135,21 +135,10 @@ definitions:
     properties:
       id:
         type: string
-      isCorrect:
-        type: boolean
       text:
         type: string
     type: object
-<<<<<<< HEAD
   httpmodels.CategoryRequest:
-=======
-  httpmodels.CommentRequest:
-    properties:
-      text:
-        type: string
-    type: object
-  httpmodels.ContentRequest:
->>>>>>> feature/comments
     properties:
       name:
         type: string
@@ -165,6 +154,11 @@ definitions:
       name:
         type: string
       updatedAt:
+        type: string
+    type: object
+  httpmodels.CommentRequest:
+    properties:
+      text:
         type: string
     type: object
   httpmodels.CourseByCategoryResponse:
@@ -319,6 +313,8 @@ definitions:
         type: string
       password:
         type: string
+      profilePictureURL:
+        type: string
       role:
         type: string
     type: object
@@ -337,6 +333,8 @@ definitions:
       id:
         type: string
       name:
+        type: string
+      profilePictureURL:
         type: string
       role:
         type: string
@@ -878,7 +876,6 @@ paths:
       tags:
       - Course
   /courses/{id}/questions:
-<<<<<<< HEAD
     get:
       parameters:
       - description: ID of course
@@ -907,8 +904,6 @@ paths:
       summary: Get the questions by the course ID
       tags:
       - Course
-=======
->>>>>>> feature/comments
     post:
       parameters:
       - description: Request payload for creating a review
@@ -933,6 +928,30 @@ paths:
       tags:
       - Course
   /courses/{id}/reviews:
+    get:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: No content
+        "400":
+          description: Bad Request
+        "404":
+          description: Course not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get the reviews by the course ID
+      tags:
+      - Course
     post:
       parameters:
       - description: ID of course
@@ -961,31 +980,6 @@ paths:
       - Bearer: []
       - Language: []
       summary: Create review
-      tags:
-      - Course
-  /courses/{id}/reviews:
-    get:
-      parameters:
-      - description: ID of course
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: No content
-        "400":
-          description: Bad Request
-        "404":
-          description: Course not found
-        default:
-          description: Standard error example object
-          schema:
-            $ref: '#/definitions/components.Response'
-      security:
-      - Bearer: []
-      - Language: []
-      summary: Get the reviews by the course ID
       tags:
       - Course
   /courses/categories:

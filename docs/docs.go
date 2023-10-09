@@ -581,7 +581,6 @@ const docTemplate = `{
                 }
             }
         },
-<<<<<<< HEAD
         "/courses/categories": {
             "get": {
                 "security": [
@@ -643,9 +642,6 @@ const docTemplate = `{
                     }
                 }
             },
-=======
-        "/courses/{courseID}/comments/{commentID}/likes": {
->>>>>>> feature/comments
             "post": {
                 "security": [
                     {
@@ -658,7 +654,6 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-<<<<<<< HEAD
                 "summary": "Create course category",
                 "parameters": [
                     {
@@ -761,28 +756,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "ID of the category to be deleted",
                         "name": "id",
-=======
-                "summary": "Add like to comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of course",
-                        "name": "courseID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of course",
-                        "name": "commentID",
->>>>>>> feature/comments
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "204": {
-<<<<<<< HEAD
                         "description": "OK"
                     },
                     "400": {
@@ -846,9 +825,52 @@ const docTemplate = `{
                                 ]
                             }
                         }
-=======
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{courseID}/comments/{commentID}/likes": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Add like to comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "courseID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "commentID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
                         "description": "No content"
->>>>>>> feature/comments
                     },
                     "400": {
                         "description": "Bad Request"
@@ -1118,7 +1140,6 @@ const docTemplate = `{
             }
         },
         "/courses/{id}/questions": {
-<<<<<<< HEAD
             "get": {
                 "security": [
                     {
@@ -1165,8 +1186,6 @@ const docTemplate = `{
                     }
                 }
             },
-=======
->>>>>>> feature/comments
             "post": {
                 "security": [
                     {
@@ -1194,57 +1213,6 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No content"
-                    },
-                    "409": {
-                        "description": "Conflict"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/courses/{id}/reviews": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "Create review",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of course",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Request payload for creating a review",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.ReviewRequestContent"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpmodels.ReviewResponse"
-                        }
                     },
                     "409": {
                         "description": "Conflict"
@@ -1290,6 +1258,55 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Course not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Create review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request payload for creating a review",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewRequestContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.ReviewResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1858,27 +1875,12 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "isCorrect": {
-                    "type": "boolean"
-                },
                 "text": {
                     "type": "string"
                 }
             }
         },
-<<<<<<< HEAD
         "httpmodels.CategoryRequest": {
-=======
-        "httpmodels.CommentRequest": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string"
-                }
-            }
-        },
-        "httpmodels.ContentRequest": {
->>>>>>> feature/comments
             "type": "object",
             "properties": {
                 "name": {
@@ -1902,6 +1904,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.CommentRequest": {
+            "type": "object",
+            "properties": {
+                "text": {
                     "type": "string"
                 }
             }
@@ -2139,6 +2149,9 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "profilePictureURL": {
+                    "type": "string"
+                },
                 "role": {
                     "type": "string"
                 }
@@ -2166,6 +2179,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "profilePictureURL": {
                     "type": "string"
                 },
                 "role": {
