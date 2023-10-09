@@ -219,7 +219,7 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 //	@Response	default	{object}	components.Response				"Standard error example object"
 //	@Param		id		path		string							true	"ID of course"
 //	@Param		request	body		httpmodels.ReviewRequestContent	true	"Request payload for creating a review"
-//	@Router		/courses/{id}/review [post]
+//	@Router		/courses/{id}/reviews [post]
 //	@Security	Bearer
 //	@Security	Language
 func CreateCourseReview(c *components.HTTPComponents) {
@@ -261,7 +261,7 @@ func CreateCourseReview(c *components.HTTPComponents) {
 
 // AddAnswer
 //
-//	@Summary	Correct Answer
+//	@Summary	Add answer to question
 //
 //	@Tags		Course
 //	@success	204		"No content"
@@ -314,17 +314,128 @@ func AddAnswer(c *components.HTTPComponents) {
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
+// AddComment
+//
+//	@Summary	Add a comment to a course
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		id		path		string						true	"ID of course"
+//	@Param		request	body		httpmodels.CommentRequest	true	"Request payload for creating a comment"
+//	@Router		/courses/{id}/comments [post]
+//	@Security	Bearer
+//	@Security	Language
+func AddComment(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	var commentRequest httpmodels.CommentRequest
+	err := components.ValidateRequest(c, &commentRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	comment := commentRequest.ToEntity()
+	comment.UserID = currentUser.ID
+	comment.CourseID = uuid.MustParse(courseID)
+
+	c.Components.Resources.Courses.AddComment(comment)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// GetCommentsByCourse
+//
+//	@Summary	Get comments by course
+//
+//	@Tags		Course
+//	@success	200		"OK"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/comments [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetCommentsByCourse(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	comments := c.Components.Resources.Courses.ListCommentsByCourse(uuid.MustParse(courseID))
+
+	components.HttpResponseWithPayload(c, ToCommentsListResponse(comments), http.StatusOK)
+}
+
+// AddLikeToComment
+//
+//	@Summary	Add like to comment
+//
+//	@Tags		Course
+//	@success	204			"No content"
+//	@Failure	400			"Bad Request"
+//	@Response	default		{object}	components.Response	"Standard error example object"
+//	@Param		courseID	path		string				true	"ID of course"
+//	@Param		commentID	path		string				true	"ID of course"
+//	@Router		/courses/{courseID}/comments/{commentID}/likes [post]
+//	@Security	Bearer
+//	@Security	Language
+func AddLikeToComment(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "courseID")
+	commentID := chi.URLParam(c.HttpRequest, "commentID")
+
+	if !govalidator.IsUUID(courseID) || !govalidator.IsUUID(commentID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	err := c.Components.Resources.Courses.AddLikeToComment(uuid.MustParse(commentID), currentUser.ID)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
 // GetEnrollmentInfo
 //
 //	@Summary	Get Enrollment info
 //
 //	@Tags		Course
-//	@success	200		"No content"
+//	@success	200		"OK"
 //	@Failure	400		"Bad Request"
-//	@Failure	404		"Course not found"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Param		id		path		string				true	"ID of course"
-//	@Router		/courses/{id}/enrollment [get]
+//	@Router		/courses/{id}/enrollments [get]
 //	@Security	Bearer
 //	@Security	Language
 func GetEnrollmentInfo(c *components.HTTPComponents) {

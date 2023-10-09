@@ -122,6 +122,45 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 		Update("progress", progress_percentage)
 }
 
+func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {
+	result := cm.DBConnection.Create(comment)
+	return result.Error
+}
+
+func (cm *CoursesManagerDB) ListCommentsByCourse(courseID uuid.UUID) []models.Comment {
+	var companies []models.Comment
+
+	cm.DBConnection.Preload(clause.Associations).
+		Find(&companies)
+
+	return companies
+}
+
+func (cm *CoursesManagerDB) AddLikeToComment(commentID, userID uuid.UUID) error {
+
+	stmnt := cm.DBConnection.
+		Where("comment_id = ?", commentID).
+		Where("user_id = ?", userID)
+
+	result := stmnt.
+		First(&models.Comment{})
+
+	if result.Error == nil {
+		// If the comment was found, remove it
+		result := stmnt.
+			Delete(&models.Like{})
+
+		return result.Error
+	}
+
+	result = cm.DBConnection.Create(&models.Like{
+		CommentID: commentID,
+		UserID:    userID,
+	})
+
+	return result.Error
+}
+
 func (cm *CoursesManagerDB) GetEnrollmentProgress(courseID, userID uuid.UUID) (models.Enrollment, error) {
 	var enrollment models.Enrollment
 

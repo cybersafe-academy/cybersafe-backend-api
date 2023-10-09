@@ -581,6 +581,7 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
         "/courses/categories": {
             "get": {
                 "security": [
@@ -642,6 +643,9 @@ const docTemplate = `{
                     }
                 }
             },
+=======
+        "/courses/{courseID}/comments/{commentID}/likes": {
+>>>>>>> feature/comments
             "post": {
                 "security": [
                     {
@@ -654,6 +658,7 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
+<<<<<<< HEAD
                 "summary": "Create course category",
                 "parameters": [
                     {
@@ -756,12 +761,28 @@ const docTemplate = `{
                         "type": "string",
                         "description": "ID of the category to be deleted",
                         "name": "id",
+=======
+                "summary": "Add like to comment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "courseID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "commentID",
+>>>>>>> feature/comments
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "204": {
+<<<<<<< HEAD
                         "description": "OK"
                     },
                     "400": {
@@ -825,6 +846,9 @@ const docTemplate = `{
                                 ]
                             }
                         }
+=======
+                        "description": "No content"
+>>>>>>> feature/comments
                     },
                     "400": {
                         "description": "Bad Request"
@@ -969,7 +993,92 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/enrollment": {
+        "/courses/{id}/comments": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get comments by course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Add a comment to a course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request payload for creating a comment",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CommentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/enrollments": {
             "get": {
                 "security": [
                     {
@@ -994,13 +1103,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "No content"
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "Course not found"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1012,6 +1118,7 @@ const docTemplate = `{
             }
         },
         "/courses/{id}/questions": {
+<<<<<<< HEAD
             "get": {
                 "security": [
                     {
@@ -1058,6 +1165,8 @@ const docTemplate = `{
                     }
                 }
             },
+=======
+>>>>>>> feature/comments
             "post": {
                 "security": [
                     {
@@ -1070,7 +1179,7 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-                "summary": "Correct Answer",
+                "summary": "Add answer to question",
                 "parameters": [
                     {
                         "description": "Request payload for creating a review",
@@ -1098,7 +1207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/{id}/review": {
+        "/courses/{id}/reviews": {
             "post": {
                 "security": [
                     {
@@ -1757,7 +1866,19 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
         "httpmodels.CategoryRequest": {
+=======
+        "httpmodels.CommentRequest": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.ContentRequest": {
+>>>>>>> feature/comments
             "type": "object",
             "properties": {
                 "name": {

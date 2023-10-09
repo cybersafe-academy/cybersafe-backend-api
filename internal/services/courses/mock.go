@@ -14,9 +14,12 @@ type CoursesManagerMock struct {
 	UpdateMock                   func(*models.Course) (int, error)
 	IsRightAnswerMock            func(*models.Answer) bool
 	UpdateEnrollmentProgressMock func(uuid.UUID, uuid.UUID)
+	AddCommentMock               func(*models.Comment) error
+	AddLikeToCommentMock         func(comment *models.Comment) error
 	GetEnrollmentProgressMock    func(uuid.UUID, uuid.UUID) (models.Enrollment, error)
 	GetQuestionsByCourseIDMock   func(uuid.UUID) ([]models.Question, error)
 	GetReviewsByCourseIDMock     func(uuid.UUID) ([]models.Review, error)
+	ListCommentsByCourseMock     func(uuid.UUID) []models.Comment
 }
 
 func (cm *CoursesManagerMock) ListWithPagination(limit, offset int) ([]models.Course, int) {
@@ -47,6 +50,14 @@ func (cm *CoursesManagerMock) UpdateEnrollmentProgress(courseID, userID uuid.UUI
 	cm.UpdateEnrollmentProgressMock(courseID, userID)
 }
 
+func (cm *CoursesManagerMock) AddComment(comment *models.Comment) error {
+	return cm.AddCommentMock(comment)
+}
+
+func (cm *CoursesManagerMock) AddLikeToComment(comment *models.Comment) error {
+	return cm.AddLikeToCommentMock(comment)
+}
+
 func (cm *CoursesManagerMock) GetEnrollmentProgress(courseID, userID uuid.UUID) (models.Enrollment, error) {
 	return cm.GetEnrollmentProgressMock(courseID, userID)
 }
@@ -57,4 +68,8 @@ func (cm *CoursesManagerMock) GetQuestionsByCourseID(courseID uuid.UUID) ([]mode
 
 func (cm *CoursesManagerMock) GetReviewsByCourseID(courseID uuid.UUID) ([]models.Review, error) {
 	return cm.GetReviewsByCourseIDMock(courseID)
+}
+
+func (cm *CoursesManagerMock) ListCommentsByCourse(courseID uuid.UUID) []models.Comment {
+	return cm.ListCommentsByCourseMock(courseID)
 }
