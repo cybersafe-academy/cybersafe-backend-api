@@ -228,3 +228,22 @@ func ToCategoryListResponse(categories []models.Category) []httpmodels.CategoryR
 
 	return categoriesResponse
 }
+
+func ToCommentsListResponse(comments []models.Comment) []httpmodels.CommentResponse {
+
+	var commentsResponse []httpmodels.CommentResponse
+
+	for _, comment := range comments {
+		commentsResponse = append(commentsResponse, httpmodels.CommentResponse{
+			ID: comment.ID,
+			CommentFields: httpmodels.CommentFields{
+				Text: comment.Text,
+			},
+			UserID:     comment.UserID,
+			CourseID:   comment.CourseID,
+			LikesCount: len(comment.Likes),
+		})
+	}
+
+	return commentsResponse
+}

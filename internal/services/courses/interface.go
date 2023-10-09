@@ -19,4 +19,7 @@ type CoursesManager interface {
 	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
 	GetQuestionsByCourseID(uuid.UUID) ([]models.Question, error)
 	GetReviewsByCourseID(uuid.UUID) ([]models.Review, error)
+	AddComment(*models.Comment) error
+	ListCommentsByCourse(uuid.UUID) []models.Comment
+	AddLikeToComment(uuid.UUID, uuid.UUID) error
 }

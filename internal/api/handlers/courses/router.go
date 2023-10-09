@@ -82,6 +82,24 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Get("/categories", func(w http.ResponseWriter, r *http.Request) {
 			ListCategoriesHandler(components.HttpComponents(w, r, c))
 		})
+		r.Post("/{id}/reviews", func(w http.ResponseWriter, r *http.Request) {
+			CreateCourseReview(components.HttpComponents(w, r, c))
+		})
+		r.Post("/questions", func(w http.ResponseWriter, r *http.Request) {
+			AddAnswer(components.HttpComponents(w, r, c))
+		})
+		r.Post("/{id}/comments", func(w http.ResponseWriter, r *http.Request) {
+			AddComment(components.HttpComponents(w, r, c))
+		})
+		r.Get("/{id}/comments", func(w http.ResponseWriter, r *http.Request) {
+			GetCommentsByCourse(components.HttpComponents(w, r, c))
+		})
+		r.Get("/{id}/enrollments", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrollmentInfo(components.HttpComponents(w, r, c))
+		})
+		r.Post("/{courseID}/comments/{commentID}/likes", func(w http.ResponseWriter, r *http.Request) {
+			AddLikeToComment(components.HttpComponents(w, r, c))
+		})
 	})
 
 	return subRouter
