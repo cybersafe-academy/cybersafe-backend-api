@@ -55,9 +55,27 @@ func errorResponse(httpCode int, err error) render.Renderer {
 	return response
 }
 
+func errorResponseMessage(httpCode int, errText string) render.Renderer {
+
+	// Default response
+	response := &Response{
+		Error: Error{
+			HTTPStatusCode: httpCode,
+			ErrorText:      errText,
+		},
+	}
+
+	return response
+}
+
 func HttpErrorResponse(components *HTTPComponents, httpCode int, err error) {
 	log.Printf("Error %s", err.Error())
 	_ = render.Render(components.HttpResponse, components.HttpRequest, errorResponse(httpCode, err))
+}
+
+func HttpErrorLocalizedResponse(components *HTTPComponents, httpCode int, err string) {
+	log.Printf("Error %s", err)
+	_ = render.Render(components.HttpResponse, components.HttpRequest, errorResponseMessage(httpCode, err))
 }
 
 func HttpErrorMiddlewareResponse(w http.ResponseWriter, r *http.Request, httpCode int, err error) {

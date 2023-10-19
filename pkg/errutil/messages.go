@@ -1,55 +1,57 @@
 package errutil
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	//General
-	ErrUnexpectedError      = errors.New("unexpected error")
-	ErrInvalidUUID          = errors.New("invalid uuid")
-	ErrFutureDateNotAllowed = errors.New("future date not allowed")
+	ErrUnexpectedError      = errors.New("ErrUnexpectedError")
+	ErrInvalidUUID          = errors.New("ErrInvalidUUID")
+	ErrFutureDateNotAllowed = errors.New("ErrFutureDateNotAllowed")
 
 	//Pagination
-	ErrInvalidPageParam  = errors.New("invalid page param")
-	ErrInvalidLimitParam = errors.New("invalid limit param")
+	ErrInvalidPageParam  = errors.New("ErrInvalidPageParam")
+	ErrInvalidLimitParam = errors.New("ErrInvalidLimitParam")
 
 	//Authentication
-	ErrLoginOrPasswordIncorrect = errors.New("login or password incorrect")
+	ErrLoginOrPasswordIncorrect = errors.New("ErrLoginOrPasswordIncorrect")
 
 	//JWT
-	ErrInvalidJWT             = errors.New("invalid JWT token")
-	ErrCredentialsMissing     = errors.New("credentials missing")
-	ErrInvalidSignature       = errors.New("invalid signature")
-	ErrTokenExpiredOrPending  = errors.New("token expired or pending")
-	ErrInvalidClaims          = errors.New("invalid claims")
-	ErrInsufficientPermission = errors.New("insufficient permission for given resource")
+	ErrInvalidJWT             = errors.New("ErrInvalidJWT")
+	ErrCredentialsMissing     = errors.New("ErrCredentialsMissing")
+	ErrInvalidSignature       = errors.New("ErrInvalidSignature")
+	ErrTokenExpiredOrPending  = errors.New("ErrTokenExpiredOrPending")
+	ErrInvalidClaims          = errors.New("ErrInvalidClaims")
+	ErrInsufficientPermission = errors.New("ErrInsufficientPermission")
 
 	//User
-	ErrUserResourceNotFound   = errors.New("user not found with given identifier")
-	ErrInvalidUserRole        = errors.New("invalid user role")
-	ErrCPFAlreadyInUse        = errors.New("cpf already in use")
-	ErrEmailAlreadyInUse      = errors.New("email already in use")
-	ErrCPFOrEmailAlreadyInUse = errors.New("cpf or email already in use")
+	ErrUserResourceNotFound   = errors.New("ErrUserResourceNotFound")
+	ErrInvalidUserRole        = errors.New("ErrInvalidUserRole")
+	ErrCPFAlreadyInUse        = errors.New("ErrCPFAlreadyInUse")
+	ErrEmailAlreadyInUse      = errors.New("ErrEmailAlreadyInUse")
+	ErrCPFOrEmailAlreadyInUse = errors.New("ErrCPFOrEmailAlreadyInUse")
 
 	//Course
-	ErrInvalidCourseLevel     = errors.New("invalid course level")
-	ErrCourseResourceNotFound = errors.New("course not found with given identifier")
+	ErrInvalidCourseLevel     = errors.New("ErrInvalidCourseLevel")
+	ErrCourseResourceNotFound = errors.New("ErrCourseResourceNotFound")
 
 	//Companies
-	ErrCNPJorEmailorBusinessNameAlreadyInUse = errors.New("cnpj or email or business name already in use")
-	ErrCompanyResourceNotFound               = errors.New("company not found with given identifier")
+	ErrCNPJorEmailorBusinessNameAlreadyInUse = errors.New("ErrCNPJorEmailorBusinessNameAlreadyInUse")
+	ErrCompanyResourceNotFound               = errors.New("ErrCompanyResourceNotFound")
 
 	//Review
-	ErrReviewAlreadyExists = errors.New("review already exists")
+	ErrReviewAlreadyExists = errors.New("ErrReviewAlreadyExists")
 
 	//Course
-	ErrInvalidContentType = errors.New("invalid content type")
+	ErrInvalidContentType = errors.New("ErrInvalidContentType")
 
 	//Answer
-	ErrUserAlreadyAnswerdQuestion = errors.New("user already answerd question")
+	ErrUserAlreadyAnswerdQuestion = errors.New("ErrUserAlreadyAnswerdQuestion")
 
 	//Personality Test
-	ErrInvalidMBTIType = errors.New("invalid MBTI type")
+	ErrInvalidMBTIType = errors.New("ErrInvalidMBTIType")
 
 	//Categories
-	ErrCategoryAlreadyExists = errors.New("category already exists")
+	ErrCategoryAlreadyExists = errors.New("ErrCategoryAlreadyExists")
 )

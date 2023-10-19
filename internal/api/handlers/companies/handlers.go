@@ -10,6 +10,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"gorm.io/gorm"
 )
 
@@ -61,7 +62,11 @@ func GetCompanyByIdHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidUUID",
+			},
+		))
 		return
 	}
 
@@ -69,10 +74,18 @@ func GetCompanyByIdHandler(c *components.HTTPComponents) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCompanyResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrCompanyResourceNotFound",
+				},
+			))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				},
+			))
 			return
 		}
 	}
@@ -104,10 +117,18 @@ func CreateCompanyHandler(c *components.HTTPComponents) {
 	err = c.Components.Resources.Companies.Create(company)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCNPJorEmailorBusinessNameAlreadyInUse)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrCNPJorEmailorBusinessNameAlreadyInUse",
+				},
+			))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				},
+			))
 			return
 		}
 	}
@@ -140,7 +161,11 @@ func UpdateCompanyHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidUUID",
+			},
+		))
 		return
 	}
 
@@ -151,15 +176,27 @@ func UpdateCompanyHandler(c *components.HTTPComponents) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCNPJorEmailorBusinessNameAlreadyInUse)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrCNPJorEmailorBusinessNameAlreadyInUse",
+				},
+			))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				},
+			))
 			return
 		}
 	}
 	if rowsAffected == 0 {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCompanyResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrCompanyResourceNotFound",
+			},
+		))
 		return
 	}
 
@@ -182,14 +219,22 @@ func DeleteCompanyHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidUUID",
+			},
+		))
 		return
 	}
 
 	err := c.Components.Resources.Companies.Delete(uuid.MustParse(id))
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			},
+		))
 		return
 	}
 

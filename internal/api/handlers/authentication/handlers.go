@@ -5,7 +5,6 @@ import (
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/cacheutil"
-	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -44,13 +44,19 @@ func LoginHandler(c *components.HTTPComponents) {
 	user, err := c.Components.Resources.Users.GetByCPF(loginRequest.CPF)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrUserResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusUnauthorized,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUserResourceNotFound",
+			}))
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusUnauthorized, errutil.ErrLoginOrPasswordIncorrect)
+		components.HttpErrorLocalizedResponse(c, http.StatusUnauthorized,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrLoginOrPasswordIncorrect",
+			}))
 		return
 	}
 
@@ -76,7 +82,10 @@ func LoginHandler(c *components.HTTPComponents) {
 	)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 		return
 	}
 
@@ -107,7 +116,10 @@ func RefreshTokenHandler(c *components.HTTPComponents) {
 	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 		return
 	}
 
@@ -134,7 +146,10 @@ func RefreshTokenHandler(c *components.HTTPComponents) {
 	)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 		return
 	}
 
@@ -259,7 +274,10 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 	)
 
 	if !found {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUserResourceNotFound",
+			}))
 		return
 	}
 
@@ -272,7 +290,10 @@ func UpdatePasswordHandler(c *components.HTTPComponents) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 		return
 	}
 
@@ -360,7 +381,10 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	)
 
 	if !found {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUserResourceNotFound",
+			}))
 		return
 	}
 
@@ -376,7 +400,10 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 		return
 	}
 
@@ -385,10 +412,16 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	_, err = c.Components.Resources.Users.Update(user)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCPFAlreadyInUse)
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound,
+				c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrCPFAlreadyInUse",
+				}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError,
+				c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				}))
 			return
 		}
 	}

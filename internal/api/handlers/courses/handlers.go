@@ -14,6 +14,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"gorm.io/gorm"
 )
 
@@ -82,7 +83,9 @@ func GetCourseByID(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -90,10 +93,14 @@ func GetCourseByID(c *components.HTTPComponents) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrCourseResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -126,7 +133,9 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 	err = c.Components.Resources.Courses.Create(course)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -149,14 +158,18 @@ func DeleteCourseHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	err := c.Components.Resources.Courses.Delete(uuid.MustParse(id))
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -188,7 +201,9 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -198,11 +213,15 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	rowsAffected, err := c.Components.Resources.Courses.Update(course)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 	if rowsAffected == 0 {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrCourseResourceNotFound",
+		}))
 		return
 	}
 
@@ -225,13 +244,17 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 func CreateCourseReview(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -249,10 +272,14 @@ func CreateCourseReview(c *components.HTTPComponents) {
 	err = c.Components.Resources.Reviews.Create(review)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrReviewAlreadyExists)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrReviewAlreadyExists",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -276,13 +303,17 @@ func AddAnswer(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -301,10 +332,14 @@ func AddAnswer(c *components.HTTPComponents) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrUserAlreadyAnswerdQuestion)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUserAlreadyAnswerdQuestion",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -332,13 +367,17 @@ func AddComment(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -355,7 +394,9 @@ func AddComment(c *components.HTTPComponents) {
 
 	c.Components.Resources.Courses.AddComment(comment)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -379,7 +420,9 @@ func GetCommentsByCourse(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -407,19 +450,25 @@ func AddLikeToComment(c *components.HTTPComponents) {
 	commentID := chi.URLParam(c.HttpRequest, "commentID")
 
 	if !govalidator.IsUUID(courseID) || !govalidator.IsUUID(commentID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
 	err := c.Components.Resources.Courses.AddLikeToComment(uuid.MustParse(commentID), currentUser.ID)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -443,24 +492,32 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
 	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -486,17 +543,23 @@ func GetQuestionsByCourseID(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	questions, err := c.Components.Resources.Courses.GetQuestionsByCourseID(uuid.MustParse(courseID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -522,17 +585,23 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	reviews, err := c.Components.Resources.Courses.GetReviewsByCourseID(uuid.MustParse(courseID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -556,7 +625,7 @@ func GetReviewsByCourseID(c *components.HTTPComponents) {
 func ListCategoriesHandler(c *components.HTTPComponents) {
 	paginationData, err := pagination.GetPaginationData(c.HttpRequest.URL.Query())
 
-	if errors.Is(err, errutil.ErrInvalidPageParam) {
+	if errors.Is(err, errutil.ErrInvalidLimitParam) {
 		components.HttpErrorResponse(c, http.StatusNotFound, err)
 		return
 	} else if errors.Is(err, errutil.ErrInvalidLimitParam) {
@@ -599,10 +668,14 @@ func CreateCourseCategory(c *components.HTTPComponents) {
 	err = c.Components.Resources.Categories.Create(category)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCategoryAlreadyExists)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCategoryAlreadyExists",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -634,7 +707,9 @@ func UpdateCategoryHandler(c *components.HTTPComponents) {
 
 	id := chi.URLParam(c.HttpRequest, "id")
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -644,11 +719,15 @@ func UpdateCategoryHandler(c *components.HTTPComponents) {
 	rowsAffected, err := c.Components.Resources.Categories.Update(category)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 	if rowsAffected == 0 {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrCourseResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrCourseResourceNotFound",
+		}))
 		return
 	}
 
@@ -670,13 +749,17 @@ func UpdateCategoryHandler(c *components.HTTPComponents) {
 func DeleteCategoryHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	err := c.Components.Resources.Categories.Delete(uuid.MustParse(id))
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
