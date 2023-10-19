@@ -1,1 +1,49 @@
-Hello = "olá meu amigo!"
+#General
+ErrUnexpectedError = "Erro inesperado."
+ErrInvalidUUID = "UUID inválido."
+ErrFutureDateNotAllowed = "Data futura não permitada."
+
+#Pagination
+ErrInvalidPageParam = "Parâmetro 'page' inválido."
+ErrInvalidLimitParam = "Parâmetro 'limit' inválido."
+
+#Authentication
+ErrLoginOrPasswordIncorrect = "Senha ou usuário incorreto."
+
+#JWT
+ErrInvalidJWT = "Token JWT inválido."
+ErrCredentialsMissing = "Credenciais faltando."
+ErrInvalidSignature = "Assinatura inválida."
+ErrTokenExpiredOrPending = "Token expirado ou pendente."
+ErrInvalidClaims = "Claims inválido"
+ErrInsufficientPermission = "Permissão insuficiente para o recurso."
+
+#User
+ErrUserResourceNotFound = "Usuário não encontrado com o identificador fornecido."
+ErrInvalidUserRole = "Role de usuário inválido."
+ErrCPFAlreadyInUse = "CPF já esta em uso."
+ErrEmailAlreadyInUse = "Email já esta em uso."
+ErrCPFOrEmailAlreadyInUse = "CPF ou email já esta em uso."
+
+#Course
+ErrInvalidCourseLevel = "Nível do curso inválido."
+ErrCourseResourceNotFound = "Curso não encontrado com o identificador fornecido."
+
+#Companies
+ErrCNPJorEmailorBusinessNameAlreadyInUse = "CNPJ, email ou nome fantasia já esta em uso."
+ErrCompanyResourceNotFound = "Empresa não encontrada com o identificador fornecido."
+
+#Review
+ErrReviewAlreadyExists = "Avaliação já existe."
+
+#Course
+ErrInvalidContentType = "Tipo de conteúdo inválido."
+
+#Answer
+ErrUserAlreadyAnswerdQuestion = "Usuário já respondeu a questão."
+
+#Personality Test
+ErrInvalidMBTIType = "Tipo MBTI inválido."
+
+#Categories
+ErrCategoryAlreadyExists = "Categoria já existe."

@@ -1,1 +1,49 @@
-Hello = "hello my friend!"
+#General
+ErrUnexpectedError = "Unexpected error."
+ErrInvalidUUID = "invalid UUID."
+ErrFutureDateNotAllowed = "Future date not allowed."
+
+#Pagination
+ErrInvalidPageParam = "Invalid page param."
+ErrInvalidLimitParam = "Invalid limit param."
+
+#Authentication
+ErrLoginOrPasswordIncorrect = "Login or password incorrect."
+
+#JWT
+ErrInvalidJWT = "Invalid JWT token."
+ErrCredentialsMissing = "Credentials missing."
+ErrInvalidSignature = "Invalid signature."
+ErrTokenExpiredOrPending = "Token expired or pending."
+ErrInvalidClaims = "Invalid claims"
+ErrInsufficientPermission = "Insufficient permission for given resource."
+
+#User
+ErrUserResourceNotFound = "User not found with given identifier."
+ErrInvalidUserRole = "Invalid user role."
+ErrCPFAlreadyInUse = "CPF already in use."
+ErrEmailAlreadyInUse = "Email already in use."
+ErrCPFOrEmailAlreadyInUse = "CPF or email already in use."
+
+#Course
+ErrInvalidCourseLevel = "Invalid course level."
+ErrCourseResourceNotFound = "Course not found with given identifier."
+
+#Companies
+ErrCNPJorEmailorBusinessNameAlreadyInUse = "CNPJ or email or business name already in use."
+ErrCompanyResourceNotFound = "Company not found with given identifier."
+
+#Review
+ErrReviewAlreadyExists = "Review already exists."
+
+#Course
+ErrInvalidContentType = "Invalid content type."
+
+#Answer
+ErrUserAlreadyAnswerdQuestion = "User already answerd question."
+
+#Personality Test
+ErrInvalidMBTIType = "Invalid MBTI type."
+
+#Categories
+ErrCategoryAlreadyExists = "Category already exists."
