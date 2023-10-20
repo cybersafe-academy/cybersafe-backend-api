@@ -367,11 +367,12 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
 	user := &models.User{
-		Email:     email.(string),
-		Name:      finishSignupRequest.Name,
-		BirthDate: birthDate,
-		CPF:       finishSignupRequest.CPF,
-		Password:  finishSignupRequest.Password,
+		Email:             email.(string),
+		Name:              finishSignupRequest.Name,
+		BirthDate:         birthDate,
+		CPF:               finishSignupRequest.CPF,
+		ProfilePictureURL: "",
+		Password:          finishSignupRequest.Password,
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
