@@ -4,6 +4,7 @@ database:
   password: postgres
   name: cybersafeacademy
   port: 5432
+  sslmode: disable
 
 application:
   name: CyberSafe Academy

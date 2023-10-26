@@ -4,6 +4,7 @@ database:
   password: NHQSeWGhxxMBdNxDQPQk
   name: cybersafe
   port: 5432
+  sslmode: require
 
 application:
   name: CyberSafe Academy
