@@ -196,7 +196,7 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 		Email: preSignUpRequest.Email,
 	}
 
-	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
+	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
 		return
 	}

@@ -2,6 +2,7 @@ package mail
 
 import (
 	"cybersafe-backend-api/pkg/settings"
+	"log"
 	"net/smtp"
 	"strings"
 )
@@ -43,6 +44,8 @@ func (gm *GmailMailer) Send(to []string, subject string, message string) error {
 	err := smtp.SendMail("smtp.gmail.com:587", auth, gm.Email, to, []byte(body))
 
 	if err != nil {
+		log.Println("Error sending email:", err)
+
 		return err
 	}
 

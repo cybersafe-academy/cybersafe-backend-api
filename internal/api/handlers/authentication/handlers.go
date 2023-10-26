@@ -4,6 +4,7 @@ import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/helpers"
@@ -11,6 +12,7 @@ import (
 	"cybersafe-backend-api/pkg/mail"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"net/http"
@@ -355,23 +357,35 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, found := c.Components.Cache.Get(
+	email, _ := c.Components.Cache.Get(
 		cacheutil.KeyWithPrefix(cacheutil.FirstAccessPrefix, randomToken),
 	)
 
-	if !found {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
-		return
-	}
+	// if !found {
+	// 	components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+	// 	return
+	// }
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
+
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", email)
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture, "image")
+	if err != nil {
+		log.Println("Error converting base64 to file:", err)
+	}
+
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.bucketName"), profilePictureURL, profilePictureFile)
+	if err != nil {
+		log.Println("Error uploading file to S3 bucket:", err)
+	}
 
 	user := &models.User{
 		Email:             email.(string),
 		Name:              finishSignupRequest.Name,
 		BirthDate:         birthDate,
 		CPF:               finishSignupRequest.CPF,
-		ProfilePictureURL: "",
+		ProfilePictureURL: profilePictureURL,
 		Password:          finishSignupRequest.Password,
 	}
 

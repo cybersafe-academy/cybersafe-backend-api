@@ -27,3 +27,8 @@ frontend:
   port: 5173
   updatePasswordEndpoint: /update-password
   firstAccessEndpoint: /finish-signup
+
+aws:
+  region: sa-east-1
+  bucketName: cybersafe-users
+  bucketURL: https://s3.amazonaws.com/cybersafe-users/

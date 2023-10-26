@@ -1,34 +1,34 @@
 package aws
 
 import (
-	"fmt"
+	"context"
+	"log"
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-func PutFile(sess *session.Session, bucket string, filename string) error {
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("Unable to open file " + filename)
-		return err
-	}
+type S3Client struct {
+	Client *s3.Client
+}
 
-	defer file.Close()
+func GetS3Client(sdkConfig aws.Config) S3Client {
+	return S3Client{Client: s3.NewFromConfig(sdkConfig)}
+}
 
-	uploader := s3manager.NewUploader(sess)
-
-	_, err = uploader.Upload(
-		&s3manager.UploadInput{
-			Bucket: &bucket,
-			Key:    aws.String("profile-pictures/" + filename),
+func (c *S3Client) UploadFile(bucketName string, objectKey string, file *os.File) error {
+	response, err := c.Client.PutObject(
+		context.TODO(),
+		&s3.PutObjectInput{
+			Bucket: aws.String(bucketName),
+			Key:    aws.String(objectKey),
 			Body:   file,
 		})
 	if err != nil {
 		return err
 	}
 
-	return nil
+	log.Println("Successfully uploaded file to S3 bucket:", response)
+	return err
 }
