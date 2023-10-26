@@ -1,7 +1,7 @@
 database:
-  host: localhost
+  host: cybersafe-db03.cdpt1yldzkan.sa-east-1.rds.amazonaws.com
   user: postgres
-  password: postgres
+  password: 2XghzsCQnNndY9pFSiHm
   name: cybersafeacademy
   port: 5432
 
