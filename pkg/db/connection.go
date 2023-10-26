@@ -17,6 +17,8 @@ var dbConnection *gorm.DB
 
 func CreateDBConnection(config settings.Settings) *gorm.DB {
 
+	// check env for ssl enabled or disable
+
 	args := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=America/Sao_Paulo",
 		config.String("database.host"),

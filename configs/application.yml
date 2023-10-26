@@ -10,12 +10,12 @@ application:
   issuer: cybersafe
 
 docs:
-  host: localhost
+  host: c2-52-67-31-102.sa-east-1.compute.amazonaws.com
   basePath: /api
   port: 8080
 
 jwt:
-  secretKey: secretKey
+  secretKey: FATmSgjlxd2Q3U8WZMzIIN49uHCQ9JIW
   subject: userCredentials
 
 mail:
