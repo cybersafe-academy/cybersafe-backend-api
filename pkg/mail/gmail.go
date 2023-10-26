@@ -19,7 +19,7 @@ type GmailMailer struct {
 func Config(config settings.Settings) Mailer {
 	return &GmailMailer{
 		Email:    config.StrWDefault("mail.email", "cybersafeacad@gmail.com"),
-		Password: config.String("mail.password"),
+		Password: config.StrWDefault("mail.password", "rmqzhuirbnlravbc"),
 	}
 }
 

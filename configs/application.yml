@@ -4,19 +4,24 @@ database:
   password: postgres
   name: cybersafeacademy
   port: 5432
+
 application:
   name: CyberSafe Academy
   issuer: cybersafe
+
 docs:
   host: localhost
   basePath: /api
   port: 8080
-mail:
-  email: cybersafeacad@gmail.com
-  password: rmqzhuirbnlravbc
+
 jwt:
   secretKey: secretKey
   subject: userCredentials
+
+mail:
+  email: cybersafeacad@gmail.com
+  password: rmqzhuirbnlravbc
+
 frontend:
   host: http://localhost
   port: 5173
