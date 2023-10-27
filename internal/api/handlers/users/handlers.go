@@ -13,6 +13,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -64,7 +65,9 @@ func GetAuthenticatedUserHandler(c *components.HTTPComponents) {
 	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -86,7 +89,9 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -94,10 +99,14 @@ func GetUserByIDHandler(c *components.HTTPComponents) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrUserResourceNotFound)
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUserResourceNotFound",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -122,7 +131,9 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -136,13 +147,17 @@ func CreateUserHandler(c *components.HTTPComponents) {
 	user := userRequest.ToEntity()
 
 	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUserRole",
+		}))
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -153,10 +168,14 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCPFOrEmailAlreadyInUse)
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCPFOrEmailAlreadyInUse",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -180,7 +199,9 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -197,7 +218,9 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 	}
 
 	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUserRole)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUserRole",
+		}))
 		return
 	}
 
@@ -205,10 +228,14 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			components.HttpErrorResponse(c, http.StatusNotFound, errutil.ErrEmailAlreadyInUse)
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrEmailAlreadyInUse",
+			}))
 			return
 		} else {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
 			return
 		}
 	}
@@ -232,14 +259,18 @@ func DeleteUserHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
 	err := c.Components.Resources.Users.Delete(uuid.MustParse(id))
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -271,7 +302,9 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	id := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(id) {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
 		return
 	}
 
@@ -282,11 +315,15 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
 
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 	if rowsAffected == 0 {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUserResourceNotFound)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUserResourceNotFound",
+		}))
 		return
 	}
 
@@ -318,7 +355,9 @@ func PersonalityTestHandler(c *components.HTTPComponents) {
 
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
 	if !ok {
-		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 
@@ -326,7 +365,9 @@ func PersonalityTestHandler(c *components.HTTPComponents) {
 
 	_, err = c.Components.Resources.Users.Update(currentUser)
 	if err != nil {
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
 		return
 	}
 

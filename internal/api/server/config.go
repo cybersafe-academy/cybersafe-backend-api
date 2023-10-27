@@ -3,7 +3,6 @@ package server
 import (
 	_ "cybersafe-backend-api/docs"
 	"cybersafe-backend-api/internal/api/components"
-	"cybersafe-backend-api/pkg/environment"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -15,18 +14,13 @@ func Config(c *components.Components) {
 
 	c.Router = chi.NewRouter()
 
-	allowedOrigins := []string{}
-
-	if c.Environment == environment.Local {
-		allowedOrigins = append(allowedOrigins, "http://localhost:*")
-	}
-
 	corsConfig := cors.New(cors.Options{
-		AllowedOrigins:   allowedOrigins,
+		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Access-Control-Allow-Origin"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
+		MaxAge:           300,
 	})
 
 	c.Router.Use(corsConfig.Handler)

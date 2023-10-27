@@ -18,12 +18,13 @@ var dbConnection *gorm.DB
 func CreateDBConnection(config settings.Settings) *gorm.DB {
 
 	args := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=America/Sao_Paulo",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=America/Sao_Paulo",
 		config.String("database.host"),
 		config.String("database.user"),
 		config.String("database.password"),
 		config.String("database.name"),
 		config.String("database.port"),
+		config.String("database.sslmode"),
 	)
 
 	db, err := gorm.Open(postgres.Open(args), &gorm.Config{

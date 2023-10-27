@@ -1,0 +1,30 @@
+database:
+  host: cybersafeacademy.cdpt1yldzkan.sa-east-1.rds.amazonaws.com
+  user: cybersafe
+  password: NHQSeWGhxxMBdNxDQPQk
+  name: cybersafe
+  port: 5432
+  sslmode: require
+
+application:
+  name: CyberSafe Academy
+  issuer: cybersafe
+
+docs:
+  host: ec2-52-67-31-102.sa-east-1.compute.amazonaws.com
+  basePath: /api
+  port: 8080
+
+jwt:
+  secretKey: FATmSgjlxd2Q3U8WZMzIIN49uHCQ9JIW
+  subject: userCredentials
+
+notification:
+  user: "cybersafeacad@gmail.com"
+  password: "rmqzhuirbnlravbc"
+
+frontend:
+  host: localhost
+  port: 5173
+  updatePasswordEndpoint: /update-password
+  firstAccessEndpoint: /finish-signup
