@@ -3,9 +3,14 @@ package users
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
+	"fmt"
+	"log"
+	"os"
 
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -275,9 +280,26 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user := userRequest.ToEntity()
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePicture)
+	if err != nil {
+		log.Println("Error converting base64 to file:", err)
+	}
 
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, profilePictureFile)
+	if err != nil {
+		log.Println("Error uploading file to S3 bucket:", err)
+	}
+
+	err = os.Remove(profilePictureFile.Name())
+	if err != nil {
+		log.Println("Error deleting file from local storage:", err)
+	}
+
+	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)
+	user.ProfilePictureURL = c.Components.Settings.String("aws.usersBucketURL") + profilePictureURL
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
 

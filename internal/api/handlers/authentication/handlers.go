@@ -390,7 +390,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		Name:              finishSignupRequest.Name,
 		BirthDate:         birthDate,
 		CPF:               finishSignupRequest.CPF,
-		ProfilePictureURL: (c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL),
+		ProfilePictureURL: c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL,
 		Password:          finishSignupRequest.Password,
 	}
 
