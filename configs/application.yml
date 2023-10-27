@@ -19,8 +19,8 @@ jwt:
   secretKey: FATmSgjlxd2Q3U8WZMzIIN49uHCQ9JIW
   subject: userCredentials
 
-mail:
-  email: "cybersafeacad@gmail.com"
+notification:
+  user: "cybersafeacad@gmail.com"
   password: "rmqzhuirbnlravbc"
 
 frontend:
