@@ -20,8 +20,8 @@ jwt:
   subject: userCredentials
 
 mail:
-  email: cybersafeacad@gmail.com
-  password: rmqzhuirbnlravbc
+  email: "cybersafeacad@gmail.com"
+  password: "rmqzhuirbnlravbc"
 
 frontend:
   host: localhost
