@@ -19,9 +19,9 @@ jwt:
   secretKey: secretKey
   subject: userCredentials
 
-mail:
-  email: cybersafeacad@gmail.com
-  password: rmqzhuirbnlravbc
+notification:
+  user: "cybersafeacad@gmail.com"
+  password: "rmqzhuirbnlravbc"
 
 frontend:
   host: http://localhost
