@@ -30,5 +30,7 @@ frontend:
 
 aws:
   region: sa-east-1
-  bucketName: cybersafe-users
-  bucketURL: https://s3.amazonaws.com/cybersafe-users/
+  usersBucketName: cybersafe-users
+  usersbucketURL: https://cybersafe-users.s3.sa-east-1.amazonaws.com/
+  coursesBucketName: cybersafe-courses
+  coursesBucketURL: https://cybersafe-courses.s3.sa-east-1.amazonaws.com/

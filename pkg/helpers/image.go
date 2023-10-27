@@ -1,41 +1,42 @@
 package helpers
 
 import (
+	"bytes"
 	"encoding/base64"
-	"fmt"
 	"os"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
-func ConvertBase64ImageToFile(base64String string, fileName string) (*os.File, error) {
-	prefix := "data:image/"
-	suffix := ";base64,"
-	var imageType string
+func ConvertBase64ImageToFile(base64Image string) (*os.File, error) {
+	base64Image = strings.SplitN(base64Image, ",", 2)[1]
 
-	if strings.HasPrefix(base64String, prefix) && strings.Contains(base64String, suffix) {
-		start := len(prefix)
-		end := strings.Index(base64String, ";base64")
-		imageType = base64String[start:end]
-		base64String = base64String[end+len(suffix):]
-	}
-
-	data, err := base64.StdEncoding.DecodeString(base64String)
+	imageData, err := base64.StdEncoding.DecodeString(base64Image)
 	if err != nil {
 		return nil, err
 	}
 
-	outputFileName := fmt.Sprintf("%s.%s", fileName, imageType)
+	buffer := bytes.NewBuffer(imageData)
 
-	outputFile, err := os.Create(outputFileName)
+	tempFile, err := os.CreateTemp("", "image-*.jpg")
+	if err != nil {
+		return nil, err
+	}
+	defer tempFile.Close()
+
+	_, err = buffer.WriteTo(tempFile)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = outputFile.Write(data)
+	newFileName := uuid.NewString() + ".jpg"
+	os.Rename(tempFile.Name(), newFileName)
+
+	file, err := os.Open(newFileName)
 	if err != nil {
-		outputFile.Close()
 		return nil, err
 	}
 
-	return outputFile, nil
+	return file, nil
 }

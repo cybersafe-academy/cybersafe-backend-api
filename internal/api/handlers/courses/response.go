@@ -68,7 +68,7 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			Title:          course.Title,
 			Description:    course.Description,
 			ContentInHours: course.ContentInHours,
-			ThumbnailURL:   course.Description,
+			ThumbnailURL:   course.ThumbnailURL,
 			Level:          course.Level,
 			ContentURL:     course.ContentURL,
 		},

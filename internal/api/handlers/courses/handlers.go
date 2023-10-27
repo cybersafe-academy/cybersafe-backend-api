@@ -5,8 +5,13 @@ import (
 	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
+	"fmt"
+	"log"
+	"os"
 
+	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -121,6 +126,30 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
+	if err != nil {
+		log.Println("Error converting base64 image to file", err)
+
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	thumbnailURL := fmt.Sprintf("thumbnails/%s", thumbnailPictureFile.Name())
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
+	if err != nil {
+		log.Println("Error uploading file to S3", err)
+
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	err = os.Remove(thumbnailPictureFile.Name())
+	if err != nil {
+		log.Println("Error removing file", err)
+	}
+
+	courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
 	course := courseRequest.ToEntity()
 
 	err = c.Components.Resources.Courses.Create(course)
@@ -186,11 +215,35 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 
 	id := chi.URLParam(c.HttpRequest, "id")
-
 	if !govalidator.IsUUID(id) {
 		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
 		return
 	}
+
+	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
+	if err != nil {
+		log.Println("Error converting base64 image to file", err)
+
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	thumbnailURL := fmt.Sprintf("thumbnails/%s", thumbnailPictureFile.Name())
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
+	if err != nil {
+		log.Println("Error uploading file to S3", err)
+
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	err = os.Remove(thumbnailPictureFile.Name())
+	if err != nil {
+		log.Println("Error removing file", err)
+	}
+
+	courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
 
 	course := courseRequest.ToEntity()
 	course.ID = uuid.MustParse(id)

@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"net/http"
@@ -357,27 +358,31 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	email, _ := c.Components.Cache.Get(
+	email, found := c.Components.Cache.Get(
 		cacheutil.KeyWithPrefix(cacheutil.FirstAccessPrefix, randomToken),
 	)
-
-	// if !found {
-	// 	components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
-	// 	return
-	// }
+	if !found {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrUserResourceNotFound)
+		return
+	}
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", email)
-	profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture, "image")
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
 	if err != nil {
 		log.Println("Error converting base64 to file:", err)
 	}
 
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.bucketName"), profilePictureURL, profilePictureFile)
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, profilePictureFile)
 	if err != nil {
 		log.Println("Error uploading file to S3 bucket:", err)
+	}
+
+	err = os.Remove(profilePictureFile.Name())
+	if err != nil {
+		log.Println("Error deleting file from local storage:", err)
 	}
 
 	user := &models.User{
@@ -385,7 +390,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 		Name:              finishSignupRequest.Name,
 		BirthDate:         birthDate,
 		CPF:               finishSignupRequest.CPF,
-		ProfilePictureURL: profilePictureURL,
+		ProfilePictureURL: (c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL),
 		Password:          finishSignupRequest.Password,
 	}
 
