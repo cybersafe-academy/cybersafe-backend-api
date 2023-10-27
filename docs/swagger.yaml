@@ -659,6 +659,24 @@ paths:
       tags:
       - Company
   /courses:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpmodels.CourseByCategoryResponse'
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: List all courses grouped by category
+      tags:
+      - Course
     post:
       parameters:
       - description: Request payload for creating a new course
@@ -682,41 +700,6 @@ paths:
       - Bearer: []
       - Language: []
       summary: Create a course
-      tags:
-      - Course
-  /courses/:
-    get:
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Limit of elements per page
-        in: query
-        name: limit
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/pagination.PaginationData'
-              - properties:
-                  data:
-                    $ref: '#/definitions/httpmodels.ResponseContent'
-                type: object
-            type: array
-        "400":
-          description: Bad Request
-        default:
-          description: Standard error example object
-          schema:
-            $ref: '#/definitions/components.Response'
-      security:
-      - Bearer: []
-      - Language: []
-      summary: List courses with paginated response
       tags:
       - Course
   /courses/{courseID}/comments/{commentID}/likes:
@@ -1124,11 +1107,27 @@ paths:
       - Course
   /management:
     get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit of elements per page
+        in: query
+        name: limit
+        type: integer
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/httpmodels.CourseByCategoryResponse'
+            items:
+              allOf:
+              - $ref: '#/definitions/pagination.PaginationData'
+              - properties:
+                  data:
+                    $ref: '#/definitions/httpmodels.ResponseContent'
+                type: object
+            type: array
         "400":
           description: Bad Request
         default:
@@ -1138,7 +1137,7 @@ paths:
       security:
       - Bearer: []
       - Language: []
-      summary: List all courses grouped by category
+      summary: List courses with paginated response
       tags:
       - Course
   /users:

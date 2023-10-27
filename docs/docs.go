@@ -507,6 +507,37 @@ const docTemplate = `{
             }
         },
         "/courses": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "List all courses grouped by category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -536,68 +567,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/httpmodels.ResponseContent"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/courses/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "List courses with paginated response",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit of elements per page",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/httpmodels.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     },
                     "400": {
@@ -1299,12 +1268,41 @@ const docTemplate = `{
                 "tags": [
                     "Course"
                 ],
-                "summary": "List all courses grouped by category",
+                "summary": "List courses with paginated response",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit of elements per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/pagination.PaginationData"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/httpmodels.ResponseContent"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     },
                     "400": {
