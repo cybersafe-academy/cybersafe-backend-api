@@ -16,7 +16,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Get("/management", func(w http.ResponseWriter, r *http.Request) {
-			ListCoursesHandler(components.HttpComponents(w, r, c))
+			FetchCoursesHandler(components.HttpComponents(w, r, c))
 		})
 
 		r.Post("/", func(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +52,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Use(middlewares.Authorizer(c))
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			FetchCoursesHandler(components.HttpComponents(w, r, c))
+			ListCoursesHandler(components.HttpComponents(w, r, c))
 		})
 
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {

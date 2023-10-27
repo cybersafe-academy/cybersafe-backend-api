@@ -19,11 +19,13 @@ var (
 type Course struct {
 	Shared
 
-	Title          string
-	Description    string
-	ContentInHours float64
-	ThumbnailURL   string
-	Level          string
+	Title           string
+	Description     string
+	TitlePtBr       string
+	DescriptionPtBr string
+	ContentInHours  float64
+	ThumbnailURL    string
+	Level           string
 
 	CategoryID uuid.UUID
 	Category   Category `gorm:"foreignKey:CategoryID"`
