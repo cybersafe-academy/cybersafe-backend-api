@@ -1,42 +1,65 @@
 package helpers
 
 import (
-	"bytes"
 	"encoding/base64"
+	"image"
+	_ "image/jpeg"
+	"image/png"
 	"os"
 	"strings"
 
-	"github.com/google/uuid"
+	"github.com/nfnt/resize"
 )
 
 func ConvertBase64ImageToFile(base64Image string) (*os.File, error) {
-	base64Image = strings.SplitN(base64Image, ",", 2)[1]
+	// Remove the prefix
+	imgData := strings.Split(base64Image, ",")[1]
 
-	imageData, err := base64.StdEncoding.DecodeString(base64Image)
+	// Decode the base64 string
+	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(imgData))
+
+	// Decode the image
+	img, _, err := image.Decode(reader)
 	if err != nil {
 		return nil, err
 	}
 
-	buffer := bytes.NewBuffer(imageData)
-
-	tempFile, err := os.CreateTemp("", "image-*.jpg")
-	if err != nil {
-		return nil, err
-	}
-	defer tempFile.Close()
-
-	_, err = buffer.WriteTo(tempFile)
+	// Create a new file
+	file, err := os.Create("tmp.png")
 	if err != nil {
 		return nil, err
 	}
 
-	newFileName := uuid.NewString() + ".jpg"
-	os.Rename(tempFile.Name(), newFileName)
+	// Encode the image to file
+	err = png.Encode(file, img)
+	if err != nil {
+		return nil, err
+	}
 
-	file, err := os.Open(newFileName)
+	// Return the file pointer to the beginning
+	_, err = file.Seek(0, 0)
 	if err != nil {
 		return nil, err
 	}
 
 	return file, nil
+}
+
+func ResizeImage(inputFile *os.File, outputFile *os.File, weight, height uint) error {
+	// Decode the image
+	img, _, err := image.Decode(inputFile)
+	if err != nil {
+		return err
+	}
+
+	// Resize the image to width 1280px and height 720px
+	img = resize.Resize(weight, height, img, resize.Lanczos3)
+
+	// Crie um novo arquivo de imagem de saída
+	err = png.Encode(outputFile, img)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
