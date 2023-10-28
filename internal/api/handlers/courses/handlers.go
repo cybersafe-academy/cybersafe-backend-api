@@ -135,8 +135,6 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
 	if err != nil {
-		log.Println("Error converting base64 image to file", err)
-
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
@@ -153,7 +151,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 	thumbnailURL := fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
 	if err != nil {
 		log.Println("Error uploading file to S3", err)
 
@@ -242,8 +240,6 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 
 	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
 	if err != nil {
-		log.Println("Error converting base64 image to file", err)
-
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
@@ -260,7 +256,7 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 
 	thumbnailURL := fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
 	if err != nil {
 		log.Println("Error uploading file to S3", err)
 

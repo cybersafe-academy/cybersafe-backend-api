@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -25,6 +26,8 @@ func (c *S3Client) UploadFile(bucketName string, objectKey string, file *os.File
 			Body:   file,
 		})
 	if err != nil {
+		log.Println("Error uploading file to S3: ", err)
+
 		return err
 	}
 

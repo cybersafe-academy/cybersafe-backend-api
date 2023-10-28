@@ -67,5 +67,11 @@ func ResizeImage(inputFile *os.File, weight, height uint) (*os.File, error) {
 		return nil, err
 	}
 
+	// Return the file pointer to the beginning
+	_, err = outputFile.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	return outputFile, nil
 }
