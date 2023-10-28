@@ -776,68 +776,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/courses/management": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    },
-                    {
-                        "Language": []
-                    }
-                ],
-                "tags": [
-                    "Course"
-                ],
-                "summary": "List courses with paginated response",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit of elements per page",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/pagination.PaginationData"
-                                    },
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            "data": {
-                                                "$ref": "#/definitions/httpmodels.ResponseContent"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "default": {
-                        "description": "Standard error example object",
-                        "schema": {
-                            "$ref": "#/definitions/components.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/courses/{courseID}/comments/{commentID}/likes": {
             "post": {
                 "security": [
@@ -1307,6 +1245,68 @@ const docTemplate = `{
                     },
                     "409": {
                         "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/management": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "List courses with paginated response",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit of elements per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/pagination.PaginationData"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/httpmodels.ResponseContent"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "default": {
                         "description": "Standard error example object",
@@ -1983,6 +1983,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "descriptionPtBr": {
+                    "type": "string"
+                },
                 "level": {
                     "type": "string"
                 },
@@ -1996,6 +1999,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "titlePtBr": {
                     "type": "string"
                 }
             }
@@ -2024,6 +2030,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "descriptionPtBr": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2040,6 +2049,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "titlePtBr": {
                     "type": "string"
                 },
                 "updatedAt": {

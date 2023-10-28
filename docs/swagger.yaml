@@ -205,6 +205,8 @@ definitions:
         type: string
       description:
         type: string
+      descriptionPtBr:
+        type: string
       level:
         type: string
       questions:
@@ -214,6 +216,8 @@ definitions:
       thumbnailURL:
         type: string
       title:
+        type: string
+      titlePtBr:
         type: string
     type: object
   httpmodels.ResponseContent:
@@ -232,6 +236,8 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       description:
         type: string
+      descriptionPtBr:
+        type: string
       id:
         type: string
       level:
@@ -243,6 +249,8 @@ definitions:
       thumbnailURL:
         type: string
       title:
+        type: string
+      titlePtBr:
         type: string
       updatedAt:
         type: string
@@ -1097,7 +1105,7 @@ paths:
       summary: Update category by ID
       tags:
       - Course
-  /courses/management:
+  /management:
     get:
       parameters:
       - description: Page number

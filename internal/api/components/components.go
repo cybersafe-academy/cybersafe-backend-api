@@ -6,6 +6,7 @@ import (
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/db"
 	"cybersafe-backend-api/pkg/environment"
+	"cybersafe-backend-api/pkg/internationalization"
 	"cybersafe-backend-api/pkg/logger"
 	"cybersafe-backend-api/pkg/mail"
 	"cybersafe-backend-api/pkg/settings"
@@ -16,6 +17,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/rs/zerolog"
 )
 
@@ -23,6 +25,8 @@ type Components struct {
 	Environment string
 	Router      *chi.Mux
 	Logger      *zerolog.Logger
+	Bundle      *i18n.Bundle
+	Localizer   *i18n.Localizer
 	Settings    settings.Settings
 	Resources   services.Resources
 	Cache       cacheutil.Cacher
@@ -78,6 +82,9 @@ func Config() *Components {
 		panic("Error occurred while trying to run migrations...")
 	}
 
+	//Internationalization
+	bundle := internationalization.Config()
+
 	//Resources
 	resources := services.Config(dbConn)
 
@@ -88,6 +95,7 @@ func Config() *Components {
 		Cache:       cache,
 		Mail:        mailer,
 		Resources:   resources,
+		Bundle:      bundle,
 	}
 }
 

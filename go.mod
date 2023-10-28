@@ -21,6 +21,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.19.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.40.2
 	github.com/go-chi/cors v1.2.1
+	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/stretchr/testify v1.8.4
 )
 
@@ -66,7 +67,7 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.7
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

@@ -19,8 +19,8 @@ type GmailMailer struct {
 
 func Config(config settings.Settings) Mailer {
 	return &GmailMailer{
-		Email:    config.String("mail.email"),
-		Password: config.String("mail.password"),
+		Email:    config.String("notification.user"),
+		Password: config.String("notification.password"),
 	}
 }
 

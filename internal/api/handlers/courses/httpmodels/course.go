@@ -12,12 +12,14 @@ import (
 )
 
 type CourseFields struct {
-	Title          string  `json:"title" valid:"required"`
-	Description    string  `json:"description" valid:"required"`
-	ContentInHours float64 `json:"contentInHours" valid:"required"`
-	ThumbnailURL   string  `json:"thumbnailURL" valid:"required"`
-	Level          string  `json:"level" valid:"required"`
-	ContentURL     string  `json:"contentURL" valid:"required"`
+	Title           string  `json:"title"`
+	Description     string  `json:"description"`
+	TitlePtBr       string  `json:"titlePtBr"`
+	DescriptionPtBr string  `json:"descriptionPtBr"`
+	ContentInHours  float64 `json:"contentInHours" valid:"required"`
+	ThumbnailURL    string  `json:"thumbnailURL" valid:"required"`
+	Level           string  `json:"level" valid:"required"`
+	ContentURL      string  `json:"contentURL" valid:"required"`
 }
 
 type CourseResponse struct {
@@ -94,13 +96,15 @@ func (re *RequestContent) Bind(_ *http.Request) error {
 
 func (re *RequestContent) ToEntity() *models.Course {
 	course := &models.Course{
-		Title:          re.Title,
-		Description:    re.Description,
-		ContentInHours: re.ContentInHours,
-		ThumbnailURL:   re.ThumbnailURL,
-		Level:          re.Level,
-		CategoryID:     re.CategoryID,
-		ContentURL:     re.ContentURL,
+		Title:           re.Title,
+		Description:     re.Description,
+		TitlePtBr:       re.TitlePtBr,
+		DescriptionPtBr: re.DescriptionPtBr,
+		ContentInHours:  re.ContentInHours,
+		ThumbnailURL:    re.ThumbnailURL,
+		Level:           re.Level,
+		CategoryID:      re.CategoryID,
+		ContentURL:      re.ContentURL,
 	}
 
 	for _, question := range re.Questions {

@@ -12,6 +12,7 @@ type Settings interface {
 	Int64(string) int64
 	Bool(string) bool
 	Strings(string) []string
+	StrWDefault(string, string) string
 }
 
 type settings struct {
