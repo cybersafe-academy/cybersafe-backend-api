@@ -52,8 +52,9 @@ type Category struct {
 type Content struct {
 	Shared
 
-	Title string
-	URL   string
+	Title     string
+	TitlePtBr string
+	URL       string
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`
@@ -75,7 +76,8 @@ type Review struct {
 type Question struct {
 	Shared
 
-	Wording string
+	Wording     string
+	WordingPtBr string
 
 	CourseID uuid.UUID
 	Course   Course `gorm:"foreignKey:CourseID"`
@@ -90,5 +92,6 @@ type Answer struct {
 	Question   Question `gorm:"foreignKey:QuestionID"`
 
 	Text      string
+	TextPtBr  string
 	IsCorrect bool
 }

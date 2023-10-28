@@ -17,5 +17,6 @@ type QuestionResponse struct {
 }
 
 type QuestionFields struct {
-	Wording string `json:"wording"`
+	Wording     string `json:"wording"`
+	WordingPtBr string `json:"wording-pt-br"`
 }

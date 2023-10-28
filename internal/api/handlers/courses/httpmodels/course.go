@@ -69,6 +69,7 @@ type RawCoursesByCategory struct {
 	CourseID uuid.UUID
 
 	CourseTitle          string
+	CourseTitlePtBr      string
 	CourseThumbnailURL   string
 	CourseContentURL     string
 	AvgRating            float64

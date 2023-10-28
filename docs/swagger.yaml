@@ -130,12 +130,16 @@ definitions:
         type: boolean
       text:
         type: string
+      text-pt-br:
+        type: string
     type: object
   httpmodels.AnswerResponse:
     properties:
       id:
         type: string
       text:
+        type: string
+      text-pt-br:
         type: string
     type: object
   httpmodels.CategoryRequest:
@@ -183,6 +187,8 @@ definitions:
         type: array
       wording:
         type: string
+      wording-pt-br:
+        type: string
     type: object
   httpmodels.QuestionResponse:
     properties:
@@ -193,6 +199,8 @@ definitions:
       id:
         type: string
       wording:
+        type: string
+      wording-pt-br:
         type: string
     type: object
   httpmodels.RequestContent:

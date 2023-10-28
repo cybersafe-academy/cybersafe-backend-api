@@ -18,7 +18,8 @@ type AnswerResponse struct {
 }
 
 type AnswerFields struct {
-	Text string `json:"text"`
+	Text     string `json:"text"`
+	TextPtBr string `json:"text-pt-br"`
 }
 
 type AddAnswerRequest struct {

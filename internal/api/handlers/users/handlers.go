@@ -149,7 +149,32 @@ func CreateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	profilePictureURL := ""
+	if userRequest.ProfilePictureURL == "" {
+		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
+		if err != nil {
+			log.Println("Error converting base64 to file:", err)
+		}
+		defer os.Remove(profilePictureFile.Name())
+
+		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+		if err != nil {
+			log.Println("Error resizing image:", err)
+		}
+		defer os.Remove(croppedPictureFile.Name())
+
+		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+
+		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+		defer func() {
+			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
+		}()
+
+		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+	}
+
 	user := userRequest.ToEntity()
+	user.ProfilePictureURL = profilePictureURL
 
 	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -313,27 +338,33 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
-	if err != nil {
-		log.Println("Error converting base64 to file:", err)
-	}
+	profilePictureURL := ""
+	if userRequest.ProfilePictureURL == "" {
+		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
+		if err != nil {
+			log.Println("Error converting base64 to file:", err)
+		}
+		defer os.Remove(profilePictureFile.Name())
 
-	err = os.Remove(profilePictureFile.Name())
-	if err != nil {
-		log.Println("Error deleting file from local storage:", err)
-	}
+		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+		if err != nil {
+			log.Println("Error resizing image:", err)
+		}
+		defer os.Remove(croppedPictureFile.Name())
 
-	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
-	if err != nil {
-		log.Println("Error resizing image:", err)
-	}
-	defer os.Remove(croppedPictureFile.Name())
+		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+		defer func() {
+			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
+		}()
+
+		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+	}
 
 	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)
-	user.ProfilePictureURL = c.Components.Settings.String("aws.usersBucketURL") + profilePictureURL
+	user.ProfilePictureURL = profilePictureURL
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
 
@@ -349,9 +380,6 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		}))
 		return
 	}
-
-	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	response := ToResponse(*user)
 

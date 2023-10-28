@@ -392,26 +392,36 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
-	profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
-	if err != nil {
-		log.Println("Error converting base64 to file:", err)
-	}
-	defer os.Remove(profilePictureFile.Name())
+	profilePictureURL := ""
+	if finishSignupRequest.ProfilePicture == "" {
+		profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
+		if err != nil {
+			log.Println("Error converting base64 to file:", err)
+		}
+		defer os.Remove(profilePictureFile.Name())
 
-	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
-	if err != nil {
-		log.Println("Error resizing image:", err)
-	}
-	defer os.Remove(croppedPictureFile.Name())
+		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+		if err != nil {
+			log.Println("Error resizing image:", err)
+		}
+		defer os.Remove(croppedPictureFile.Name())
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+
+		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+		defer func() {
+			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
+		}()
+
+		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+	}
 
 	user := &models.User{
 		Email:             email.(string),
 		Name:              finishSignupRequest.Name,
 		BirthDate:         birthDate,
 		CPF:               finishSignupRequest.CPF,
-		ProfilePictureURL: c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL,
+		ProfilePictureURL: profilePictureURL,
 		Password:          finishSignupRequest.Password,
 	}
 
@@ -442,9 +452,6 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 			return
 		}
 	}
-
-	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	c.Components.Cache.Delete(randomToken)
 
