@@ -11,7 +11,7 @@ application:
   issuer: cybersafe
 
 docs:
-  host: ec2-52-67-31-102.sa-east-1.compute.amazonaws.com
+  host: ec2-15-228-243-181.sa-east-1.compute.amazonaws.com
   basePath: /api
   port: 8080
 
@@ -24,7 +24,14 @@ notification:
   password: "rmqzhuirbnlravbc"
 
 frontend:
-  host: localhost
-  port: 5173
+  host: ec2-18-230-115-74.sa-east-1.compute.amazonaws.com
+  port: 80
   updatePasswordEndpoint: /update-password
   firstAccessEndpoint: /finish-signup
+
+aws:
+  region: sa-east-1
+  usersBucketName: cybersafe-users
+  usersbucketURL: https://cybersafe-users.s3.sa-east-1.amazonaws.com/
+  coursesBucketName: cybersafe-courses
+  coursesBucketURL: https://cybersafe-courses.s3.sa-east-1.amazonaws.com/

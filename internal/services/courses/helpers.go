@@ -20,6 +20,7 @@ func GroupCoursesByCategory(rawCourses []httpmodels.RawCoursesByCategory) httpmo
 			"id":             course.CourseID,
 			"title":          course.CourseTitle,
 			"titlePtBr":      course.CourseTitlePtBr,
+			"title_pt_br":    course.CourseTitlePtBr,
 			"thumbnailURL":   course.CourseThumbnailURL,
 			"avgRating":      course.AvgRating,
 			"contentURL":     course.CourseContentURL,

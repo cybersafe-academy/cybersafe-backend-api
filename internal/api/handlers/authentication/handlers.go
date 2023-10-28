@@ -4,12 +4,15 @@ import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/cacheutil"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"net/http"
@@ -379,7 +382,6 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	email, found := c.Components.Cache.Get(
 		cacheutil.KeyWithPrefix(cacheutil.FirstAccessPrefix, randomToken),
 	)
-
 	if !found {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest,
 			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -390,12 +392,27 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
+	if err != nil {
+		log.Println("Error converting base64 to file:", err)
+	}
+	defer os.Remove(profilePictureFile.Name())
+
+	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+	if err != nil {
+		log.Println("Error resizing image:", err)
+	}
+	defer os.Remove(croppedPictureFile.Name())
+
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+
 	user := &models.User{
-		Email:     email.(string),
-		Name:      finishSignupRequest.Name,
-		BirthDate: birthDate,
-		CPF:       finishSignupRequest.CPF,
-		Password:  finishSignupRequest.Password,
+		Email:             email.(string),
+		Name:              finishSignupRequest.Name,
+		BirthDate:         birthDate,
+		CPF:               finishSignupRequest.CPF,
+		ProfilePictureURL: c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL,
+		Password:          finishSignupRequest.Password,
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -425,6 +442,9 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 			return
 		}
 	}
+
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	c.Components.Cache.Delete(randomToken)
 

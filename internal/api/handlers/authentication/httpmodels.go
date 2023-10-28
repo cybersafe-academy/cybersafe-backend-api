@@ -33,10 +33,11 @@ type UpdatePasswordRequest struct {
 }
 
 type FinishSignupRequest struct {
-	Name      string `json:"name" valid:"type(string),"`
-	BirthDate string `json:"birthDate" valid:"date"`
-	CPF       string `json:"cpf" valid:"type(string), cpf,"`
-	Password  string `json:"password" valid:"stringlength(8|24)"`
+	Name           string `json:"name" valid:"type(string),"`
+	BirthDate      string `json:"birthDate" valid:"date"`
+	CPF            string `json:"cpf" valid:"type(string), cpf,"`
+	ProfilePicture string `json:"profilePicture"`
+	Password       string `json:"password" valid:"stringlength(8|24)"`
 }
 
 func (re *FinishSignupRequest) Bind(_ *http.Request) error {

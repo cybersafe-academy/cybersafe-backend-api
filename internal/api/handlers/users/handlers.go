@@ -3,9 +3,14 @@ package users
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
+	"fmt"
+	"log"
+	"os"
 
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -146,7 +151,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	user := userRequest.ToEntity()
 
-	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
+	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrInvalidUserRole",
 		}))
@@ -217,7 +222,7 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 		Email: preSignUpRequest.Email,
 	}
 
-	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
+	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrInvalidUserRole",
 		}))
@@ -308,9 +313,27 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	user := userRequest.ToEntity()
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
+	if err != nil {
+		log.Println("Error converting base64 to file:", err)
+	}
 
+	err = os.Remove(profilePictureFile.Name())
+	if err != nil {
+		log.Println("Error deleting file from local storage:", err)
+	}
+
+	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+	if err != nil {
+		log.Println("Error resizing image:", err)
+	}
+	defer os.Remove(croppedPictureFile.Name())
+
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
+
+	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)
+	user.ProfilePictureURL = c.Components.Settings.String("aws.usersBucketURL") + profilePictureURL
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
 
@@ -326,6 +349,9 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		}))
 		return
 	}
+
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	response := ToResponse(*user)
 
