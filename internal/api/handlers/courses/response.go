@@ -37,7 +37,8 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 		for _, question := range course.Questions {
 			questionModel := httpmodels.QuestionResponse{
 				QuestionFields: httpmodels.QuestionFields{
-					Wording: question.Wording,
+					Wording:     question.Wording,
+					WordingPtBr: question.WordingPtBr,
 				},
 				ID: question.CourseID,
 			}
@@ -45,7 +46,8 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 			for _, answer := range question.Answers {
 				questionModel.Answers = append(questionModel.Answers, httpmodels.AnswerResponse{
 					AnswerFields: httpmodels.AnswerFields{
-						Text: answer.Text,
+						Text:     answer.Text,
+						TextPtBr: answer.TextPtBr,
 					},
 					ID: answer.ID,
 				})
@@ -88,7 +90,8 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 		questionResponse := httpmodels.QuestionResponse{
 			ID: question.ID,
 			QuestionFields: httpmodels.QuestionFields{
-				Wording: question.Wording,
+				Wording:     question.Wording,
+				WordingPtBr: question.WordingPtBr,
 			},
 		}
 
@@ -97,7 +100,8 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 				httpmodels.AnswerResponse{
 					ID: answer.ID,
 					AnswerFields: httpmodels.AnswerFields{
-						Text: answer.Text,
+						Text:     answer.Text,
+						TextPtBr: answer.TextPtBr,
 					},
 				})
 		}
@@ -160,7 +164,8 @@ func ToQuestionsListResponse(questions []models.Question) []httpmodels.QuestionR
 
 		questionResponse := httpmodels.QuestionResponse{
 			QuestionFields: httpmodels.QuestionFields{
-				Wording: question.Wording,
+				Wording:     question.Wording,
+				WordingPtBr: question.WordingPtBr,
 			},
 			ID: question.ID,
 		}
@@ -170,7 +175,8 @@ func ToQuestionsListResponse(questions []models.Question) []httpmodels.QuestionR
 		for _, answer := range question.Answers {
 			answerResponse = append(answerResponse, httpmodels.AnswerResponse{
 				AnswerFields: httpmodels.AnswerFields{
-					Text: answer.Text,
+					Text:     answer.Text,
+					TextPtBr: answer.TextPtBr,
 				},
 				ID: answer.ID,
 			})
