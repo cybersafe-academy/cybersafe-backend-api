@@ -45,21 +45,26 @@ func ConvertBase64ImageToFile(base64Image string) (*os.File, error) {
 	return file, nil
 }
 
-func ResizeImage(inputFile *os.File, outputFile *os.File, weight, height uint) error {
+func ResizeImage(inputFile *os.File, weight, height uint) (*os.File, error) {
 	// Decode the image
 	img, _, err := image.Decode(inputFile)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Resize the image to width 1280px and height 720px
 	img = resize.Resize(weight, height, img, resize.Lanczos3)
 
+	outputFile, err := os.Create("tmp_cropped.png")
+	if err != nil {
+		return nil, err
+	}
+
 	// Crie um novo arquivo de imagem de saída
 	err = png.Encode(outputFile, img)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return outputFile, nil
 }

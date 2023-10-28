@@ -142,22 +142,14 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(thumbnailPictureFile.Name())
 
-	croppedPictureFile, err := os.Create("cropped.png")
-	if err != nil {
-		log.Println("Error creating file", err)
-
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-		return
-	}
-	defer os.Remove(croppedPictureFile.Name())
-
-	err = helpers.ResizeImage(thumbnailPictureFile, croppedPictureFile, 1280, 720)
+	croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
 	if err != nil {
 		log.Println("Error resizing image", err)
 
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
+	defer os.Remove(croppedPictureFile.Name())
 
 	thumbnailURL := fmt.Sprintf("thumbnails/%s", uuid.NewString())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
@@ -257,22 +249,14 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(thumbnailPictureFile.Name())
 
-	croppedPictureFile, err := os.Create("cropped.png")
-	if err != nil {
-		log.Println("Error creating file", err)
-
-		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-		return
-	}
-	defer os.Remove(croppedPictureFile.Name())
-
-	err = helpers.ResizeImage(thumbnailPictureFile, croppedPictureFile, 1280, 720)
+	croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
 	if err != nil {
 		log.Println("Error resizing image", err)
 
 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 		return
 	}
+	defer os.Remove(croppedPictureFile.Name())
 
 	thumbnailURL := fmt.Sprintf("thumbnails/%s", uuid.NewString())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))

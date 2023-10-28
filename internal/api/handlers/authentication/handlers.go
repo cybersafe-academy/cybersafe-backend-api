@@ -396,17 +396,19 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	if err != nil {
 		log.Println("Error converting base64 to file:", err)
 	}
+	defer os.Remove(profilePictureFile.Name())
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
+	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+	if err != nil {
+		log.Println("Error resizing image:", err)
+	}
+	defer os.Remove(croppedPictureFile.Name())
+
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", uuid.New())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, profilePictureFile)
+	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 	if err != nil {
 		log.Println("Error uploading file to S3 bucket:", err)
-	}
-
-	err = os.Remove(profilePictureFile.Name())
-	if err != nil {
-		log.Println("Error deleting file from local storage:", err)
 	}
 
 	user := &models.User{

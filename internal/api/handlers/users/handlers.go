@@ -151,7 +151,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	user := userRequest.ToEntity()
 
-	if models.RoleToHierarchyNumber(user.Role) >= models.RoleToHierarchyNumber(currentUser.Role) {
+	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrInvalidUserRole",
 		}))
