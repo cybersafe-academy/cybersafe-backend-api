@@ -43,6 +43,7 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 				AVG(r.rating) AS avg_rating,
 				c.id AS course_id,
 				c.title AS course_title,
+				c.title_pt_br AS course_title_pt_br,
 				c.description AS course_description,
 				c.title_pt_br AS course_title_pt_br,
 				c.content_in_hours AS course_content_in_hours,

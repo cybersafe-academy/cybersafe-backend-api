@@ -1857,6 +1857,9 @@
                 },
                 "text": {
                     "type": "string"
+                },
+                "text-pt-br": {
+                    "type": "string"
                 }
             }
         },
@@ -1867,6 +1870,9 @@
                     "type": "string"
                 },
                 "text": {
+                    "type": "string"
+                },
+                "text-pt-br": {
                     "type": "string"
                 }
             }
@@ -1939,6 +1945,9 @@
                 },
                 "wording": {
                     "type": "string"
+                },
+                "wording-pt-br": {
+                    "type": "string"
                 }
             }
         },
@@ -1955,6 +1964,9 @@
                     "type": "string"
                 },
                 "wording": {
+                    "type": "string"
+                },
+                "wording-pt-br": {
                     "type": "string"
                 }
             }

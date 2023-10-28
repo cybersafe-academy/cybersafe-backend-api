@@ -1866,6 +1866,9 @@ const docTemplate = `{
                 },
                 "text": {
                     "type": "string"
+                },
+                "text-pt-br": {
+                    "type": "string"
                 }
             }
         },
@@ -1876,6 +1879,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "text": {
+                    "type": "string"
+                },
+                "text-pt-br": {
                     "type": "string"
                 }
             }
@@ -1948,6 +1954,9 @@ const docTemplate = `{
                 },
                 "wording": {
                     "type": "string"
+                },
+                "wording-pt-br": {
+                    "type": "string"
                 }
             }
         },
@@ -1964,6 +1973,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wording": {
+                    "type": "string"
+                },
+                "wording-pt-br": {
                     "type": "string"
                 }
             }
