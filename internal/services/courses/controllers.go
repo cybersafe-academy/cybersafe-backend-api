@@ -44,6 +44,7 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 				c.id AS course_id,
 				c.title AS course_title,
 				c.description AS course_description,
+				c.title_pt_br AS course_title_pt_br,
 				c.content_in_hours AS course_content_in_hours,
 				c.thumbnail_url AS course_thumbnail_url,
 				c.level AS course_level,

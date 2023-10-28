@@ -19,6 +19,7 @@ func GroupCoursesByCategory(rawCourses []httpmodels.RawCoursesByCategory) httpmo
 		courseData := map[string]any{
 			"id":             course.CourseID,
 			"title":          course.CourseTitle,
+			"title_pt_br":    course.CourseTitle,
 			"thumbnailURL":   course.CourseThumbnailURL,
 			"avgRating":      course.AvgRating,
 			"contentURL":     course.CourseContentURL,
