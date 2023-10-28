@@ -22,7 +22,7 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				TitlePtBr:       course.TitlePtBr,
 				DescriptionPtBr: course.DescriptionPtBr,
 				ContentInHours:  course.ContentInHours,
-				ThumbnailURL:    course.Description,
+				ThumbnailURL:    course.ThumbnailURL,
 				Level:           course.Level,
 				ContentURL:      course.ContentURL,
 			},
