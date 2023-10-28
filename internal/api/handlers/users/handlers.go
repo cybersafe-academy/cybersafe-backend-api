@@ -329,7 +329,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(croppedPictureFile.Name())
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
 
 	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)

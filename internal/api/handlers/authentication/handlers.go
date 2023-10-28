@@ -404,7 +404,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(croppedPictureFile.Name())
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", uuid.New())
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
 
 	user := &models.User{
 		Email:             email.(string),

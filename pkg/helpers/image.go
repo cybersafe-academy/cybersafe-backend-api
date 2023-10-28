@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/nfnt/resize"
 )
 
@@ -55,7 +56,7 @@ func ResizeImage(inputFile *os.File, weight, height uint) (*os.File, error) {
 	// Resize the image to width 1280px and height 720px
 	img = resize.Resize(weight, height, img, resize.Lanczos3)
 
-	outputFile, err := os.Create("tmp_cropped.png")
+	outputFile, err := os.Create(uuid.NewString() + ".png")
 	if err != nil {
 		return nil, err
 	}
