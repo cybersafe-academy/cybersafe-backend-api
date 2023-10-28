@@ -280,7 +280,7 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePicture)
+	profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
 	if err != nil {
 		log.Println("Error converting base64 to file:", err)
 	}

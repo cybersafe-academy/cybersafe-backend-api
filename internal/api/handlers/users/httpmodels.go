@@ -13,12 +13,12 @@ import (
 )
 
 type UserFields struct {
-	Name           string `json:"name"`
-	Role           string `json:"role"`
-	Email          string `json:"email" valid:"email, required"`
-	BirthDate      string `json:"birthDate" valid:"date"`
-	CPF            string `json:"cpf" valid:"cpf"`
-	ProfilePicture string `json:"profilePicture"`
+	Name              string `json:"name"`
+	Role              string `json:"role"`
+	Email             string `json:"email" valid:"email, required"`
+	BirthDate         string `json:"birthDate" valid:"date"`
+	CPF               string `json:"cpf" valid:"cpf"`
+	ProfilePictureURL string `json:"profilePictureURL"`
 }
 
 type ResponseContent struct {
@@ -96,7 +96,7 @@ func (re *RequestContent) ToEntity() *models.User {
 		Email:             re.Email,
 		BirthDate:         birthDate,
 		CPF:               re.CPF,
-		ProfilePictureURL: re.ProfilePicture,
+		ProfilePictureURL: re.ProfilePictureURL,
 		Role:              re.Role,
 		Password:          re.Password,
 	}
