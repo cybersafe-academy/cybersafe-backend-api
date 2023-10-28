@@ -14,10 +14,15 @@ import (
 
 func ConvertBase64ImageToFile(base64Image string) (*os.File, error) {
 	// Remove the prefix
-	imgData := strings.Split(base64Image, ",")[1]
+	imgData := strings.Split(base64Image, ",")
+
+	// Check the length of the slice
+	if len(imgData) != 2 {
+		return nil, nil
+	}
 
 	// Decode the base64 string
-	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(imgData))
+	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(imgData[1]))
 
 	// Decode the image
 	img, _, err := image.Decode(reader)
