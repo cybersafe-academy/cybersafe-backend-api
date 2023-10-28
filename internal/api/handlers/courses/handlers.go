@@ -151,7 +151,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(croppedPictureFile.Name())
 
-	thumbnailURL := fmt.Sprintf("thumbnails/%s", uuid.NewString())
+	thumbnailURL := fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
 	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
 	if err != nil {
@@ -258,7 +258,7 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	}
 	defer os.Remove(croppedPictureFile.Name())
 
-	thumbnailURL := fmt.Sprintf("thumbnails/%s", uuid.NewString())
+	thumbnailURL := fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
 	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, thumbnailPictureFile)
 	if err != nil {
