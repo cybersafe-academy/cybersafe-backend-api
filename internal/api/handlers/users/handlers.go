@@ -318,17 +318,18 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		log.Println("Error converting base64 to file:", err)
 	}
 
-	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
-	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, profilePictureFile)
-	if err != nil {
-		log.Println("Error uploading file to S3 bucket:", err)
-	}
-
 	err = os.Remove(profilePictureFile.Name())
 	if err != nil {
 		log.Println("Error deleting file from local storage:", err)
 	}
+
+	croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
+	if err != nil {
+		log.Println("Error resizing image:", err)
+	}
+	defer os.Remove(croppedPictureFile.Name())
+
+	profilePictureURL := fmt.Sprintf("profile-pictures/%s", profilePictureFile.Name())
 
 	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)
@@ -348,6 +349,9 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		}))
 		return
 	}
+
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	response := ToResponse(*user)
 

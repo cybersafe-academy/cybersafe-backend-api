@@ -405,11 +405,6 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	defer os.Remove(croppedPictureFile.Name())
 
 	profilePictureURL := fmt.Sprintf("profile-pictures/%s", uuid.New())
-	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	err = s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
-	if err != nil {
-		log.Println("Error uploading file to S3 bucket:", err)
-	}
 
 	user := &models.User{
 		Email:             email.(string),
@@ -447,6 +442,9 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 			return
 		}
 	}
+
+	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 
 	c.Components.Cache.Delete(randomToken)
 
