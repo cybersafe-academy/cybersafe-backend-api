@@ -133,8 +133,10 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	course := courseRequest.ToEntity()
+
 	thumbnailURL := ""
-	if courseRequest.ThumbnailURL == "" {
+	if courseRequest.ThumbnailURL != "" {
 		thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
 		if err != nil {
 			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
@@ -161,11 +163,8 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 			return
 		}
 
-		thumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
+		courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
 	}
-
-	course := courseRequest.ToEntity()
-	courseRequest.ThumbnailURL = thumbnailURL
 
 	err = c.Components.Resources.Courses.Create(course)
 
@@ -243,8 +242,11 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	course := courseRequest.ToEntity()
+	course.ID = uuid.MustParse(id)
+
 	thumbnailURL := ""
-	if courseRequest.ThumbnailURL == "" {
+	if courseRequest.ThumbnailURL != "" {
 		thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
 		if err != nil {
 			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
@@ -271,12 +273,8 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 			return
 		}
 
-		thumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
+		courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
 	}
-
-	course := courseRequest.ToEntity()
-	course.ID = uuid.MustParse(id)
-	courseRequest.ThumbnailURL = thumbnailURL
 
 	rowsAffected, err := c.Components.Resources.Courses.Update(course)
 

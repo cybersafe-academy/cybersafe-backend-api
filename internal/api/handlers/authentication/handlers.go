@@ -393,7 +393,7 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
 	profilePictureURL := ""
-	if finishSignupRequest.ProfilePicture == "" {
+	if finishSignupRequest.ProfilePicture != "" {
 		profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
 		if err != nil {
 			log.Println("Error converting base64 to file:", err)

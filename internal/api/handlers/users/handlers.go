@@ -149,8 +149,10 @@ func CreateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	user := userRequest.ToEntity()
+
 	profilePictureURL := ""
-	if userRequest.ProfilePictureURL == "" {
+	if userRequest.ProfilePictureURL != "" {
 		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
 		if err != nil {
 			log.Println("Error converting base64 to file:", err)
@@ -170,11 +172,8 @@ func CreateUserHandler(c *components.HTTPComponents) {
 			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 		}()
 
-		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+		user.ProfilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
 	}
-
-	user := userRequest.ToEntity()
-	user.ProfilePictureURL = profilePictureURL
 
 	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -338,8 +337,11 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		return
 	}
 
+	user := userRequest.ToEntity()
+	user.ID = uuid.MustParse(id)
+
 	profilePictureURL := ""
-	if userRequest.ProfilePictureURL == "" {
+	if userRequest.ProfilePictureURL != "" {
 		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
 		if err != nil {
 			log.Println("Error converting base64 to file:", err)
@@ -359,12 +361,8 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
 		}()
 
-		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+		user.ProfilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
 	}
-
-	user := userRequest.ToEntity()
-	user.ID = uuid.MustParse(id)
-	user.ProfilePictureURL = profilePictureURL
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
 
