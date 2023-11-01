@@ -5,13 +5,9 @@ import (
 	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
-	"fmt"
-	"log"
-	"os"
 
 	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -135,37 +131,32 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 	course := courseRequest.ToEntity()
 
-	// thumbnailURL := ""
-	// if courseRequest.ThumbnailURL != "" {
-	// 	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
-	// 	if err != nil {
-	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-	// 		return
-	// 	}
-	// 	defer os.Remove(thumbnailPictureFile.Name())
+	err = aws.HandleImageAndUploadToS3(
+		courseRequest.ThumbnailURL,
+		c.Components.Settings.String("aws.coursesBucketName"),
+		c.Components.Settings.String("aws.coursesThumbnailFolder"),
+		c.Components.Settings.String("aws.coursesBucketURL"),
+		c,
+		course,
+		1280,
+		720,
+	)
+	if err != nil {
+		errKey := "ErrUnexpectedError"
 
-	// 	croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
-	// 	if err != nil {
-	// 		log.Println("Error resizing image", err)
+		if errors.Is(err, errutil.ErrInvalidBase64Image) {
+			errKey = "ErrInvalidBase64Image"
+		}
 
-	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-	// 		return
-	// 	}
-	// 	defer os.Remove(croppedPictureFile.Name())
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: errKey}),
+		)
 
-	// 	thumbnailURL = fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
-	// 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-	// 	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
-	// 	if err != nil {
-	// 		log.Println("Error uploading file to S3", err)
-
-	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-	// 		return
-	// 	}
-
-	// 	courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
-	// }
-
+		return
+	}
+  
 	err = c.Components.Resources.Courses.Create(course)
 
 	if err != nil {
@@ -245,35 +236,30 @@ func UpdateCourseHandler(c *components.HTTPComponents) {
 	course := courseRequest.ToEntity()
 	course.ID = uuid.MustParse(id)
 
-	thumbnailURL := ""
-	if courseRequest.ThumbnailURL != "" {
-		thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
-		if err != nil {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
-		defer os.Remove(thumbnailPictureFile.Name())
+	err = aws.HandleImageAndUploadToS3(
+		courseRequest.ThumbnailURL,
+		c.Components.Settings.String("aws.coursesBucketName"),
+		c.Components.Settings.String("aws.coursesThumbnailFolder"),
+		c.Components.Settings.String("aws.coursesBucketURL"),
+		c,
+		course,
+		1280,
+		720,
+	)
+	if err != nil {
+		errKey := "ErrUnexpectedError"
 
-		croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
-		if err != nil {
-			log.Println("Error resizing image", err)
-
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
-		defer os.Remove(croppedPictureFile.Name())
-
-		thumbnailURL = fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
-		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-		err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
-		if err != nil {
-			log.Println("Error uploading file to S3", err)
-
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
+		if errors.Is(err, errutil.ErrInvalidBase64Image) {
+			errKey = "ErrInvalidBase64Image"
 		}
 
-		courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: errKey}),
+		)
+
+		return
 	}
 
 	rowsAffected, err := c.Components.Resources.Courses.Update(course)

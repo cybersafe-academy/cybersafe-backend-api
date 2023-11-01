@@ -18,7 +18,7 @@ type UserFields struct {
 	Email             string `json:"email" valid:"email, required"`
 	BirthDate         string `json:"birthDate" valid:"date"`
 	CPF               string `json:"cpf" valid:"cpf"`
-	ProfilePictureURL string `json:"profilePictureURL"`
+	ProfilePictureURL string `json:"profilePictureURL" valid:"url"`
 }
 
 type ResponseContent struct {

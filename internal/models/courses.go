@@ -37,6 +37,10 @@ type Course struct {
 	Enrollments []Enrollment `gorm:"foreignKey:CourseID"`
 }
 
+func (c *Course) SetImageURL(url string) {
+	c.ThumbnailURL = url
+}
+
 type CourseExtraFields struct {
 	Course
 

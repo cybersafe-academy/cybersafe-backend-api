@@ -2,8 +2,8 @@ package aws
 
 import (
 	"context"
+	"io"
 	"log"
-	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -17,7 +17,7 @@ func GetS3Client(sdkConfig aws.Config) S3Client {
 	return S3Client{Client: s3.NewFromConfig(sdkConfig)}
 }
 
-func (c *S3Client) UploadFile(bucketName string, objectKey string, file *os.File) error {
+func (c *S3Client) UploadFile(bucketName string, objectKey string, file io.Reader) error {
 	_, err := c.Client.PutObject(
 		context.TODO(),
 		&s3.PutObjectInput{

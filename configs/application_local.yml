@@ -33,5 +33,7 @@ aws:
   region: sa-east-1
   usersBucketName: cybersafe-users
   usersbucketURL: https://cybersafe-users.s3.sa-east-1.amazonaws.com/
+  usersProfilePictureFolder: profile-pictures
   coursesBucketName: cybersafe-courses
   coursesBucketURL: https://cybersafe-courses.s3.sa-east-1.amazonaws.com/
+  coursesThumbnailFolder: thumbnails

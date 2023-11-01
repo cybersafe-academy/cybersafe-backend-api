@@ -36,6 +36,10 @@ type User struct {
 	Enrollments []Enrollment `gorm:"foreignKey:UserID"`
 }
 
+func (u *User) SetImageURL(url string) {
+	u.ProfilePictureURL = url
+}
+
 type UserAnswer struct {
 	Shared
 

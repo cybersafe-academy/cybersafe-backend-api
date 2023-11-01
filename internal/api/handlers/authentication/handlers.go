@@ -6,13 +6,12 @@ import (
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/cacheutil"
+	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/jwtutil"
 	"cybersafe-backend-api/pkg/mail"
 	"errors"
 	"fmt"
-	"log"
-	"os"
 	"time"
 
 	"net/http"
@@ -392,37 +391,38 @@ func FinishSignupHandler(c *components.HTTPComponents) {
 
 	birthDate, _ := time.Parse(helpers.DefaultDateFormat(), finishSignupRequest.BirthDate)
 
-	profilePictureURL := ""
-	if finishSignupRequest.ProfilePicture != "" {
-		profilePictureFile, err := helpers.ConvertBase64ImageToFile(finishSignupRequest.ProfilePicture)
-		if err != nil {
-			log.Println("Error converting base64 to file:", err)
-		}
-		defer os.Remove(profilePictureFile.Name())
-
-		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
-		if err != nil {
-			log.Println("Error resizing image:", err)
-		}
-		defer os.Remove(croppedPictureFile.Name())
-
-		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
-
-		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-		defer func() {
-			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
-		}()
-
-		profilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+	user := &models.User{
+		Email:     email.(string),
+		Name:      finishSignupRequest.Name,
+		BirthDate: birthDate,
+		CPF:       finishSignupRequest.CPF,
+		Password:  finishSignupRequest.Password,
 	}
 
-	user := &models.User{
-		Email:             email.(string),
-		Name:              finishSignupRequest.Name,
-		BirthDate:         birthDate,
-		CPF:               finishSignupRequest.CPF,
-		ProfilePictureURL: profilePictureURL,
-		Password:          finishSignupRequest.Password,
+	err = aws.HandleImageAndUploadToS3(
+		finishSignupRequest.ProfilePicture,
+		c.Components.Settings.String("aws.usersBucketName"),
+		c.Components.Settings.String("aws.usersProfilePictureFolder"),
+		c.Components.Settings.String("aws.usersbucketURL"),
+		c,
+		user,
+		1280,
+		720,
+	)
+	if err != nil {
+		errKey := "ErrUnexpectedError"
+
+		if errors.Is(err, errutil.ErrInvalidBase64Image) {
+			errKey = "ErrInvalidBase64Image"
+		}
+
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: errKey}),
+		)
+
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
