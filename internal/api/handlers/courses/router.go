@@ -75,7 +75,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 			AddAnswer(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/questions/batch", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/{id}/questions/batch", func(w http.ResponseWriter, r *http.Request) {
 			AddAnswersBatch(components.HttpComponents(w, r, c))
 		})
 
@@ -89,6 +89,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 
 		r.Get("/{id}/enrollments", func(w http.ResponseWriter, r *http.Request) {
 			GetEnrollmentInfo(components.HttpComponents(w, r, c))
+		})
+
+		r.Post("/{id}/enroll", func(w http.ResponseWriter, r *http.Request) {
+			Enroll(components.HttpComponents(w, r, c))
 		})
 
 		r.Post("/{courseID}/comments/{commentID}/likes", func(w http.ResponseWriter, r *http.Request) {

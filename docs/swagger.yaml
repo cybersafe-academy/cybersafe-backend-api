@@ -877,6 +877,29 @@ paths:
       summary: Add a comment to a course
       tags:
       - Course
+  /courses/{id}/enroll:
+    post:
+      parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Enroll to a course
+      tags:
+      - Course
   /courses/{id}/enrollments:
     get:
       parameters:
@@ -931,6 +954,11 @@ paths:
       - Course
     post:
       parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Request payload for creating a review
         in: body
         name: request
@@ -955,6 +983,11 @@ paths:
   /courses/{id}/questions/batch:
     post:
       parameters:
+      - description: ID of course
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Request payload for adding answers
         in: body
         name: request
@@ -962,8 +995,8 @@ paths:
         schema:
           $ref: '#/definitions/httpmodels.AddAnswersBatchRequest'
       responses:
-        "204":
-          description: No content
+        "200":
+          description: OK
         "409":
           description: Conflict
         default:

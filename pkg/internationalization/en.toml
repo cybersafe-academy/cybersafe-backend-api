@@ -39,6 +39,9 @@ ErrReviewAlreadyExists = "Review already exists."
 #Course
 ErrInvalidContentType = "Invalid content type."
 
+#Enrollment
+ErrEnrollmentAlreadyExists = "Enrollment already exists."
+
 #Answer
 ErrUserAlreadyAnswerdQuestion = "User already answerd question."
 ErrCourseHasNoQuestionsAvailable = "Course has no question available."

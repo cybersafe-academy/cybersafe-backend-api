@@ -39,6 +39,9 @@ ErrReviewAlreadyExists = "Avaliação já existe."
 #Course
 ErrInvalidContentType = "Tipo de conteúdo inválido."
 
+#Enrollment
+ErrEnrollmentAlreadyExists = "Inscrição já existe."
+
 #Answer
 ErrUserAlreadyAnswerdQuestion = "Usuário já respondeu a questão."
 ErrCourseHasNoQuestionsAvailable = "Curso não possui questões disponiveis."

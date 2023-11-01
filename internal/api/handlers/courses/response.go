@@ -149,8 +149,7 @@ func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
 func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{
-			Status:       enrollment.Status,
-			QuizProgress: enrollment.QuizProgress,
+			Status: enrollment.Status,
 		},
 	}
 

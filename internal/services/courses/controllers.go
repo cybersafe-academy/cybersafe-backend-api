@@ -125,29 +125,32 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 		Update("progress", progress_percentage)
 }
 
-func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) error {
-	var questionsIDs []int64
+func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (float64, error) {
+	var questionsIDs []string
 	var userAnswersCount int64
 
-	cm.DBConnection.Model(&models.Question{}).
+	cm.DBConnection.
+		Model(&models.Question{}).
 		Where("course_id = ?", courseID).
 		Pluck("id", &questionsIDs)
 
-	cm.DBConnection.Model(&models.UserAnswer{}).
-		Joins("Answer").
-		Where("question_id IN(?)", questionsIDs).
-		Where("answer.is_correct = true").
+	cm.DBConnection.
+		Model(&models.UserAnswer{}).
+		Preload("Answers").
+		Joins("LEFT JOIN answers ON answers.id = user_answers.answer_id").
+		Where("answers.question_id IN (?)", questionsIDs).
+		Where("answers.is_correct = ?", true).
 		Count(&userAnswersCount)
 
 	if len(questionsIDs) <= 0 {
-		return errutil.ErrCourseHasNoQuestionsAvailable
+		return 0, errutil.ErrCourseHasNoQuestionsAvailable
 	}
 
-	hits_percentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
+	hitsPercentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
 
 	var courseStatus string
 
-	if hits_percentage >= 70 {
+	if hitsPercentage >= 70 {
 		courseStatus = models.ApprovedStatus
 	} else {
 		courseStatus = models.FailedStatus
@@ -158,7 +161,12 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) e
 		Where("user_id = ?", userID).
 		Update("status", courseStatus)
 
-	return nil
+	return hitsPercentage, nil
+}
+
+func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
+	result := cm.DBConnection.Create(enrollment)
+	return result.Error
 }
 
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {

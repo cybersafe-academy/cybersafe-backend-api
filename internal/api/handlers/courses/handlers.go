@@ -135,36 +135,36 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 	course := courseRequest.ToEntity()
 
-	thumbnailURL := ""
-	if courseRequest.ThumbnailURL != "" {
-		thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
-		if err != nil {
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
-		defer os.Remove(thumbnailPictureFile.Name())
+	// thumbnailURL := ""
+	// if courseRequest.ThumbnailURL != "" {
+	// 	thumbnailPictureFile, err := helpers.ConvertBase64ImageToFile(courseRequest.ThumbnailURL)
+	// 	if err != nil {
+	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+	// 		return
+	// 	}
+	// 	defer os.Remove(thumbnailPictureFile.Name())
 
-		croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
-		if err != nil {
-			log.Println("Error resizing image", err)
+	// 	croppedPictureFile, err := helpers.ResizeImage(thumbnailPictureFile, 1280, 720)
+	// 	if err != nil {
+	// 		log.Println("Error resizing image", err)
 
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
-		defer os.Remove(croppedPictureFile.Name())
+	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+	// 		return
+	// 	}
+	// 	defer os.Remove(croppedPictureFile.Name())
 
-		thumbnailURL = fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
-		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-		err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
-		if err != nil {
-			log.Println("Error uploading file to S3", err)
+	// 	thumbnailURL = fmt.Sprintf("thumbnails/%s", croppedPictureFile.Name())
+	// 	s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
+	// 	err = s3Client.UploadFile(c.Components.Settings.String("aws.coursesBucketName"), thumbnailURL, croppedPictureFile)
+	// 	if err != nil {
+	// 		log.Println("Error uploading file to S3", err)
 
-			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
-			return
-		}
+	// 		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+	// 		return
+	// 	}
 
-		courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
-	}
+	// 	courseRequest.ThumbnailURL = c.Components.Settings.String("aws.coursesBucketURL") + thumbnailURL
+	// }
 
 	err = c.Components.Resources.Courses.Create(course)
 
@@ -360,6 +360,8 @@ func CreateCourseReview(c *components.HTTPComponents) {
 //	@success	204		"No content"
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		id		path		string						true	"ID of course"
+//
 //	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/questions [post]
 //	@Security	Bearer
@@ -420,9 +422,10 @@ func AddAnswer(c *components.HTTPComponents) {
 //	@Summary	Add answers to questions
 //
 //	@Tags		Course
-//	@success	204		"No content"
+//	@success	200		"OK"
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response					"Standard error example object"
+//	@Param		id		path		string								true	"ID of course"
 //	@Param		request	body		httpmodels.AddAnswersBatchRequest	true	"Request payload for adding answers"
 //	@Router		/courses/{id}/questions/batch [post]
 //	@Security	Bearer
@@ -476,13 +479,86 @@ func AddAnswersBatch(c *components.HTTPComponents) {
 		}
 	}
 
-	err = c.Components.Resources.Courses.UpdateEnrollmentStatus(uuid.MustParse(courseID), currentUser.ID)
+	HitsPercentage, err := c.Components.Resources.Courses.UpdateEnrollmentStatus(uuid.MustParse(courseID), currentUser.ID)
 
 	if errors.Is(err, errutil.ErrCourseHasNoQuestionsAvailable) {
 		components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrCourseHasNoQuestionsAvailable",
 		}))
 		return
+	}
+
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+	}
+
+	response := ToEnrollmentRespose(enrollment)
+	response.HitsPercentage = HitsPercentage
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
+
+// Enroll
+//
+//	@Summary	Enroll to a course
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/enroll [post]
+//	@Security	Bearer
+//	@Security	Language
+func Enroll(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	enrollment := &models.Enrollment{
+		CourseID: uuid.MustParse(courseID),
+		UserID:   currentUser.ID,
+		Status:   models.InProgressStatus,
+	}
+
+	err := c.Components.Resources.Courses.Enroll(enrollment)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrEnrollmentAlreadyExists",
+			}))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
 	}
 
 	components.HttpResponse(c, http.StatusNoContent)
@@ -645,8 +721,6 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 		}))
 		return
 	}
-
-	// atualiza e retorna o status de acordo com o progress_percentage
 
 	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 	if err != nil {
