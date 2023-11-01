@@ -2,6 +2,7 @@
 ErrUnexpectedError = "Unexpected error."
 ErrInvalidUUID = "invalid UUID."
 ErrFutureDateNotAllowed = "Future date not allowed."
+ErrInvalidBase64Image = "Invalid base64 image."
 
 #Pagination
 ErrInvalidPageParam = "Invalid page param."

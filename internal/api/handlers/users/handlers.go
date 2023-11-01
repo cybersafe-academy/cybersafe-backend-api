@@ -3,14 +3,10 @@ package users
 import (
 	"cybersafe-backend-api/internal/api/components"
 	"cybersafe-backend-api/internal/api/server/middlewares"
-	"fmt"
-	"log"
-	"os"
 
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/aws"
 	"cybersafe-backend-api/pkg/errutil"
-	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -151,28 +147,30 @@ func CreateUserHandler(c *components.HTTPComponents) {
 
 	user := userRequest.ToEntity()
 
-	profilePictureURL := ""
-	if userRequest.ProfilePictureURL != "" {
-		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
-		if err != nil {
-			log.Println("Error converting base64 to file:", err)
+	err = aws.HandleImageAndUploadToS3(
+		userRequest.ProfilePictureURL,
+		c.Components.Settings.String("aws.usersBucketName"),
+		c.Components.Settings.String("aws.usersProfilePictureFolder"),
+		c.Components.Settings.String("aws.usersbucketURL"),
+		c,
+		user,
+		1280,
+		720,
+	)
+	if err != nil {
+		errKey := "ErrUnexpectedError"
+
+		if errors.Is(err, errutil.ErrInvalidBase64Image) {
+			errKey = "ErrInvalidBase64Image"
 		}
-		defer os.Remove(profilePictureFile.Name())
 
-		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
-		if err != nil {
-			log.Println("Error resizing image:", err)
-		}
-		defer os.Remove(croppedPictureFile.Name())
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: errKey}),
+		)
 
-		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
-
-		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-		defer func() {
-			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
-		}()
-
-		user.ProfilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+		return
 	}
 
 	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
@@ -340,28 +338,30 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	user := userRequest.ToEntity()
 	user.ID = uuid.MustParse(id)
 
-	profilePictureURL := ""
-	if userRequest.ProfilePictureURL != "" {
-		profilePictureFile, err := helpers.ConvertBase64ImageToFile(userRequest.ProfilePictureURL)
-		if err != nil {
-			log.Println("Error converting base64 to file:", err)
+	err = aws.HandleImageAndUploadToS3(
+		userRequest.ProfilePictureURL,
+		c.Components.Settings.String("aws.usersBucketName"),
+		c.Components.Settings.String("aws.usersProfilePictureFolder"),
+		c.Components.Settings.String("aws.usersbucketURL"),
+		c,
+		user,
+		1280,
+		720,
+	)
+	if err != nil {
+		errKey := "ErrUnexpectedError"
+
+		if errors.Is(err, errutil.ErrInvalidBase64Image) {
+			errKey = "ErrInvalidBase64Image"
 		}
-		defer os.Remove(profilePictureFile.Name())
 
-		croppedPictureFile, err := helpers.ResizeImage(profilePictureFile, 400, 400)
-		if err != nil {
-			log.Println("Error resizing image:", err)
-		}
-		defer os.Remove(croppedPictureFile.Name())
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: errKey}),
+		)
 
-		profilePictureURL = fmt.Sprintf("profile-pictures/%s", croppedPictureFile.Name())
-
-		s3Client := aws.GetS3Client(aws.GetAWSConfig(c.Components))
-		defer func() {
-			go s3Client.UploadFile(c.Components.Settings.String("aws.usersBucketName"), profilePictureURL, croppedPictureFile)
-		}()
-
-		user.ProfilePictureURL = c.Components.Settings.String("aws.usersbucketURL") + profilePictureURL
+		return
 	}
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)

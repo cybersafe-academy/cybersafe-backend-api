@@ -9,6 +9,7 @@ var (
 	ErrUnexpectedError      = errors.New("ErrUnexpectedError")
 	ErrInvalidUUID          = errors.New("ErrInvalidUUID")
 	ErrFutureDateNotAllowed = errors.New("ErrFutureDateNotAllowed")
+	ErrInvalidBase64Image   = errors.New("ErrInvalidBase64Image")
 
 	//Pagination
 	ErrInvalidPageParam  = errors.New("ErrInvalidPageParam")
