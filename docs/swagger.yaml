@@ -1179,6 +1179,23 @@ paths:
       summary: Update category by ID
       tags:
       - Course
+  /courses/enrolled:
+    get:
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get enrolled courses
+      tags:
+      - Course
   /management:
     get:
       parameters:

@@ -564,6 +564,32 @@ func Enroll(c *components.HTTPComponents) {
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
+// GetEnrolledCourses
+//
+//	@Summary	Get enrolled courses
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Router		/courses/enrolled [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetEnrolledCourses(c *components.HTTPComponents) {
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	courses := c.Components.Resources.Courses.GetEnrolledCourses(currentUser.ID)
+
+	components.HttpResponseWithPayload(c, ToCourseListResponse(courses), http.StatusOK)
+}
+
 // AddComment
 //
 //	@Summary	Add a comment to a course

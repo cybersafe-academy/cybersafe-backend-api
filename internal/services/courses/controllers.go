@@ -63,6 +63,18 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 	return &response
 }
 
+func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course {
+	var courses []models.Course
+
+	cm.DBConnection.
+		Preload(clause.Associations).
+		Joins("JOIN enrollments ON enrollments.course_id = courses.id").
+		Where("enrollments.user_id = ?", userID).
+		Find(&courses)
+
+	return courses
+}
+
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
 	var course models.Course
 

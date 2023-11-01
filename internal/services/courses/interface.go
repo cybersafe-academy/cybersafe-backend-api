@@ -10,6 +10,7 @@ import (
 type CoursesManager interface {
 	ListWithPagination(int, int) ([]models.CourseExtraFields, int)
 	ListByCategory() *httpmodels.CourseByCategoryResponse
+	GetEnrolledCourses(uuid.UUID) []models.Course
 	GetByID(uuid.UUID) (models.Course, error)
 	Create(*models.Course) error
 	Delete(uuid.UUID) error

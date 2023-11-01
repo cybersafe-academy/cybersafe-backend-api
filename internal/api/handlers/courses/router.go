@@ -91,6 +91,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 			GetEnrollmentInfo(components.HttpComponents(w, r, c))
 		})
 
+		r.Get("/enrolled", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrolledCourses(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/{id}/enroll", func(w http.ResponseWriter, r *http.Request) {
 			Enroll(components.HttpComponents(w, r, c))
 		})
