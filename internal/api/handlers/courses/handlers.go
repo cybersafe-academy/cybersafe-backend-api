@@ -415,6 +415,79 @@ func AddAnswer(c *components.HTTPComponents) {
 	components.HttpResponse(c, http.StatusNoContent)
 }
 
+// AddAnswersBatch
+//
+//	@Summary	Add answers to questions
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response					"Standard error example object"
+//	@Param		request	body		httpmodels.AddAnswersBatchRequest	true	"Request payload for adding answers"
+//	@Router		/courses/{id}/questions/batch [post]
+//	@Security	Bearer
+//	@Security	Language
+func AddAnswersBatch(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	var addAnswersBatchRequest httpmodels.AddAnswersBatchRequest
+	err := components.ValidateRequest(c, &addAnswersBatchRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	for _, addAnswerRequest := range addAnswersBatchRequest.Answers {
+
+		err = c.Components.Resources.Answers.SaveUserAnswer(&models.UserAnswer{
+			QuestionID: addAnswerRequest.QuestionID,
+			AnswerID:   addAnswerRequest.AnswerID,
+			UserID:     currentUser.ID,
+		})
+
+		if err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrUserAlreadyAnswerdQuestion",
+				}))
+				return
+			} else {
+				components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				}))
+				return
+			}
+		}
+	}
+
+	err = c.Components.Resources.Courses.UpdateEnrollmentStatus(uuid.MustParse(courseID), currentUser.ID)
+
+	if errors.Is(err, errutil.ErrCourseHasNoQuestionsAvailable) {
+		components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrCourseHasNoQuestionsAvailable",
+		}))
+		return
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
 // AddComment
 //
 //	@Summary	Add a comment to a course
@@ -572,6 +645,8 @@ func GetEnrollmentInfo(c *components.HTTPComponents) {
 		}))
 		return
 	}
+
+	// atualiza e retorna o status de acordo com o progress_percentage
 
 	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 	if err != nil {

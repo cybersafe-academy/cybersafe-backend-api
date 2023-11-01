@@ -1155,6 +1155,47 @@
                 }
             }
         },
+        "/courses/{id}/questions/batch": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Add answers to questions",
+                "parameters": [
+                    {
+                        "description": "Request payload for adding answers",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.AddAnswersBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{id}/reviews": {
             "get": {
                 "security": [
@@ -1671,6 +1712,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "profilePicture": {
+                    "type": "string"
                 }
             }
         },
@@ -1846,6 +1890,17 @@
                 },
                 "questionID": {
                     "type": "string"
+                }
+            }
+        },
+        "httpmodels.AddAnswersBatchRequest": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/httpmodels.AddAnswerRequest"
+                    }
                 }
             }
         },

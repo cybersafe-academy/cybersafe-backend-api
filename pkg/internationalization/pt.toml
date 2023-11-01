@@ -41,6 +41,8 @@ ErrInvalidContentType = "Tipo de conteúdo inválido."
 
 #Answer
 ErrUserAlreadyAnswerdQuestion = "Usuário já respondeu a questão."
+ErrCourseHasNoQuestionsAvailable = "Curso não possui questões disponiveis."
+
 
 #Personality Test
 ErrInvalidMBTIType = "Tipo MBTI inválido."

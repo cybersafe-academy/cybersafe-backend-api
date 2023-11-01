@@ -3,6 +3,7 @@ package courses
 import (
 	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/errutil"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -122,6 +123,42 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
 		Update("progress", progress_percentage)
+}
+
+func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) error {
+	var questionsIDs []int64
+	var userAnswersCount int64
+
+	cm.DBConnection.Model(&models.Question{}).
+		Where("course_id = ?", courseID).
+		Pluck("id", &questionsIDs)
+
+	cm.DBConnection.Model(&models.UserAnswer{}).
+		Joins("Answer").
+		Where("question_id IN(?)", questionsIDs).
+		Where("answer.is_correct = true").
+		Count(&userAnswersCount)
+
+	if len(questionsIDs) <= 0 {
+		return errutil.ErrCourseHasNoQuestionsAvailable
+	}
+
+	hits_percentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
+
+	var courseStatus string
+
+	if hits_percentage >= 70 {
+		courseStatus = models.ApprovedStatus
+	} else {
+		courseStatus = models.FailedStatus
+	}
+
+	cm.DBConnection.Model(&models.Enrollment{}).
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Update("status", courseStatus)
+
+	return nil
 }
 
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {
