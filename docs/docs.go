@@ -776,6 +776,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/courses/enrolled": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Get enrolled courses",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{courseID}/comments/{commentID}/likes": {
             "post": {
                 "security": [
@@ -1038,6 +1068,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/courses/{id}/enroll": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Enroll to a course",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses/{id}/enrollments": {
             "get": {
                 "security": [
@@ -1139,6 +1208,13 @@ const docTemplate = `{
                 "summary": "Add answer to question",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Request payload for creating a review",
                         "name": "request",
                         "in": "body",
@@ -1151,6 +1227,54 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No content"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/courses/{id}/questions/batch": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Add answers to questions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of course",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request payload for adding answers",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpmodels.AddAnswersBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "409": {
                         "description": "Conflict"
@@ -1680,6 +1804,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                },
+                "profilePicture": {
+                    "type": "string"
                 }
             }
         },
@@ -1855,6 +1982,17 @@ const docTemplate = `{
                 },
                 "questionID": {
                     "type": "string"
+                }
+            }
+        },
+        "httpmodels.AddAnswersBatchRequest": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/httpmodels.AddAnswerRequest"
+                    }
                 }
             }
         },

@@ -3,9 +3,9 @@ package models
 import "github.com/google/uuid"
 
 const (
-	ApprovedStatus   string = "beginner"
-	FailedStatus     string = "intermediate"
-	InProgressStatus string = "advanced"
+	ApprovedStatus   string = "approved"
+	FailedStatus     string = "failed"
+	InProgressStatus string = "in_progress"
 )
 
 var (
@@ -19,11 +19,11 @@ var (
 type Enrollment struct {
 	Shared
 
-	CourseID uuid.UUID
-	Course   Course `gorm:"foreignKey:CourseID"`
+	CourseID uuid.UUID `gorm:"uniqueIndex:idx_user_course_enroll"`
+	Course   Course    `gorm:"foreignKey:CourseID"`
 
-	UserID uuid.UUID
-	User   User `gorm:"foreignKey:UserID"`
+	UserID uuid.UUID `gorm:"uniqueIndex:idx_user_course_enroll"`
+	User   User      `gorm:"foreignKey:UserID"`
 
 	Status       string
 	QuizProgress float64

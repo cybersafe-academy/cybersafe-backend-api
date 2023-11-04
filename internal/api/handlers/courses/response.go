@@ -62,6 +62,62 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 	return coursesResponse
 }
 
+func ToCourseListResponse(courses []models.Course) []httpmodels.CourseResponse {
+	var coursesResponse []httpmodels.CourseResponse
+
+	for _, course := range courses {
+
+		courseResponse := httpmodels.CourseResponse{
+			ID:        course.ID,
+			CreatedAt: course.CreatedAt,
+			UpdatedAt: course.UpdatedAt,
+			DeletedAt: course.DeletedAt,
+			CourseFields: httpmodels.CourseFields{
+				Title:           course.Title,
+				Description:     course.Description,
+				TitlePtBr:       course.TitlePtBr,
+				DescriptionPtBr: course.DescriptionPtBr,
+				ContentInHours:  course.ContentInHours,
+				ThumbnailURL:    course.ThumbnailURL,
+				Level:           course.Level,
+				ContentURL:      course.ContentURL,
+			},
+			Category: httpmodels.CourseCategoryResponse{
+				ID: course.Category.ID,
+				CategoryFields: httpmodels.CategoryFields{
+					Name: course.Category.Name,
+				},
+			},
+		}
+
+		for _, question := range course.Questions {
+			questionModel := httpmodels.QuestionResponse{
+				QuestionFields: httpmodels.QuestionFields{
+					Wording:     question.Wording,
+					WordingPtBr: question.WordingPtBr,
+				},
+				ID: question.CourseID,
+			}
+
+			for _, answer := range question.Answers {
+				questionModel.Answers = append(questionModel.Answers, httpmodels.AnswerResponse{
+					AnswerFields: httpmodels.AnswerFields{
+						Text:     answer.Text,
+						TextPtBr: answer.TextPtBr,
+					},
+					ID: answer.ID,
+				})
+			}
+
+			courseResponse.Questions = append(courseResponse.Questions, questionModel)
+		}
+
+		coursesResponse = append(coursesResponse, courseResponse)
+	}
+
+	return coursesResponse
+}
+
 func ToResponse(course models.Course) httpmodels.CourseResponse {
 	courseResponse := httpmodels.CourseResponse{
 		ID:        course.ID,
@@ -149,8 +205,7 @@ func ToCategoryResponse(category models.Category) httpmodels.CategoryResponse {
 func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResponse {
 	enrollmentResponse := httpmodels.EnrollmentResponse{
 		EnrollmentFields: httpmodels.EnrollmentFields{
-			Status:       enrollment.Status,
-			QuizProgress: enrollment.QuizProgress,
+			Status: enrollment.Status,
 		},
 	}
 

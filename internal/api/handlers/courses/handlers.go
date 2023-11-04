@@ -156,7 +156,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 		return
 	}
-
+  
 	err = c.Components.Resources.Courses.Create(course)
 
 	if err != nil {
@@ -346,6 +346,8 @@ func CreateCourseReview(c *components.HTTPComponents) {
 //	@success	204		"No content"
 //	@Failure	409		"Conflict"
 //	@Response	default	{object}	components.Response			"Standard error example object"
+//	@Param		id		path		string						true	"ID of course"
+//
 //	@Param		request	body		httpmodels.AddAnswerRequest	true	"Request payload for creating a review"
 //	@Router		/courses/{id}/questions [post]
 //	@Security	Bearer
@@ -399,6 +401,179 @@ func AddAnswer(c *components.HTTPComponents) {
 	c.Components.Resources.Courses.UpdateEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 
 	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// AddAnswersBatch
+//
+//	@Summary	Add answers to questions
+//
+//	@Tags		Course
+//	@success	200		"OK"
+//	@Failure	409		"Conflict"
+//	@Response	default	{object}	components.Response					"Standard error example object"
+//	@Param		id		path		string								true	"ID of course"
+//	@Param		request	body		httpmodels.AddAnswersBatchRequest	true	"Request payload for adding answers"
+//	@Router		/courses/{id}/questions/batch [post]
+//	@Security	Bearer
+//	@Security	Language
+func AddAnswersBatch(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	var addAnswersBatchRequest httpmodels.AddAnswersBatchRequest
+	err := components.ValidateRequest(c, &addAnswersBatchRequest)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	for _, addAnswerRequest := range addAnswersBatchRequest.Answers {
+
+		err = c.Components.Resources.Answers.SaveUserAnswer(&models.UserAnswer{
+			QuestionID: addAnswerRequest.QuestionID,
+			AnswerID:   addAnswerRequest.AnswerID,
+			UserID:     currentUser.ID,
+		})
+
+		if err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrUserAlreadyAnswerdQuestion",
+				}))
+				return
+			} else {
+				components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				}))
+				return
+			}
+		}
+	}
+
+	HitsPercentage, err := c.Components.Resources.Courses.UpdateEnrollmentStatus(uuid.MustParse(courseID), currentUser.ID)
+
+	if errors.Is(err, errutil.ErrCourseHasNoQuestionsAvailable) {
+		components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrCourseHasNoQuestionsAvailable",
+		}))
+		return
+	}
+
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrCourseResourceNotFound",
+			}))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+	}
+
+	response := ToEnrollmentRespose(enrollment)
+	response.HitsPercentage = HitsPercentage
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
+}
+
+// Enroll
+//
+//	@Summary	Enroll to a course
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/enroll [post]
+//	@Security	Bearer
+//	@Security	Language
+func Enroll(c *components.HTTPComponents) {
+
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInvalidUUID",
+		}))
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	enrollment := &models.Enrollment{
+		CourseID: uuid.MustParse(courseID),
+		UserID:   currentUser.ID,
+		Status:   models.InProgressStatus,
+	}
+
+	err := c.Components.Resources.Courses.Enroll(enrollment)
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			components.HttpErrorLocalizedResponse(c, http.StatusConflict, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrEnrollmentAlreadyExists",
+			}))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// GetEnrolledCourses
+//
+//	@Summary	Get enrolled courses
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Router		/courses/enrolled [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetEnrolledCourses(c *components.HTTPComponents) {
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	courses := c.Components.Resources.Courses.GetEnrolledCourses(currentUser.ID)
+
+	components.HttpResponseWithPayload(c, ToCourseListResponse(courses), http.StatusOK)
 }
 
 // AddComment

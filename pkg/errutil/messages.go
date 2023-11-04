@@ -48,7 +48,8 @@ var (
 	ErrInvalidContentType = errors.New("ErrInvalidContentType")
 
 	//Answer
-	ErrUserAlreadyAnswerdQuestion = errors.New("ErrUserAlreadyAnswerdQuestion")
+	ErrUserAlreadyAnswerdQuestion    = errors.New("ErrUserAlreadyAnswerdQuestion")
+	ErrCourseHasNoQuestionsAvailable = errors.New("ErrCourseHasNoQuestionsAvailable")
 
 	//Personality Test
 	ErrInvalidMBTIType = errors.New("ErrInvalidMBTIType")

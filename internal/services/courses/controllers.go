@@ -3,6 +3,7 @@ package courses
 import (
 	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
+	"cybersafe-backend-api/pkg/errutil"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -60,6 +61,18 @@ func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryRespons
 	response := GroupCoursesByCategory(results)
 
 	return &response
+}
+
+func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course {
+	var courses []models.Course
+
+	cm.DBConnection.
+		Preload(clause.Associations).
+		Joins("JOIN enrollments ON enrollments.course_id = courses.id").
+		Where("enrollments.user_id = ?", userID).
+		Find(&courses)
+
+	return courses
 }
 
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
@@ -122,6 +135,50 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
 		Update("progress", progress_percentage)
+}
+
+func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (float64, error) {
+	var questionsIDs []string
+	var userAnswersCount int64
+
+	cm.DBConnection.
+		Model(&models.Question{}).
+		Where("course_id = ?", courseID).
+		Pluck("id", &questionsIDs)
+
+	cm.DBConnection.
+		Model(&models.UserAnswer{}).
+		Preload("Answers").
+		Joins("LEFT JOIN answers ON answers.id = user_answers.answer_id").
+		Where("answers.question_id IN (?)", questionsIDs).
+		Where("answers.is_correct = ?", true).
+		Count(&userAnswersCount)
+
+	if len(questionsIDs) <= 0 {
+		return 0, errutil.ErrCourseHasNoQuestionsAvailable
+	}
+
+	hitsPercentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
+
+	var courseStatus string
+
+	if hitsPercentage >= 70 {
+		courseStatus = models.ApprovedStatus
+	} else {
+		courseStatus = models.FailedStatus
+	}
+
+	cm.DBConnection.Model(&models.Enrollment{}).
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Update("status", courseStatus)
+
+	return hitsPercentage, nil
+}
+
+func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
+	result := cm.DBConnection.Create(enrollment)
+	return result.Error
 }
 
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {

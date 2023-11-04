@@ -14,6 +14,8 @@ type CoursesManagerMock struct {
 	UpdateMock                   func(*models.Course) (int, error)
 	IsRightAnswerMock            func(*models.Answer) bool
 	UpdateEnrollmentProgressMock func(uuid.UUID, uuid.UUID)
+	UpdateEnrollmentStatusMock   func(uuid.UUID, uuid.UUID) error
+	EnrollMock                   func(*models.Enrollment) error
 	AddCommentMock               func(*models.Comment) error
 	AddLikeToCommentMock         func(comment *models.Comment) error
 	GetEnrollmentProgressMock    func(uuid.UUID, uuid.UUID) (models.Enrollment, error)
@@ -48,6 +50,14 @@ func (cm *CoursesManagerMock) IsRightAnswer(answer *models.Answer) bool {
 
 func (cm *CoursesManagerMock) UpdateEnrollmentProgress(courseID, userID uuid.UUID) {
 	cm.UpdateEnrollmentProgressMock(courseID, userID)
+}
+
+func (cm *CoursesManagerMock) UpdateEnrollmentStatus(courseID, userID uuid.UUID) error {
+	return cm.UpdateEnrollmentStatusMock(courseID, userID)
+}
+
+func (cm *CoursesManagerMock) Enroll(enrollment *models.Enrollment) error {
+	return cm.EnrollMock(enrollment)
 }
 
 func (cm *CoursesManagerMock) AddComment(comment *models.Comment) error {

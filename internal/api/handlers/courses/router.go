@@ -31,10 +31,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 			UpdateCourseHandler(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
-			CreateCourseReview(components.HttpComponents(w, r, c))
-		})
-
 		r.Post("/categories", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseCategory(components.HttpComponents(w, r, c))
 		})
@@ -59,14 +55,6 @@ func SetupRoutes(c *components.Components) http.Handler {
 			GetCourseByID(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/questions", func(w http.ResponseWriter, r *http.Request) {
-			AddAnswer(components.HttpComponents(w, r, c))
-		})
-
-		r.Get("/{id}/enrollment", func(w http.ResponseWriter, r *http.Request) {
-			GetEnrollmentInfo(components.HttpComponents(w, r, c))
-		})
-
 		r.Get("/{id}/questions", func(w http.ResponseWriter, r *http.Request) {
 			GetQuestionsByCourseID(components.HttpComponents(w, r, c))
 		})
@@ -75,28 +63,42 @@ func SetupRoutes(c *components.Components) http.Handler {
 			GetReviewsByCourseID(components.HttpComponents(w, r, c))
 		})
 
-		r.Post("/{id}/review", func(w http.ResponseWriter, r *http.Request) {
-			CreateCourseReview(components.HttpComponents(w, r, c))
-		})
-
 		r.Get("/categories", func(w http.ResponseWriter, r *http.Request) {
 			ListCategoriesHandler(components.HttpComponents(w, r, c))
 		})
+
 		r.Post("/{id}/reviews", func(w http.ResponseWriter, r *http.Request) {
 			CreateCourseReview(components.HttpComponents(w, r, c))
 		})
+
 		r.Post("/questions", func(w http.ResponseWriter, r *http.Request) {
 			AddAnswer(components.HttpComponents(w, r, c))
 		})
+
+		r.Post("/{id}/questions/batch", func(w http.ResponseWriter, r *http.Request) {
+			AddAnswersBatch(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/{id}/comments", func(w http.ResponseWriter, r *http.Request) {
 			AddComment(components.HttpComponents(w, r, c))
 		})
+
 		r.Get("/{id}/comments", func(w http.ResponseWriter, r *http.Request) {
 			GetCommentsByCourse(components.HttpComponents(w, r, c))
 		})
+
 		r.Get("/{id}/enrollments", func(w http.ResponseWriter, r *http.Request) {
 			GetEnrollmentInfo(components.HttpComponents(w, r, c))
 		})
+
+		r.Get("/enrolled", func(w http.ResponseWriter, r *http.Request) {
+			GetEnrolledCourses(components.HttpComponents(w, r, c))
+		})
+
+		r.Post("/{id}/enroll", func(w http.ResponseWriter, r *http.Request) {
+			Enroll(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/{courseID}/comments/{commentID}/likes", func(w http.ResponseWriter, r *http.Request) {
 			AddLikeToComment(components.HttpComponents(w, r, c))
 		})
