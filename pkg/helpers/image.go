@@ -1,82 +1,63 @@
 package helpers
 
 import (
+	"bytes"
+	"cybersafe-backend-api/pkg/errutil"
 	"encoding/base64"
 	"image"
-	_ "image/jpeg"
 	"image/png"
-	"os"
+	"io"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/nfnt/resize"
 )
 
-func ConvertBase64ImageToFile(base64Image string) (*os.File, error) {
-	// Remove the prefix
-	imgData := strings.Split(base64Image, ",")
-
-	// Check the length of the slice
-	if len(imgData) != 2 {
-		return nil, nil
+func ConvertBase64ImageToFile(base64Image string) (*bytes.Buffer, error) {
+	imageData := strings.Split(base64Image, ",")
+	if len(imageData) != 2 {
+		return nil, errutil.ErrInvalidBase64Image
 	}
 
-	// Decode the base64 string
-	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(imgData[1]))
+	decodedImage := base64.NewDecoder(base64.StdEncoding, strings.NewReader(imageData[1]))
 
-	// Decode the image
-	img, _, err := image.Decode(reader)
+	buffer := new(bytes.Buffer)
+	_, err := io.Copy(buffer, decodedImage)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create a new file
-	file, err := os.Create("tmp.png")
-	if err != nil {
-		return nil, err
-	}
-
-	// Encode the image to file
-	err = png.Encode(file, img)
-	if err != nil {
-		return nil, err
-	}
-
-	// Return the file pointer to the beginning
-	_, err = file.Seek(0, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
+	return buffer, nil
 }
 
-func ResizeImage(inputFile *os.File, weight, height uint) (*os.File, error) {
-	// Decode the image
-	img, _, err := image.Decode(inputFile)
+func ResizeImage(file *bytes.Buffer, weight, height uint) (*bytes.Buffer, error) {
+	img, _, err := image.Decode(file)
 	if err != nil {
 		return nil, err
 	}
 
-	// Resize the image to width 1280px and height 720px
-	img = resize.Resize(weight, height, img, resize.Lanczos3)
+	resizedImage := resize.Resize(weight, height, img, resize.Lanczos3)
 
-	outputFile, err := os.Create(uuid.NewString() + ".png")
+	buffer := new(bytes.Buffer)
+	err = png.Encode(buffer, resizedImage)
 	if err != nil {
 		return nil, err
 	}
 
-	// Crie um novo arquivo de imagem de saída
-	err = png.Encode(outputFile, img)
+	return buffer, nil
+}
+
+func HandleBase64Image(base64Image string, weight, height uint) (io.Reader, error) {
+	buffer, err := ConvertBase64ImageToFile(base64Image)
 	if err != nil {
 		return nil, err
 	}
 
-	// Return the file pointer to the beginning
-	_, err = outputFile.Seek(0, 0)
+	resizedImage, err := ResizeImage(buffer, weight, height)
 	if err != nil {
 		return nil, err
 	}
 
-	return outputFile, nil
+	reader := bytes.NewReader(resizedImage.Bytes())
+
+	return reader, nil
 }
