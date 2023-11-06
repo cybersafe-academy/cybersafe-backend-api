@@ -14,10 +14,11 @@ import (
 //	@Tags			Analytics
 //	@Accept			json
 //	@Produce		json
-//	@Success		200		{object}	AnalyticsDataResponse
-//	@Failure		400		"Bad Request"
-//
+//	@Success		200	{object}	AnalyticsDataResponse
+//	@Failure		400	"Bad Request"
 //	@Router			/analytics/data [get]
+//	@Security		Bearer
+//	@Security		Language
 func GetAnalyticsData(c *components.HTTPComponents) {
 
 	result, err := c.Components.Resources.Analytics.GetData()
@@ -34,13 +35,15 @@ func GetAnalyticsData(c *components.HTTPComponents) {
 	}
 
 	var mbtiCountResponse []MBTICount
-	for _, mbti := range mbtiCountResponse {
+	for _, mbti := range result.MBTICount {
 		mbtiItem := MBTICount{
 			MBTIType: mbti.MBTIType,
 			Count:    mbti.Count,
 		}
 		mbtiCountResponse = append(mbtiCountResponse, mbtiItem)
 	}
+
+	response.MBTICount = mbtiCountResponse
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
 

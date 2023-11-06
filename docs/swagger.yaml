@@ -1,4 +1,17 @@
 definitions:
+  analytics.AnalyticsDataResponse:
+    properties:
+      accuracyInQuizzes:
+        type: number
+      courseCompletion:
+        type: number
+      mbtiCount:
+        items:
+          $ref: '#/definitions/cybersafe-backend-api_internal_api_handlers_analytics.MBTICount'
+        type: array
+      numberOfUsers:
+        type: integer
+    type: object
   authentication.FinishSignupRequest:
     properties:
       birthDate:
@@ -110,6 +123,13 @@ definitions:
     properties:
       error:
         $ref: '#/definitions/components.Error'
+    type: object
+  cybersafe-backend-api_internal_api_handlers_analytics.MBTICount:
+    properties:
+      count:
+        type: integer
+      mbtitype:
+        type: string
     type: object
   gorm.DeletedAt:
     properties:
@@ -379,6 +399,26 @@ info:
   title: CyberSafe Academy API
   version: "1.0"
 paths:
+  /analytics/data:
+    get:
+      consumes:
+      - application/json
+      description: Gets all analytics data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/analytics.AnalyticsDataResponse'
+        "400":
+          description: Bad Request
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Data analytics
+      tags:
+      - Analytics
   /auth/finish-signup:
     post:
       consumes:

@@ -1,8 +1,8 @@
 package analytics
 
 type MBTICount struct {
-	MBTIType string
-	Count    int
+	MBTIType string `json:"mbtiType"`
+	Count    int    `json:"count"`
 }
 
 type AnalyticsDataResponse struct {

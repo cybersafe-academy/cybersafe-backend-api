@@ -17,6 +17,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 		r.Use(middlewares.Authorizer(c, models.AdminUserRole, models.MasterUserRole))
 
 		r.Get("/data", func(w http.ResponseWriter, r *http.Request) {
+			GetAnalyticsData(components.HttpComponents(w, r, c))
 		})
 
 	})
