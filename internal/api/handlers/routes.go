@@ -3,6 +3,7 @@ package handlers
 import (
 	_ "cybersafe-backend-api/docs"
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/handlers/analytics"
 	"cybersafe-backend-api/internal/api/handlers/authentication"
 	"cybersafe-backend-api/internal/api/handlers/companies"
 	"cybersafe-backend-api/internal/api/handlers/courses"
@@ -22,6 +23,7 @@ func SetupRoutes(c *components.Components) http.Handler {
 	subRouter.Mount("/users", users.SetupRoutes(c))
 	subRouter.Mount("/courses", courses.SetupRoutes(c))
 	subRouter.Mount("/companies", companies.SetupRoutes(c))
+	subRouter.Mount("/analytics", analytics.SetupRoutes(c))
 
 	return subRouter
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"cybersafe-backend-api/internal/services/analytics"
 	"cybersafe-backend-api/internal/services/answers"
 	"cybersafe-backend-api/internal/services/categories"
 	"cybersafe-backend-api/internal/services/companies"
@@ -16,4 +17,5 @@ type Resources struct {
 	Reviews    reviews.ReviewsManager
 	Categories categories.CategoriesManager
 	Answers    answers.AnswersManager
+	Analytics  analytics.AnalyticsManager
 }
