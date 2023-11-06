@@ -78,7 +78,17 @@ func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course
 func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
 	var course models.Course
 
-	result := cm.DBConnection.First(&course, id)
+	result := cm.DBConnection.
+		Table("courses").
+		Preload("Reviews").
+		Preload("Category").
+		Preload("Questions").
+		Preload("Questions.Answers").
+		Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
+		Select("courses.*, avg(reviews.rating) as avg_rating").
+		Where("courses.deleted_at IS NULL").
+		Group("courses.id").
+		First(&course, id)
 
 	return course, result.Error
 }
