@@ -25,6 +25,40 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/analytics/data": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "description": "Gets all analytics data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Data analytics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/analytics.AnalyticsDataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/auth/finish-signup": {
             "post": {
                 "description": "Checks the token on the request and fills up remaining user info",
@@ -1790,6 +1824,26 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "analytics.AnalyticsDataResponse": {
+            "type": "object",
+            "properties": {
+                "accuracyInQuizzes": {
+                    "type": "number"
+                },
+                "courseCompletion": {
+                    "type": "number"
+                },
+                "mbtiCount": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cybersafe-backend-api_internal_api_handlers_analytics.MBTICount"
+                    }
+                },
+                "numberOfUsers": {
+                    "type": "integer"
+                }
+            }
+        },
         "authentication.FinishSignupRequest": {
             "type": "object",
             "properties": {
@@ -1959,6 +2013,17 @@ const docTemplate = `{
             "properties": {
                 "error": {
                     "$ref": "#/definitions/components.Error"
+                }
+            }
+        },
+        "cybersafe-backend-api_internal_api_handlers_analytics.MBTICount": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "mbtitype": {
+                    "type": "string"
                 }
             }
         },
