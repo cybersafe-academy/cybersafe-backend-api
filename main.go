@@ -23,7 +23,7 @@ import (
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
 //	@name						Authorization
-//	@description				Insert the token withou "Bearer" prefix.
+//	@description				Insert the token without "Bearer" prefix.
 func main() {
 
 	c := components.Config()

@@ -1921,9 +1921,6 @@
                 },
                 "tradeName": {
                     "type": "string"
-                },
-                "websiteURL": {
-                    "type": "string"
                 }
             }
         },
@@ -1955,9 +1952,6 @@
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "websiteURL": {
                     "type": "string"
                 }
             }
@@ -2013,7 +2007,7 @@
                 "count": {
                     "type": "integer"
                 },
-                "mbtitype": {
+                "mbtiType": {
                     "type": "string"
                 }
             }
@@ -2330,6 +2324,29 @@
                 }
             }
         },
+        "users.CompanyResponse": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "legalName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                }
+            }
+        },
         "users.PersonalityTestRequest": {
             "type": "object",
             "properties": {
@@ -2341,6 +2358,9 @@
         "users.PreSignupRequest": {
             "type": "object",
             "properties": {
+                "companyID": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -2353,6 +2373,9 @@
             "type": "object",
             "properties": {
                 "birthDate": {
+                    "type": "string"
+                },
+                "companyID": {
                     "type": "string"
                 },
                 "cpf": {
@@ -2380,6 +2403,9 @@
             "properties": {
                 "birthDate": {
                     "type": "string"
+                },
+                "company": {
+                    "$ref": "#/definitions/users.CompanyResponse"
                 },
                 "cpf": {
                     "type": "string"
@@ -2413,7 +2439,7 @@
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "Insert the token withou \"Bearer\" prefix.",
+            "description": "Insert the token without \"Bearer\" prefix.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

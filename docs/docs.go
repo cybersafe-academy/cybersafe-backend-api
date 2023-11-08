@@ -1930,9 +1930,6 @@ const docTemplate = `{
                 },
                 "tradeName": {
                     "type": "string"
-                },
-                "websiteURL": {
-                    "type": "string"
                 }
             }
         },
@@ -1964,9 +1961,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "websiteURL": {
                     "type": "string"
                 }
             }
@@ -2022,7 +2016,7 @@ const docTemplate = `{
                 "count": {
                     "type": "integer"
                 },
-                "mbtitype": {
+                "mbtiType": {
                     "type": "string"
                 }
             }
@@ -2339,6 +2333,29 @@ const docTemplate = `{
                 }
             }
         },
+        "users.CompanyResponse": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "legalName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                }
+            }
+        },
         "users.PersonalityTestRequest": {
             "type": "object",
             "properties": {
@@ -2350,6 +2367,9 @@ const docTemplate = `{
         "users.PreSignupRequest": {
             "type": "object",
             "properties": {
+                "companyID": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -2362,6 +2382,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "birthDate": {
+                    "type": "string"
+                },
+                "companyID": {
                     "type": "string"
                 },
                 "cpf": {
@@ -2389,6 +2412,9 @@ const docTemplate = `{
             "properties": {
                 "birthDate": {
                     "type": "string"
+                },
+                "company": {
+                    "$ref": "#/definitions/users.CompanyResponse"
                 },
                 "cpf": {
                     "type": "string"
@@ -2422,7 +2448,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "Insert the token withou \"Bearer\" prefix.",
+            "description": "Insert the token without \"Bearer\" prefix.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -2440,6 +2466,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

@@ -14,19 +14,19 @@ type UsersManagerDB struct {
 
 func (um *UsersManagerDB) GetByCPF(cpf string) (models.User, error) {
 	user := models.User{}
-	result := um.DBConnection.Where("CPF = ?", cpf).First(&user)
+	result := um.DBConnection.Where("CPF = ?", cpf).Preload(clause.Associations).First(&user)
 	return user, result.Error
 }
 
 func (um *UsersManagerDB) GetByID(id uuid.UUID) (models.User, error) {
 	var user models.User
-	result := um.DBConnection.First(&user, id)
+	result := um.DBConnection.Preload(clause.Associations).First(&user, id)
 	return user, result.Error
 }
 
 func (um *UsersManagerDB) ListWithPagination(offset, limit int) ([]models.User, int64) {
 	var users []models.User
-	um.DBConnection.Offset(offset).Limit(limit).Find(&users)
+	um.DBConnection.Offset(offset).Limit(limit).Preload(clause.Associations).Find(&users)
 
 	var count int64
 	um.DBConnection.Model(&models.User{}).Count(&count)

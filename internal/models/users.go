@@ -31,7 +31,10 @@ type User struct {
 	ProfilePictureURL string
 	Password          string
 	MBTIType          string
-	Enabled           bool `gorm:"default:false;not null"`
+	Enabled           bool `gorm:"default:true;not null"`
+
+	CompanyID uuid.UUID
+	Company   Company `gorm:"foreignKey:CompanyID"`
 
 	Enrollments []Enrollment `gorm:"foreignKey:UserID"`
 }

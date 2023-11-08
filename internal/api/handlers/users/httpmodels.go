@@ -13,31 +13,44 @@ import (
 )
 
 type UserFields struct {
-	Name              string `json:"name"`
+	Name              string `json:"name" valid:"required"`
 	Role              string `json:"role"`
 	Email             string `json:"email" valid:"email, required"`
-	BirthDate         string `json:"birthDate" valid:"date"`
-	CPF               string `json:"cpf" valid:"cpf"`
-	ProfilePictureURL string `json:"profilePictureURL" valid:"url"`
+	BirthDate         string `json:"birthDate" valid:"date, required"`
+	CPF               string `json:"cpf" valid:"cpf, required"`
+	ProfilePictureURL string `json:"profilePictureURL"`
 }
 
 type ResponseContent struct {
 	UserFields
+	CompanyResponse CompanyResponse `json:"company"`
 
-	ID        uuid.UUID      `json:"id" valid:"uuid, required"`
+	ID        uuid.UUID      `json:"id"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 }
 
+type CompanyResponse struct {
+	ID        uuid.UUID `json:"id"`
+	LegalName string    `json:"legalName"`
+	TradeName string    `json:"tradeName"`
+	CNPJ      string    `json:"cnpj"`
+	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+}
+
 type RequestContent struct {
 	UserFields
-	Password string `json:"password" valid:"stringlength(8|24)"`
+
+	CompanyID uuid.UUID `json:"companyID"`
+	Password  string    `json:"password" valid:"stringlength(8|24)"`
 }
 
 type PreSignupRequest struct {
-	Role  string `json:"role"`
-	Email string `json:"email" valid:"email, required"`
+	Role      string    `json:"role" valid:"required"`
+	Email     string    `json:"email" valid:"email, required"`
+	CompanyID uuid.UUID `json:"companyID"`
 }
 
 type PersonalityTestRequest struct {
@@ -99,5 +112,6 @@ func (re *RequestContent) ToEntity() *models.User {
 		ProfilePictureURL: re.ProfilePictureURL,
 		Role:              re.Role,
 		Password:          re.Password,
+		CompanyID:         re.CompanyID,
 	}
 }

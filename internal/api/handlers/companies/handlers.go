@@ -2,6 +2,8 @@ package companies
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/internal/api/server/middlewares"
+	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
@@ -38,7 +40,31 @@ func ListCompaniesHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	companies, count := c.Components.Resources.Companies.ListWithPagination(paginationData.Offset, paginationData.Limit)
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	var companies []models.Company
+	var count int
+
+	if currentUser.Role == models.MasterUserRole {
+		companies, count = c.Components.Resources.Companies.ListWithPagination(paginationData.Offset, paginationData.Limit)
+	} else {
+		company, err := c.Components.Resources.Companies.GetByID(currentUser.CompanyID)
+		if err != nil {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+
+		companies = append(companies, company)
+		count = 1
+	}
 
 	response := paginationData.ToResponse(
 		ToListResponse(companies), int(count),
