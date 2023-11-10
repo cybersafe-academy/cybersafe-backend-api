@@ -23,5 +23,5 @@ func (rmm *ReviewsManagerDB) ExistsByUserIDAndCourseID(userID, courseID uuid.UUI
 		Where("course_id = ?", courseID).
 		First(&models.Review{})
 
-	return result.Error == nil
+	return result.Error != nil
 }
