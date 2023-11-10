@@ -128,7 +128,7 @@ definitions:
     properties:
       count:
         type: integer
-      mbtitype:
+      mbtiType:
         type: string
     type: object
   gorm.DeletedAt:
@@ -283,6 +283,8 @@ definitions:
         items:
           $ref: '#/definitions/httpmodels.QuestionResponse'
         type: array
+      reviewed:
+        type: boolean
       thumbnailURL:
         type: string
       title:

@@ -31,6 +31,8 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
+	Reviewed bool `json:"reviewed"`
+
 	Category CourseCategoryResponse `json:"category,omitempty"`
 
 	Questions []QuestionResponse `json:"questions"`

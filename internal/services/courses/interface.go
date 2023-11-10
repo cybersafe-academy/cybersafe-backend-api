@@ -25,4 +25,5 @@ type CoursesManager interface {
 	AddComment(*models.Comment) error
 	ListCommentsByCourse(uuid.UUID) []models.Comment
 	AddLikeToComment(uuid.UUID, uuid.UUID) error
+	ExistsEnrollmentByUserIDAndCourseID(uuid.UUID, uuid.UUID) bool
 }

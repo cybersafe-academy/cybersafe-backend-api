@@ -2013,7 +2013,7 @@
                 "count": {
                     "type": "integer"
                 },
-                "mbtitype": {
+                "mbtiType": {
                     "type": "string"
                 }
             }
@@ -2250,6 +2250,9 @@
                     "items": {
                         "$ref": "#/definitions/httpmodels.QuestionResponse"
                     }
+                },
+                "reviewed": {
+                    "type": "boolean"
                 },
                 "thumbnailURL": {
                     "type": "string"

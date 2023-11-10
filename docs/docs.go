@@ -2022,7 +2022,7 @@ const docTemplate = `{
                 "count": {
                     "type": "integer"
                 },
-                "mbtitype": {
+                "mbtiType": {
                     "type": "string"
                 }
             }
@@ -2259,6 +2259,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/httpmodels.QuestionResponse"
                     }
+                },
+                "reviewed": {
+                    "type": "boolean"
                 },
                 "thumbnailURL": {
                     "type": "string"

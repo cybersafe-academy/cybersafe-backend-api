@@ -81,17 +81,24 @@ func FetchCoursesHandler(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func GetCourseByID(c *components.HTTPComponents) {
-	id := chi.URLParam(c.HttpRequest, "id")
+	courseID := chi.URLParam(c.HttpRequest, "id")
 
-	if !govalidator.IsUUID(id) {
+	if !govalidator.IsUUID(courseID) {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrInvalidUUID",
 		}))
 		return
 	}
 
-	course, err := c.Components.Resources.Courses.GetByID(uuid.MustParse(id))
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
 
+	course, err := c.Components.Resources.Courses.GetByID(uuid.MustParse(courseID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -106,7 +113,12 @@ func GetCourseByID(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(course), http.StatusOK)
+	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(uuid.MustParse(courseID), currentUser.ID)
+
+	response := ToResponse(course)
+	response.Reviewed = reviewExists
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }
 
 // CreateCourseHandler
@@ -156,7 +168,7 @@ func CreateCourseHandler(c *components.HTTPComponents) {
 
 		return
 	}
-  
+
 	err = c.Components.Resources.Courses.Create(course)
 
 	if err != nil {
