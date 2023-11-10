@@ -288,6 +288,8 @@ definitions:
         items:
           $ref: '#/definitions/httpmodels.QuestionResponse'
         type: array
+      reviewed:
+        type: boolean
       thumbnailURL:
         type: string
       title:

@@ -2322,6 +2322,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/httpmodels.QuestionResponse"
                     }
                 },
+                "reviewed": {
+                    "type": "boolean"
+                },
                 "thumbnailURL": {
                     "type": "string"
                 },

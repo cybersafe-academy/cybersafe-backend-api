@@ -262,3 +262,12 @@ func (cm *CoursesManagerDB) GetReviewsByCourseID(courseID uuid.UUID) ([]models.R
 
 	return reviews, result.Error
 }
+
+func (cm *CoursesManagerDB) ExistsEnrollmentByUserIDAndCourseID(userID, courseID uuid.UUID) bool {
+	result := cm.DBConnection.
+		Where("user_id = ?", userID).
+		Where("course_id = ?", courseID).
+		First(&models.Enrollment{})
+
+	return result.Error == nil
+}
