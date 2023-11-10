@@ -113,7 +113,7 @@ func GetCourseByID(c *components.HTTPComponents) {
 		}
 	}
 
-	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(uuid.MustParse(courseID), currentUser.ID)
+	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(currentUser.ID, uuid.MustParse(courseID))
 
 	response := ToResponse(course)
 	response.Reviewed = reviewExists
