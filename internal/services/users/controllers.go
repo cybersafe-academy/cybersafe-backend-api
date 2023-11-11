@@ -44,7 +44,8 @@ func (um *UsersManagerDB) Delete(id uuid.UUID) error {
 }
 
 func (um *UsersManagerDB) Update(user *models.User) (int, error) {
-	result := um.DBConnection.Model(user).
+	result := um.DBConnection.
+		Model(user).
 		Where("email = ?", user.Email).
 		Clauses(clause.Returning{}).
 		Updates(user)

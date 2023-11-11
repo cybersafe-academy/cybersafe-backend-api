@@ -27,6 +27,7 @@ func ToResponse(user models.User) ResponseContent {
 			BirthDate:         user.BirthDate.Format("2006-01-02"),
 			CPF:               user.CPF,
 			ProfilePictureURL: user.ProfilePictureURL,
+			MbtiType:          user.MBTIType,
 		},
 		CompanyResponse: CompanyResponse{
 			ID:        user.CompanyID,
