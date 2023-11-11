@@ -33,7 +33,7 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 	var count int64
 	cm.DBConnection.Model(&models.Course{}).Count(&count)
 
-	return courses, int(count)
+    return courses, int(count)
 }
 
 func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryResponse {
@@ -144,7 +144,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 	cm.DBConnection.Model(&models.Enrollment{}).
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
-		Update("progress", progress_percentage)
+		Update("quiz_progress", progress_percentage)
 }
 
 func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (float64, error) {
@@ -181,7 +181,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 	cm.DBConnection.Model(&models.Enrollment{}).
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
-		Update("status", courseStatus)
+		Updates(models.Enrollment{Status: courseStatus, QuizProgress: hitsPercentage})
 
 	return hitsPercentage, nil
 }

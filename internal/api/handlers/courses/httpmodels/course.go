@@ -32,6 +32,7 @@ type CourseResponse struct {
 	AvgRating float64        `json:"avgRating"`
 
 	Reviewed bool `json:"reviewed"`
+	Enrollment *EnrollmentResponse `json:"enrollment,omitempty"`
 
 	Category CourseCategoryResponse `json:"category,omitempty"`
 

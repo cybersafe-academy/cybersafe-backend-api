@@ -113,9 +113,24 @@ func GetCourseByID(c *components.HTTPComponents) {
 		}
 	}
 
-	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(currentUser.ID, uuid.MustParse(courseID))
-
 	response := ToResponse(course)
+
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.Enrollment = nil
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+	} else {
+		enrollmentResponse := ToEnrollmentRespose(enrollment)
+		response.Enrollment = &enrollmentResponse
+	}
+
+	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(currentUser.ID, uuid.MustParse(courseID))
 	response.Reviewed = reviewExists
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)

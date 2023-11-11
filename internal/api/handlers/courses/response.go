@@ -206,6 +206,7 @@ func ToEnrollmentRespose(enrollment models.Enrollment) httpmodels.EnrollmentResp
 		EnrollmentFields: httpmodels.EnrollmentFields{
 			Status: enrollment.Status,
 		},
+		HitsPercentage: enrollment.QuizProgress,
 	}
 
 	return enrollmentResponse
