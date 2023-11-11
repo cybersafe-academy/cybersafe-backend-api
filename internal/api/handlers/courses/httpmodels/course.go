@@ -17,7 +17,7 @@ type CourseFields struct {
 	TitlePtBr       string  `json:"titlePtBr"`
 	DescriptionPtBr string  `json:"descriptionPtBr"`
 	ContentInHours  float64 `json:"contentInHours"`
-	ThumbnailURL    string  `json:"thumbnailURL" valid:"required"`
+	ThumbnailURL    string  `json:"thumbnailURL"`
 	Level           string  `json:"level" valid:"required"`
 	ContentURL      string  `json:"contentURL" valid:"required"`
 }
