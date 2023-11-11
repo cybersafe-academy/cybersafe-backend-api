@@ -19,6 +19,7 @@ type UserFields struct {
 	BirthDate         string `json:"birthDate" valid:"date, required"`
 	CPF               string `json:"cpf" valid:"cpf, required"`
 	ProfilePictureURL string `json:"profilePictureURL"`
+	MbtiType          string `json:"mbtiType"`
 }
 
 type ResponseContent struct {
@@ -111,6 +112,7 @@ func (re *RequestContent) ToEntity() *models.User {
 		CPF:               re.CPF,
 		ProfilePictureURL: re.ProfilePictureURL,
 		Role:              re.Role,
+		MBTIType:          re.MbtiType,
 		Password:          re.Password,
 		CompanyID:         re.CompanyID,
 	}

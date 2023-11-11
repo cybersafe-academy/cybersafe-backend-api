@@ -363,7 +363,6 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 	}
 
 	rowsAffected, err := c.Components.Resources.Users.Update(user)
-
 	if err != nil {
 		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrUnexpectedError",
@@ -376,6 +375,16 @@ func UpdateUserHandler(c *components.HTTPComponents) {
 		}))
 		return
 	}
+
+	compay, err := c.Components.Resources.Companies.GetByID(user.CompanyID)
+	if err != nil {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	user.Company = compay
 
 	response := ToResponse(*user)
 
