@@ -56,6 +56,34 @@ definitions:
       password:
         type: string
     type: object
+  companies.CompanyContentRecommendationRequestContent:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      mbtiType:
+        type: string
+    type: object
+  companies.CompanyContentRecommendationResponseContent:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      companyID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: string
+      mbtiType:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   companies.RequestContent:
     properties:
       cnpj:
@@ -67,8 +95,6 @@ definitions:
       phone:
         type: string
       tradeName:
-        type: string
-      websiteURL:
         type: string
     type: object
   companies.ResponseContent:
@@ -90,8 +116,6 @@ definitions:
       tradeName:
         type: string
       updatedAt:
-        type: string
-      websiteURL:
         type: string
     type: object
   components.Error:
@@ -194,18 +218,39 @@ definitions:
       text:
         type: string
     type: object
-  httpmodels.CourseByCategoryResponse:
-    additionalProperties:
-      items:
-        additionalProperties: {}
-        type: object
-      type: array
-    type: object
   httpmodels.CourseCategoryResponse:
     properties:
       id:
         type: string
       name:
+        type: string
+    type: object
+  httpmodels.CourseContentResponse:
+    properties:
+      avgRating:
+        type: number
+      contentInHours:
+        type: number
+      contentURL:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      level:
+        type: string
+      thumbnailURL:
+        type: string
+      title:
+        type: string
+      titlePtBr:
+        type: string
+    type: object
+  httpmodels.EnrollmentResponse:
+    properties:
+      hitsPercentage:
+        type: number
+      status:
         type: string
     type: object
   httpmodels.QuestionRequest:
@@ -275,6 +320,8 @@ definitions:
         type: string
       descriptionPtBr:
         type: string
+      enrollment:
+        $ref: '#/definitions/httpmodels.EnrollmentResponse'
       id:
         type: string
       level:
@@ -336,6 +383,21 @@ definitions:
       page:
         type: integer
     type: object
+  users.CompanyResponse:
+    properties:
+      cnpj:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      legalName:
+        type: string
+      phone:
+        type: string
+      tradeName:
+        type: string
+    type: object
   users.PersonalityTestRequest:
     properties:
       mbtiType:
@@ -343,6 +405,8 @@ definitions:
     type: object
   users.PreSignupRequest:
     properties:
+      companyID:
+        type: string
       email:
         type: string
       role:
@@ -351,6 +415,8 @@ definitions:
   users.RequestContent:
     properties:
       birthDate:
+        type: string
+      companyID:
         type: string
       cpf:
         type: string
@@ -369,6 +435,8 @@ definitions:
     properties:
       birthDate:
         type: string
+      company:
+        $ref: '#/definitions/users.CompanyResponse'
       cpf:
         type: string
       createdAt:
@@ -717,13 +785,77 @@ paths:
       summary: Update company by ID
       tags:
       - Company
+  /companies/{id}/content-recommendations:
+    put:
+      parameters:
+      - description: Request payload for updating company content recommendations
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.CompanyContentRecommendationRequestContent'
+      - description: ID of company to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "400":
+          description: Bad Request
+        "404":
+          description: Company not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update company content recommendations for a given MBTI type
+      tags:
+      - Company
+  /companies/{id}/content-recommendations/{mbti}:
+    get:
+      parameters:
+      - description: ID of company to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.CompanyContentRecommendationResponseContent'
+        "400":
+          description: Bad Request
+        "404":
+          description: Company not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Get all company content recommendations
+      tags:
+      - Company
   /courses:
     get:
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/httpmodels.CourseByCategoryResponse'
+            additionalProperties:
+              items:
+                $ref: '#/definitions/httpmodels.CourseContentResponse'
+              type: array
+            type: object
         "400":
           description: Bad Request
         default:
@@ -1479,7 +1611,7 @@ paths:
       - User
 securityDefinitions:
   Bearer:
-    description: Insert the token withou "Bearer" prefix.
+    description: Insert the token without "Bearer" prefix.
     in: header
     name: Authorization
     type: apiKey

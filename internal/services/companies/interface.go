@@ -13,4 +13,6 @@ type CompaniesManager interface {
 	Create(*models.Company) error
 	Delete(uuid.UUID) error
 	Update(*models.Company) (int, error)
+	UpdateContentRecommendations(recommendations []models.CompanyContentRecommendation) error
+	GetCompanyContentRecommendationsByMBTI(companyID uuid.UUID, mbti string) ([]models.CompanyContentRecommendation, error)
 }

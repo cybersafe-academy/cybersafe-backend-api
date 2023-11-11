@@ -16,6 +16,10 @@ func ToListResponse(users []models.User) []ResponseContent {
 
 func ToResponse(user models.User) ResponseContent {
 	return ResponseContent{
+		ID:        user.ID,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		DeletedAt: user.DeletedAt,
 		UserFields: UserFields{
 			Name:              user.Name,
 			Role:              user.Role,
@@ -24,9 +28,13 @@ func ToResponse(user models.User) ResponseContent {
 			CPF:               user.CPF,
 			ProfilePictureURL: user.ProfilePictureURL,
 		},
-		ID:        user.ID,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		DeletedAt: user.DeletedAt,
+		CompanyResponse: CompanyResponse{
+			ID:        user.CompanyID,
+			LegalName: user.Company.LegalName,
+			TradeName: user.Company.TradeName,
+			CNPJ:      user.Company.CNPJ,
+			Email:     user.Company.Email,
+			Phone:     user.Company.Phone,
+		},
 	}
 }

@@ -52,3 +52,40 @@ func (cm *CompaniesManagerDB) Update(company *models.Company) (int, error) {
 	result := cm.DBConnection.Model(company).Clauses(clause.Returning{}).Updates(company)
 	return int(result.RowsAffected), result.Error
 }
+
+func (cm *CompaniesManagerDB) UpdateContentRecommendations(recommendations []models.CompanyContentRecommendation) error {
+	// Start a transaction
+	tx := cm.DBConnection.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	for _, recommendation := range recommendations {
+		// Delete existing records that match mbti_type and company_id
+		err := tx.Where("mbti_type = ? AND company_id = ?", recommendation.MBTIType, recommendation.CompanyID).Delete(&models.CompanyContentRecommendation{}).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Insert new recommendations
+	result := tx.Create(recommendations)
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
+}
+
+func (cm *CompaniesManagerDB) GetCompanyContentRecommendationsByMBTI(companyID uuid.UUID, mbti string) ([]models.CompanyContentRecommendation, error) {
+	var recommendations []models.CompanyContentRecommendation
+	result := cm.DBConnection.
+		Preload("Category").
+		Where("company_id = ? AND mbti_type = UPPER(?)", companyID, mbti).
+		Find(&recommendations)
+
+	return recommendations, result.Error
+}

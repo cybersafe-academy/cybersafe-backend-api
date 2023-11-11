@@ -5,7 +5,9 @@ import (
 	"cybersafe-backend-api/pkg/errutil"
 	"encoding/base64"
 	"image"
+	_ "image/jpeg"
 	"image/png"
+
 	"io"
 	"strings"
 

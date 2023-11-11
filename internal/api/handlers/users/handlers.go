@@ -222,9 +222,7 @@ func CreateUserHandler(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func PreSignupUserHandler(c *components.HTTPComponents) {
-
 	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
-
 	if !ok {
 		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			MessageID: "ErrUnexpectedError",
@@ -240,8 +238,9 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 	}
 
 	user := &models.User{
-		Role:  preSignUpRequest.Role,
-		Email: preSignUpRequest.Email,
+		Role:      preSignUpRequest.Role,
+		Email:     preSignUpRequest.Email,
+		CompanyID: preSignUpRequest.CompanyID,
 	}
 
 	if models.RoleToHierarchyNumber(user.Role) > models.RoleToHierarchyNumber(currentUser.Role) {
@@ -252,7 +251,6 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 	}
 
 	err = c.Components.Resources.Users.Create(user)
-
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{

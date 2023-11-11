@@ -1,11 +1,11 @@
 package courses
 
 import (
-	"cybersafe-backend-api/internal/api/handlers/courses/httpmodels"
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -16,8 +16,6 @@ type CoursesManagerDB struct {
 
 func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.CourseExtraFields, int) {
 	var courses []models.CourseExtraFields
-	var count int64
-
 	cm.DBConnection.
 		Table("courses").
 		Preload("Reviews").
@@ -30,37 +28,74 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 		Group("courses.id").
 		Offset(offset).
 		Limit(limit).
-		Find(&courses).
-		Count(&count)
+		Find(&courses)
+
+	var count int64
+	cm.DBConnection.Model(&models.Course{}).Count(&count)
 
 	return courses, int(count)
 }
 
-func (cm *CoursesManagerDB) ListByCategory() *httpmodels.CourseByCategoryResponse {
-	var results []httpmodels.RawCoursesByCategory
+func (cm *CoursesManagerDB) ListCoursesWithRecommendation(userID, companyID uuid.UUID, userMBTIType string) ([]models.CourseExtraFields, error) {
+	var response, subscribedCourses, recommendedCourses []models.CourseExtraFields
+	var recommendedCategories []uuid.UUID
 
-	cm.DBConnection.Raw(`
-		SELECT ct.name AS category_name,
-				AVG(r.rating) AS avg_rating,
-				c.id AS course_id,
-				c.title AS course_title,
-				c.title_pt_br AS course_title_pt_br,
-				c.description AS course_description,
-				c.title_pt_br AS course_title_pt_br,
-				c.content_in_hours AS course_content_in_hours,
-				c.thumbnail_url AS course_thumbnail_url,
-				c.level AS course_level,
-				c.content_url as course_content_url
-		FROM categories ct
-		LEFT JOIN courses c ON c.category_id = ct.id
-		LEFT JOIN reviews r ON r.course_id = c.id
-		WHERE c.deleted_at IS NULL
-	GROUP BY ct.name, c.id, c.title, c.description, c.content_in_hours, c.thumbnail_url, c.level;
-	`).Scan(&results)
+	// Base query for courses
+	baseCourseQuery := func(db *gorm.DB) *gorm.DB {
+		return db.Table("courses").
+			Preload("Reviews").
+			Preload("Category").
+			Joins("LEFT JOIN reviews ON reviews.course_id = courses.id").
+			Select("courses.*, avg(reviews.rating) as avg_rating").
+			Where("courses.deleted_at IS NULL").
+			Group("courses.id")
+	}
 
-	response := GroupCoursesByCategory(results)
+	// Fetch default courses
+	if err := baseCourseQuery(cm.DBConnection).Find(&response).Error; err != nil {
+		return nil, err
+	}
 
-	return &response
+	// Fetch subscribed courses
+	if err := baseCourseQuery(cm.DBConnection).
+		Joins("JOIN enrollments ON enrollments.course_id = courses.id").
+		Where("enrollments.user_id = ?", userID).
+		Find(&subscribedCourses).Error; err != nil {
+		log.Error().Err(err).Msg("Error while fetching subscribed courses")
+	} else {
+		for i := range subscribedCourses {
+			subscribedCourses[i].Category.Name = "Subscribed"
+		}
+		response = append(response, subscribedCourses...)
+	}
+
+	// Fetching company-specific or default recommendations
+	companyRecommendationsTX := cm.DBConnection.
+		Model(&models.CompanyContentRecommendation{}).
+		Where("company_id = ? AND mbti_type = ?", companyID, userMBTIType).
+		Pluck("category_id", &recommendedCategories)
+
+	if len(recommendedCategories) == 0 && companyRecommendationsTX.Error == nil {
+		cm.DBConnection.
+			Model(&models.DefaultContentRecommendation{}).
+			Where("mbti_type = ?", userMBTIType).
+			Pluck("category_id", &recommendedCategories)
+	}
+
+	if len(recommendedCategories) > 0 {
+		if err := baseCourseQuery(cm.DBConnection).
+			Where("courses.category_id IN (?)", recommendedCategories).
+			Find(&recommendedCourses).Error; err != nil {
+			log.Error().Err(err).Msg("Error while fetching recommended courses")
+		} else {
+			for i := range recommendedCourses {
+				recommendedCourses[i].Category.Name = "Made for you"
+			}
+			response = append(response, recommendedCourses...)
+		}
+	}
+
+	return response, nil
 }
 
 func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course {
@@ -144,7 +179,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentProgress(courseID, userID uuid.UUID)
 	cm.DBConnection.Model(&models.Enrollment{}).
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
-		Update("progress", progress_percentage)
+		Update("quiz_progress", progress_percentage)
 }
 
 func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (float64, error) {
@@ -181,7 +216,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 	cm.DBConnection.Model(&models.Enrollment{}).
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
-		Update("status", courseStatus)
+		Updates(models.Enrollment{Status: courseStatus, QuizProgress: hitsPercentage})
 
 	return hitsPercentage, nil
 }

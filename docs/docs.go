@@ -540,6 +540,105 @@ const docTemplate = `{
                 }
             }
         },
+        "/companies/{id}/content-recommendations": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Update company content recommendations for a given MBTI type",
+                "parameters": [
+                    {
+                        "description": "Request payload for updating company content recommendations",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/companies.CompanyContentRecommendationRequestContent"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of company to be updated",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.ResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/{id}/content-recommendations/{mbti}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get all company content recommendations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of company to be updated",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.CompanyContentRecommendationResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses": {
             "get": {
                 "security": [
@@ -558,7 +657,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/httpmodels.CourseContentResponse"
+                                }
+                            }
                         }
                     },
                     "400": {
@@ -1913,6 +2018,49 @@ const docTemplate = `{
                 }
             }
         },
+        "companies.CompanyContentRecommendationRequestContent": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mbtiType": {
+                    "type": "string"
+                }
+            }
+        },
+        "companies.CompanyContentRecommendationResponseContent": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "companyID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mbtiType": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "companies.RequestContent": {
             "type": "object",
             "properties": {
@@ -1929,9 +2077,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tradeName": {
-                    "type": "string"
-                },
-                "websiteURL": {
                     "type": "string"
                 }
             }
@@ -1964,9 +2109,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
-                    "type": "string"
-                },
-                "websiteURL": {
                     "type": "string"
                 }
             }
@@ -2125,16 +2267,6 @@ const docTemplate = `{
                 }
             }
         },
-        "httpmodels.CourseByCategoryResponse": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "additionalProperties": {}
-                }
-            }
-        },
         "httpmodels.CourseCategoryResponse": {
             "type": "object",
             "properties": {
@@ -2142,6 +2274,49 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.CourseContentResponse": {
+            "type": "object",
+            "properties": {
+                "avgRating": {
+                    "type": "number"
+                },
+                "contentInHours": {
+                    "type": "number"
+                },
+                "contentURL": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "thumbnailURL": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "titlePtBr": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.EnrollmentResponse": {
+            "type": "object",
+            "properties": {
+                "hitsPercentage": {
+                    "type": "number"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -2248,6 +2423,9 @@ const docTemplate = `{
                 "descriptionPtBr": {
                     "type": "string"
                 },
+                "enrollment": {
+                    "$ref": "#/definitions/httpmodels.EnrollmentResponse"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -2342,6 +2520,29 @@ const docTemplate = `{
                 }
             }
         },
+        "users.CompanyResponse": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "legalName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "tradeName": {
+                    "type": "string"
+                }
+            }
+        },
         "users.PersonalityTestRequest": {
             "type": "object",
             "properties": {
@@ -2353,6 +2554,9 @@ const docTemplate = `{
         "users.PreSignupRequest": {
             "type": "object",
             "properties": {
+                "companyID": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -2365,6 +2569,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "birthDate": {
+                    "type": "string"
+                },
+                "companyID": {
                     "type": "string"
                 },
                 "cpf": {
@@ -2392,6 +2599,9 @@ const docTemplate = `{
             "properties": {
                 "birthDate": {
                     "type": "string"
+                },
+                "company": {
+                    "$ref": "#/definitions/users.CompanyResponse"
                 },
                 "cpf": {
                     "type": "string"
@@ -2425,7 +2635,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "Bearer": {
-            "description": "Insert the token withou \"Bearer\" prefix.",
+            "description": "Insert the token without \"Bearer\" prefix.",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -2443,6 +2653,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This REST API contains all services for the CyberSafe plataform.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

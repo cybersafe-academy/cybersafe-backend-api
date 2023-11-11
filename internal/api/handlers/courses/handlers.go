@@ -57,16 +57,31 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //	@Summary	List all courses grouped by category
 //
 //	@Tags		Course
-//	@success	200		{object}	httpmodels.CourseByCategoryResponse	"OK"
+//	@success	200		{object}	map[string][]httpmodels.CourseContentResponse	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Router		/courses [get]
 //	@Security	Bearer
 //	@Security	Language
 func FetchCoursesHandler(c *components.HTTPComponents) {
-	courses := c.Components.Resources.Courses.ListByCategory()
+	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "ErrUnexpectedError"}))
+		return
+	}
 
-	components.HttpResponseWithPayload(c, courses, http.StatusOK)
+	courses, err := c.Components.Resources.Courses.ListCoursesWithRecommendation(user.ID, user.CompanyID, user.MBTIType)
+	if err != nil {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToCourseByCategoryResponse(courses), http.StatusOK)
 }
 
 // GetCourseByID retrieves a course by ID
@@ -113,9 +128,24 @@ func GetCourseByID(c *components.HTTPComponents) {
 		}
 	}
 
-	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(currentUser.ID, uuid.MustParse(courseID))
-
 	response := ToResponse(course)
+
+	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.Enrollment = nil
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			}))
+			return
+		}
+	} else {
+		enrollmentResponse := ToEnrollmentRespose(enrollment)
+		response.Enrollment = &enrollmentResponse
+	}
+
+	reviewExists := c.Components.Resources.Reviews.ExistsByUserIDAndCourseID(currentUser.ID, uuid.MustParse(courseID))
 	response.Reviewed = reviewExists
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
