@@ -57,7 +57,7 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //	@Summary	List all courses grouped by category
 //
 //	@Tags		Course
-//	@success	200		{object}	httpmodels.CourseByCategoryResponse	"OK"
+//	@success	200		{object}	map[string][]httpmodels.CourseContentResponse	"OK"
 //	@Failure	400		"Bad Request"
 //	@Response	default	{object}	components.Response	"Standard error example object"
 //	@Router		/courses [get]

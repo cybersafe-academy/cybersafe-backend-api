@@ -594,6 +594,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/companies/{id}/content-recommendations/{mbti}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    },
+                    {
+                        "Language": []
+                    }
+                ],
+                "tags": [
+                    "Company"
+                ],
+                "summary": "Get all company content recommendations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of company to be updated",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/companies.CompanyContentRecommendationResponseContent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Company not found"
+                    },
+                    "default": {
+                        "description": "Standard error example object",
+                        "schema": {
+                            "$ref": "#/definitions/components.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/courses": {
             "get": {
                 "security": [
@@ -612,7 +657,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/httpmodels.CourseByCategoryResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/httpmodels.CourseContentResponse"
+                                }
+                            }
                         }
                     },
                     "400": {
@@ -1981,6 +2032,35 @@ const docTemplate = `{
                 }
             }
         },
+        "companies.CompanyContentRecommendationResponseContent": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "companyID": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mbtiType": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "companies.RequestContent": {
             "type": "object",
             "properties": {
@@ -2187,16 +2267,6 @@ const docTemplate = `{
                 }
             }
         },
-        "httpmodels.CourseByCategoryResponse": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "additionalProperties": {}
-                }
-            }
-        },
         "httpmodels.CourseCategoryResponse": {
             "type": "object",
             "properties": {
@@ -2204,6 +2274,49 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.CourseContentResponse": {
+            "type": "object",
+            "properties": {
+                "avgRating": {
+                    "type": "number"
+                },
+                "contentInHours": {
+                    "type": "number"
+                },
+                "contentURL": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "thumbnailURL": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "titlePtBr": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpmodels.EnrollmentResponse": {
+            "type": "object",
+            "properties": {
+                "hitsPercentage": {
+                    "type": "number"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -2309,6 +2422,9 @@ const docTemplate = `{
                 },
                 "descriptionPtBr": {
                     "type": "string"
+                },
+                "enrollment": {
+                    "$ref": "#/definitions/httpmodels.EnrollmentResponse"
                 },
                 "id": {
                     "type": "string"
