@@ -20,6 +20,8 @@ func AutoMigrateDB() error {
 		&models.Category{},
 		&models.Comment{},
 		&models.Like{},
+		&models.CompanyContentRecommendation{},
+		&models.DefaultContentRecommendation{},
 	}
 
 	err := db.AutoMigrate(modelsSlice...)

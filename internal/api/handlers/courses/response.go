@@ -9,7 +9,6 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 	var coursesResponse []httpmodels.CourseResponse
 
 	for _, course := range courses {
-
 		courseResponse := httpmodels.CourseResponse{
 			ID:        course.ID,
 			CreatedAt: course.CreatedAt,

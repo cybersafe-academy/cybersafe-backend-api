@@ -30,8 +30,8 @@ type User struct {
 	CPF               string `gorm:"unique;default:null"`
 	ProfilePictureURL string
 	Password          string
-	MBTIType          string
-	Enabled           bool `gorm:"default:true;not null"`
+	MBTIType          string `gorm:"index:idx_mbti_type;default:null"`
+	Enabled           bool   `gorm:"default:false;not null"`
 
 	CompanyID uuid.UUID
 	Company   Company `gorm:"foreignKey:CompanyID"`

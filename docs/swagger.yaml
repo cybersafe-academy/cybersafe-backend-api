@@ -56,6 +56,15 @@ definitions:
       password:
         type: string
     type: object
+  companies.CompanyContentRecommendationRequestContent:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      mbtiType:
+        type: string
+    type: object
   companies.RequestContent:
     properties:
       cnpj:
@@ -730,6 +739,39 @@ paths:
       - Bearer: []
       - Language: []
       summary: Update company by ID
+      tags:
+      - Company
+  /companies/{id}/content-recommendations:
+    put:
+      parameters:
+      - description: Request payload for updating company content recommendations
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/companies.CompanyContentRecommendationRequestContent'
+      - description: ID of company to be updated
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/companies.ResponseContent'
+        "400":
+          description: Bad Request
+        "404":
+          description: Company not found
+        default:
+          description: Standard error example object
+          schema:
+            $ref: '#/definitions/components.Response'
+      security:
+      - Bearer: []
+      - Language: []
+      summary: Update company content recommendations for a given MBTI type
       tags:
       - Company
   /courses:

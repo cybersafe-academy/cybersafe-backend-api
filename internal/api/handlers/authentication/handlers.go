@@ -328,7 +328,6 @@ func FirstAccessHandler(c *components.HTTPComponents) {
 	}
 
 	found := c.Components.Resources.Users.ExistsDisabledByEmail(firstAccessRequest.Email)
-
 	if found {
 		randomToken := cacheutil.MustGenRandomToken()
 

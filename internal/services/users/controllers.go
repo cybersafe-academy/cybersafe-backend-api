@@ -57,7 +57,7 @@ func (um *UsersManagerDB) ExistsByEmail(email string) bool {
 	return result.Error == nil
 }
 
-func (um *UsersManagerDB) ExistsDisabledByEmail(cpf string) bool {
-	result := um.DBConnection.Where("email = ?", cpf).Where("enabled = false").First(&models.User{})
+func (um *UsersManagerDB) ExistsDisabledByEmail(email string) bool {
+	result := um.DBConnection.Where("email = ?", email).Where("enabled = false").First(&models.User{})
 	return result.Error == nil
 }

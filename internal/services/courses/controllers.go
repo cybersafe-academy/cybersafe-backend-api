@@ -16,8 +16,6 @@ type CoursesManagerDB struct {
 
 func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.CourseExtraFields, int) {
 	var courses []models.CourseExtraFields
-	var count int64
-
 	cm.DBConnection.
 		Table("courses").
 		Preload("Reviews").
@@ -30,8 +28,10 @@ func (cm *CoursesManagerDB) ListWithPagination(offset, limit int) ([]models.Cour
 		Group("courses.id").
 		Offset(offset).
 		Limit(limit).
-		Find(&courses).
-		Count(&count)
+		Find(&courses)
+
+	var count int64
+	cm.DBConnection.Model(&models.Course{}).Count(&count)
 
 	return courses, int(count)
 }

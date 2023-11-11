@@ -266,3 +266,85 @@ func DeleteCompanyHandler(c *components.HTTPComponents) {
 
 	components.HttpResponse(c, http.StatusNoContent)
 }
+
+// UpdateCompanyContentRecommendationsHandler
+//
+//	@Summary	Update company content recommendations for a given MBTI type
+//
+//	@Tags		Company
+//	@Success	200		{object}	ResponseContent	"OK"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Company not found"
+//	@Response	default	{object}	components.Response							"Standard error example object"
+//	@Param		request	body		CompanyContentRecommendationRequestContent	true	"Request payload for updating company content recommendations"
+//	@Param		id		path		string										true	"ID of company to be updated"
+//	@Router		/companies/{id}/content-recommendations [put]
+//	@Security	Bearer
+//	@Security	Language
+func UpdateCompanyContentRecommendationsHandler(c *components.HTTPComponents) {
+	var requestContent CompanyContentRecommendationRequestContent
+	err := components.ValidateRequest(c, &requestContent)
+	if err != nil {
+		components.HttpErrorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidUUID",
+			},
+		))
+		return
+	}
+
+	_, err = c.Components.Resources.Companies.GetByID(uuid.MustParse(id))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrCompanyResourceNotFound",
+				},
+			))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				},
+			))
+			return
+		}
+	}
+
+	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	if (user.Role != models.MasterUserRole) && (user.CompanyID.String() != id) {
+		components.HttpErrorLocalizedResponse(c, http.StatusUnauthorized, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrInsufficientPermission",
+		}))
+		return
+	}
+
+	requestContent.CompanyID = uuid.MustParse(id)
+	contentRecommendations := requestContent.ToEntity()
+
+	err = c.Components.Resources.Companies.UpdateContentRecommendations(contentRecommendations)
+	if err != nil {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			},
+		))
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToCompanyContentRecommendationResponse(contentRecommendations), http.StatusOK)
+}

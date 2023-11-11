@@ -84,7 +84,7 @@ func (re *PreSignupRequest) Bind(_ *http.Request) error {
 }
 
 func (ptr *PersonalityTestRequest) Bind(_ *http.Request) error {
-	isValidMBTIType := isValidMBTIType(ptr.MBTIType)
+	isValidMBTIType := helpers.IsValidMBTIType(ptr.MBTIType)
 	if !isValidMBTIType {
 		return errutil.ErrInvalidMBTIType
 	}

@@ -231,12 +231,12 @@ func TestPersonalityTestHandler(t *testing.T) {
 		expectedResponseBody helpers.M
 		queryParams          url.Values
 		resourcesMock        services.Resources
-		mbtiType             mbti
+		mbtiType             helpers.MBTI
 	}{
 		{
 			name:               "success",
 			expectedStatusCode: http.StatusNoContent,
-			mbtiType:           INTJ,
+			mbtiType:           helpers.INTJ,
 			resourcesMock: services.Resources{
 				Users: &users.UsersManagerMock{
 					UpdateMock: func(user *models.User) (int, error) {
