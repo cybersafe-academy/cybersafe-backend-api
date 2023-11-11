@@ -53,7 +53,7 @@ func (cm *CompaniesManagerDB) Update(company *models.Company) (int, error) {
 	return int(result.RowsAffected), result.Error
 }
 
-func (cm *CompaniesManagerDB) UpdateContentRecommendations(recommendations []*models.CompanyContentRecommendation) error {
+func (cm *CompaniesManagerDB) UpdateContentRecommendations(recommendations []models.CompanyContentRecommendation) error {
 	// Start a transaction
 	tx := cm.DBConnection.Begin()
 	if tx.Error != nil {
@@ -78,4 +78,14 @@ func (cm *CompaniesManagerDB) UpdateContentRecommendations(recommendations []*mo
 
 	// Commit the transaction
 	return tx.Commit().Error
+}
+
+func (cm *CompaniesManagerDB) GetCompanyContentRecommendationsByMBTI(companyID uuid.UUID, mbti string) ([]models.CompanyContentRecommendation, error) {
+	var recommendations []models.CompanyContentRecommendation
+	result := cm.DBConnection.
+		Preload("Category").
+		Where("company_id = ? AND mbti_type = UPPER(?)", companyID, mbti).
+		Find(&recommendations)
+
+	return recommendations, result.Error
 }

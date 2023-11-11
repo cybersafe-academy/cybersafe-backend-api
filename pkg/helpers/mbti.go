@@ -1,5 +1,7 @@
 package helpers
 
+import "strings"
+
 type MBTI string
 
 const (
@@ -22,7 +24,7 @@ const (
 )
 
 func IsValidMBTIType(mbtiType string) bool {
-	switch MBTI(mbtiType) {
+	switch MBTI(strings.ToUpper(mbtiType)) {
 	case INTJ, INTP, ENTJ, ENTP, INFJ, INFP, ENFJ, ENFP, ISTJ, ISFJ, ESTJ, ESFJ, ISTP, ISFP, ESTP, ESFP:
 		return true
 	default:

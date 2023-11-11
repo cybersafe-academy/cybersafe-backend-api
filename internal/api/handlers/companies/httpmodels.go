@@ -50,6 +50,22 @@ type CompanyContentRecommendationResponseContent struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 }
 
+type CategoryResponse struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
+type CompanyContentRecommendationByMBTIResponseContent struct {
+	CompanyID  uuid.UUID          `json:"companyID"`
+	MbtiType   string             `json:"mbtiType"`
+	Categories []CategoryResponse `json:"categories"`
+
+	ID        uuid.UUID      `json:"id"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+}
+
 type CompanyContentRecommendationRequestContent struct {
 	CompanyContentRecommendationFields
 }
@@ -105,12 +121,12 @@ func (re *CompanyContentRecommendationRequestContent) Bind(_ *http.Request) erro
 	return err
 }
 
-func (re *CompanyContentRecommendationRequestContent) ToEntity() []*models.CompanyContentRecommendation {
-	formattedCompanyContentRecommendations := []*models.CompanyContentRecommendation{}
+func (re *CompanyContentRecommendationRequestContent) ToEntity() []models.CompanyContentRecommendation {
+	formattedCompanyContentRecommendations := []models.CompanyContentRecommendation{}
 
 	for _, categoryID := range re.Categories {
 		formattedCompanyContentRecommendations = append(
-			formattedCompanyContentRecommendations, &models.CompanyContentRecommendation{
+			formattedCompanyContentRecommendations, models.CompanyContentRecommendation{
 				MBTIType:   re.MBTIType,
 				CompanyID:  re.CompanyID,
 				CategoryID: uuid.MustParse(categoryID),

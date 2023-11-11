@@ -64,9 +64,24 @@ func ListCoursesHandler(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func FetchCoursesHandler(c *components.HTTPComponents) {
-	courses := c.Components.Resources.Courses.ListByCategory()
+	user, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorLocalizedResponse(
+			c,
+			http.StatusInternalServerError,
+			c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "ErrUnexpectedError"}))
+		return
+	}
 
-	components.HttpResponseWithPayload(c, courses, http.StatusOK)
+	courses, err := c.Components.Resources.Courses.ListCoursesWithRecommendation(user.ID, user.CompanyID, user.MBTIType)
+	if err != nil {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			MessageID: "ErrUnexpectedError",
+		}))
+		return
+	}
+
+	components.HttpResponseWithPayload(c, ToCourseByCategoryResponse(courses), http.StatusOK)
 }
 
 // GetCourseByID retrieves a course by ID

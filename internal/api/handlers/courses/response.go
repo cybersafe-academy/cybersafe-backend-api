@@ -312,3 +312,26 @@ func ToCommentsListResponse(comments []models.Comment) []httpmodels.CommentRespo
 
 	return commentsResponse
 }
+
+func ToCourseByCategoryResponse(courses []models.CourseExtraFields) map[string][]httpmodels.CourseContentResponse {
+	courseMap := make(map[string][]httpmodels.CourseContentResponse)
+
+	for _, course := range courses {
+		courseResponse := httpmodels.CourseContentResponse{
+			ID:             course.ID,
+			Title:          course.Title,
+			TitlePtBr:      course.TitlePtBr,
+			ThumbnailURL:   course.ThumbnailURL,
+			ContentURL:     course.ContentURL,
+			AvgRating:      course.AvgRating,
+			Description:    course.Description,
+			Level:          course.Level,
+			ContentInHours: course.ContentInHours,
+		}
+
+		categoryName := course.Category.Name
+		courseMap[categoryName] = append(courseMap[categoryName], courseResponse)
+	}
+
+	return courseMap
+}

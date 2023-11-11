@@ -5,6 +5,7 @@ import (
 	"cybersafe-backend-api/internal/api/server/middlewares"
 	"cybersafe-backend-api/internal/models"
 	"cybersafe-backend-api/pkg/errutil"
+	"cybersafe-backend-api/pkg/helpers"
 	"cybersafe-backend-api/pkg/pagination"
 	"errors"
 	"net/http"
@@ -347,4 +348,76 @@ func UpdateCompanyContentRecommendationsHandler(c *components.HTTPComponents) {
 	}
 
 	components.HttpResponseWithPayload(c, ToCompanyContentRecommendationResponse(contentRecommendations), http.StatusOK)
+}
+
+// GetCompanyContentRecommendationsHandler
+//
+//	@Summary	Get all company content recommendations
+//
+//	@Tags		Company
+//	@Success	200		{object}	CompanyContentRecommendationResponseContent	"OK"
+//	@Failure	400		"Bad Request"
+//	@Failure	404		"Company not found"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of company to be updated"
+//	@Router		/companies/{id}/content-recommendations/{mbti} [get]
+//	@Security	Bearer
+//	@Security	Language
+func GetCompanyContentRecommendationsHandler(c *components.HTTPComponents) {
+	id := chi.URLParam(c.HttpRequest, "id")
+	if !govalidator.IsUUID(id) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidUUID",
+			},
+		))
+		return
+	}
+
+	mbti := chi.URLParam(c.HttpRequest, "mbti")
+	if !helpers.IsValidMBTIType(mbti) {
+		components.HttpErrorLocalizedResponse(c, http.StatusBadRequest, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrInvalidMBTIType",
+			},
+		))
+		return
+	}
+
+	_, err := c.Components.Resources.Companies.GetByID(uuid.MustParse(id))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorLocalizedResponse(c, http.StatusNotFound, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrCompanyResourceNotFound",
+				},
+			))
+			return
+		} else {
+			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+				&i18n.LocalizeConfig{
+					MessageID: "ErrUnexpectedError",
+				},
+			))
+			return
+		}
+	}
+
+	contentRecommendations, err := c.Components.Resources.Companies.GetCompanyContentRecommendationsByMBTI(uuid.MustParse(id), mbti)
+	if err != nil {
+		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(
+			&i18n.LocalizeConfig{
+				MessageID: "ErrUnexpectedError",
+			},
+		))
+		return
+	}
+
+	var response *CompanyContentRecommendationByMBTIResponseContent
+	if len(contentRecommendations) > 0 {
+		formatted := ToCompanyContentRecommendationByMBTIResponse(contentRecommendations)
+		response = &formatted
+	}
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }

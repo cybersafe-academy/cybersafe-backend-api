@@ -31,7 +31,7 @@ type CourseResponse struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 	AvgRating float64        `json:"avgRating"`
 
-	Reviewed bool `json:"reviewed"`
+	Reviewed   bool                `json:"reviewed"`
 	Enrollment *EnrollmentResponse `json:"enrollment,omitempty"`
 
 	Category CourseCategoryResponse `json:"category,omitempty"`
@@ -63,11 +63,6 @@ type CourseExtraFields struct {
 	CourseFields
 }
 
-type CourseByCategory struct {
-	CategoryName string              `json:"name"`
-	Courses      []CourseExtraFields `json:"courses"`
-}
-
 type RawCoursesByCategory struct {
 	CourseID uuid.UUID
 
@@ -83,7 +78,22 @@ type RawCoursesByCategory struct {
 	CategoryName string
 }
 
-type CourseByCategoryResponse map[string][]map[string]any
+type CourseContentResponse struct {
+	ID             uuid.UUID `json:"id"`
+	Title          string    `json:"title"`
+	TitlePtBr      string    `json:"titlePtBr"`
+	ThumbnailURL   string    `json:"thumbnailURL"`
+	ContentURL     string    `json:"contentURL"`
+	AvgRating      float64   `json:"avgRating"`
+	Description    string    `json:"description"`
+	Level          string    `json:"level"`
+	ContentInHours float64   `json:"contentInHours"`
+}
+
+type CourseByCategory struct {
+	CategoryName string                  `json:"name"`
+	Courses      []CourseContentResponse `json:"courses"`
+}
 
 func (re *RequestContent) Bind(_ *http.Request) error {
 	if !govalidator.IsIn(re.Level, models.ValidCourseLevels...) {

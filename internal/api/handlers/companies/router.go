@@ -42,6 +42,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 				GetCompanyByIdHandler(components.HttpComponents(w, r, c))
 			})
 
+			r.Get("/{id}/content-recommendations/{mbti}", func(w http.ResponseWriter, r *http.Request) {
+				GetCompanyContentRecommendationsHandler(components.HttpComponents(w, r, c))
+			})
+
 			r.Put("/{id}/content-recommendations", func(w http.ResponseWriter, r *http.Request) {
 				UpdateCompanyContentRecommendationsHandler(components.HttpComponents(w, r, c))
 			})
