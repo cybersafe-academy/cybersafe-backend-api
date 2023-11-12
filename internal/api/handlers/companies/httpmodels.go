@@ -13,12 +13,12 @@ import (
 )
 
 type CompanyFields struct {
-	LegalName string `json:"legalName" valid:"required"`
-	TradeName string `json:"tradeName"`
-	CNPJ      string `json:"cnpj" valid:"cnpj, required"`
-	Email     string `json:"email" valid:"email, required"`
-	Phone     string `json:"phone"`
-}
+		LegalName string `json:"legalName" valid:"required"`
+		TradeName string `json:"tradeName"`
+		CNPJ      string `json:"cnpj" valid:"cnpj, required"`
+		Email     string `json:"email" valid:"email, required"`
+		Phone     string `json:"phone"`
+	}
 
 type ResponseContent struct {
 	CompanyFields

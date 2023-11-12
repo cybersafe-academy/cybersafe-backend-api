@@ -203,7 +203,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 		return 0, errutil.ErrCourseHasNoQuestionsAvailable
 	}
 
-	hitsPercentage := float64((int(userAnswersCount) / len(questionsIDs)) * 100)
+	hitsPercentage := float64(userAnswersCount) / float64(len(questionsIDs)) * 100
 
 	var courseStatus string
 
