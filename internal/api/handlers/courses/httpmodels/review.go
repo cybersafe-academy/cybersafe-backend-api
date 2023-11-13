@@ -16,8 +16,9 @@ type ReviewFields struct {
 }
 
 type UserReviewFields struct {
-	ID   uuid.UUID `json:"id" valid:"uuid"`
-	Name string    `json:"name" valid:"type(string)"`
+	ID                uuid.UUID `json:"id"`
+	Name              string    `json:"name"`
+	ProfilePictureURL string    `json:"profilePictureURL"`
 }
 
 type ReviewResponse struct {

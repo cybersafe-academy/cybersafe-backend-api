@@ -179,8 +179,9 @@ func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 		},
 		CourseID: review.CourseID,
 		User: httpmodels.UserReviewFields{
-			ID:   review.User.ID,
-			Name: review.User.Name,
+			ID:                review.User.ID,
+			Name:              review.User.Name,
+			ProfilePictureURL: review.User.ProfilePictureURL,
 		},
 	}
 
@@ -261,8 +262,9 @@ func ToReviewsListResponse(reviews []models.Review) []httpmodels.ReviewResponse 
 			DeletedAt: review.DeletedAt,
 			CourseID:  review.CourseID,
 			User: httpmodels.UserReviewFields{
-				ID:   review.User.ID,
-				Name: review.User.Name,
+				ID:                review.User.ID,
+				Name:              review.User.Name,
+				ProfilePictureURL: review.User.ProfilePictureURL,
 			},
 			ID: review.ID,
 		}
