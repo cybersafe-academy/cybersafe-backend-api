@@ -377,6 +377,9 @@ func CreateCourseReview(c *components.HTTPComponents) {
 			return
 		}
 	}
+
+	review.User = *user
+
 	components.HttpResponseWithPayload(c, ToReviewResponse(*review), http.StatusOK)
 }
 
