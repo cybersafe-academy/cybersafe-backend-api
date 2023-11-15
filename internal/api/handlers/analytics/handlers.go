@@ -20,7 +20,6 @@ import (
 //	@Security		Bearer
 //	@Security		Language
 func GetAnalyticsData(c *components.HTTPComponents) {
-
 	result, err := c.Components.Resources.Analytics.GetData()
 	if err != nil {
 		components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
@@ -46,5 +45,4 @@ func GetAnalyticsData(c *components.HTTPComponents) {
 	response.MBTICount = mbtiCountResponse
 
 	components.HttpResponseWithPayload(c, response, http.StatusOK)
-
 }

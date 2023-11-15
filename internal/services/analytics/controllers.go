@@ -74,6 +74,9 @@ func (am *AnalyticsManagerDB) GetData() (*AnalyticsData, error) {
 		return nil, err
 	}
 
+	if userCorrectAnswersCount == 0 {
+		userCorrectAnswersCount = 1
+	}
 	userAnswersPercentage := float64(userAnswersCount) / float64(userCorrectAnswersCount) * 100
 
 	// Count by MBTI
