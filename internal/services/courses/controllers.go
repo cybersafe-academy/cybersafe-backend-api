@@ -227,7 +227,6 @@ func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
 }
 
 func (cm *CoursesManagerDB) Withdraw(courseID, userID uuid.UUID) error {
-	// Initialize transaction
 	tx := cm.DBConnection.Begin()
 
 	result := tx.
@@ -240,8 +239,17 @@ func (cm *CoursesManagerDB) Withdraw(courseID, userID uuid.UUID) error {
 		return result.Error
 	}
 
-	result = tx.
+	questionsIDs := tx.
+		Model(&models.Question{}).
 		Where("course_id = ?", courseID).
+		Pluck("id", &[]string{})
+	if questionsIDs.Error != nil {
+		tx.Rollback()
+		return questionsIDs.Error
+	}
+
+	result = tx.
+		Where("question_id IN(?)", questionsIDs).
 		Where("user_id = ?", userID).
 		Unscoped().
 		Delete(&models.UserAnswer{})
