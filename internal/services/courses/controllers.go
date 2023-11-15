@@ -197,6 +197,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 		Joins("LEFT JOIN answers ON answers.id = user_answers.answer_id").
 		Where("answers.question_id IN (?)", questionsIDs).
 		Where("answers.is_correct = ?", true).
+		Where("user_answers.user_id = ?", userID).
 		Count(&userAnswersCount)
 
 	if len(questionsIDs) <= 0 {
