@@ -18,6 +18,7 @@ type CoursesManager interface {
 	UpdateEnrollmentProgress(uuid.UUID, uuid.UUID)
 	UpdateEnrollmentStatus(uuid.UUID, uuid.UUID) (float64, error)
 	Enroll(*models.Enrollment) error
+	Withdraw(uuid.UUID, uuid.UUID) error
 	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
 	GetQuestionsByCourseID(uuid.UUID) ([]models.Question, error)
 	GetReviewsByCourseID(uuid.UUID) ([]models.Review, error)

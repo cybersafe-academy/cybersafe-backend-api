@@ -81,7 +81,9 @@ func FetchCoursesHandler(c *components.HTTPComponents) {
 		return
 	}
 
-	components.HttpResponseWithPayload(c, ToCourseByCategoryResponse(courses), http.StatusOK)
+	response := ToCourseByCategoryResponse(courses)
+
+	components.HttpResponseWithPayload(c, response, http.StatusOK)
 }
 
 // GetCourseByID retrieves a course by ID
@@ -553,7 +555,6 @@ func AddAnswersBatch(c *components.HTTPComponents) {
 //	@Security	Bearer
 //	@Security	Language
 func Enroll(c *components.HTTPComponents) {
-
 	courseID := chi.URLParam(c.HttpRequest, "id")
 
 	if !govalidator.IsUUID(courseID) {
@@ -588,6 +589,46 @@ func Enroll(c *components.HTTPComponents) {
 			components.HttpErrorLocalizedResponse(c, http.StatusInternalServerError, c.Components.Localizer.MustLocalize(&i18n.LocalizeConfig{
 				MessageID: "ErrUnexpectedError",
 			}))
+			return
+		}
+	}
+
+	components.HttpResponse(c, http.StatusNoContent)
+}
+
+// Withdraw
+//
+//	@Summary	Withdraw from a course
+//
+//	@Tags		Course
+//	@success	204		"No content"
+//	@Failure	400		"Bad Request"
+//	@Response	default	{object}	components.Response	"Standard error example object"
+//	@Param		id		path		string				true	"ID of course"
+//	@Router		/courses/{id}/withdraw [post]
+//	@Security	Bearer
+//	@Security	Language
+func Withdraw(c *components.HTTPComponents) {
+	courseID := chi.URLParam(c.HttpRequest, "id")
+
+	if !govalidator.IsUUID(courseID) {
+		components.HttpErrorResponse(c, http.StatusBadRequest, errutil.ErrInvalidUUID)
+		return
+	}
+
+	currentUser, ok := c.HttpRequest.Context().Value(middlewares.UserKey).(*models.User)
+	if !ok {
+		components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
+		return
+	}
+
+	err := c.Components.Resources.Courses.Withdraw(uuid.MustParse(courseID), currentUser.ID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			components.HttpErrorResponse(c, http.StatusConflict, errutil.ErrCourseResourceNotFound)
+			return
+		} else {
+			components.HttpErrorResponse(c, http.StatusInternalServerError, errutil.ErrUnexpectedError)
 			return
 		}
 	}

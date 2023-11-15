@@ -226,6 +226,16 @@ func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
 	return result.Error
 }
 
+func (cm *CoursesManagerDB) Withdraw(courseID, userID uuid.UUID) error {
+	result := cm.DBConnection.
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Unscoped().
+		Delete(&models.Enrollment{})
+
+	return result.Error
+}
+
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {
 	result := cm.DBConnection.Create(comment)
 	return result.Error
