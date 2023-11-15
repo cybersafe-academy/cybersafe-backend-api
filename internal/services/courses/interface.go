@@ -10,7 +10,7 @@ type CoursesManager interface {
 	ListWithPagination(int, int) ([]models.CourseExtraFields, int)
 	ListCoursesWithRecommendation(userID, companyID uuid.UUID, userMBTIType string) ([]models.CourseExtraFields, error)
 	GetEnrolledCourses(uuid.UUID) []models.Course
-	GetByID(uuid.UUID) (models.Course, error)
+	GetByID(uuid.UUID) (models.CourseExtraFields, error)
 	Create(*models.Course) error
 	Delete(uuid.UUID) error
 	Update(*models.Course) (int, error)

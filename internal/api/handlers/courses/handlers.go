@@ -130,7 +130,7 @@ func GetCourseByID(c *components.HTTPComponents) {
 		}
 	}
 
-	response := ToResponse(course)
+	response := ToResponseWithAvgRating(course)
 
 	enrollment, err := c.Components.Resources.Courses.GetEnrollmentProgress(uuid.MustParse(courseID), currentUser.ID)
 	if err != nil {

@@ -110,8 +110,8 @@ func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course
 	return courses
 }
 
-func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
-	var course models.Course
+func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.CourseExtraFields, error) {
+	var course models.CourseExtraFields
 
 	result := cm.DBConnection.
 		Table("courses").
