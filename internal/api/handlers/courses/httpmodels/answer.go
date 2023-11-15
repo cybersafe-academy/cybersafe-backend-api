@@ -23,8 +23,8 @@ type AnswerFields struct {
 }
 
 type AddAnswerRequest struct {
-	QuestionID uuid.UUID `json:"questionID" valid:"required"`
-	AnswerID   uuid.UUID `json:"answerID" valid:"required"`
+	QuestionID uuid.UUID `json:"questionID"`
+	AnswerID   uuid.UUID `json:"answerID"`
 }
 
 type AddAnswersBatchRequest struct {
