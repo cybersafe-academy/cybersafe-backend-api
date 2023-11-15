@@ -53,6 +53,9 @@ func (am *AnalyticsManagerDB) GetData() (*AnalyticsData, error) {
 	}
 
 	totalEnrollments := completedAndFailedCount + inProgressCount
+	if totalEnrollments == 0 {
+		totalEnrollments = 1
+	}
 	completionPercentage := float64(completedAndFailedCount) / float64(totalEnrollments) * 100
 
 	// Accuracy in quizzes
