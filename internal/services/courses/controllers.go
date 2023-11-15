@@ -227,13 +227,30 @@ func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
 }
 
 func (cm *CoursesManagerDB) Withdraw(courseID, userID uuid.UUID) error {
-	result := cm.DBConnection.
+	// Initialize transaction
+	tx := cm.DBConnection.Begin()
+
+	result := tx.
 		Where("course_id = ?", courseID).
 		Where("user_id = ?", userID).
 		Unscoped().
 		Delete(&models.Enrollment{})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
 
-	return result.Error
+	result = tx.
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Unscoped().
+		Delete(&models.UserAnswer{})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
+
+	return tx.Commit().Error
 }
 
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {
