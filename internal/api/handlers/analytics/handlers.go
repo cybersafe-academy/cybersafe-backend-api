@@ -2,6 +2,7 @@ package analytics
 
 import (
 	"cybersafe-backend-api/internal/api/components"
+	"cybersafe-backend-api/pkg/helpers"
 	"net/http"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -30,8 +31,8 @@ func GetAnalyticsData(c *components.HTTPComponents) {
 
 	response := AnalyticsDataResponse{
 		NumberOfUsers:     result.NumberOfUsers,
-		CourseCompletion:  result.CourseCompletion,
-		AccuracyInQuizzes: result.AccuracyInQuizzes,
+		CourseCompletion:  helpers.Float64ToFixed(result.CourseCompletion, 2),
+		AccuracyInQuizzes: helpers.Float64ToFixed(result.AccuracyInQuizzes, 2),
 	}
 
 	var mbtiCountResponse []MBTICount
