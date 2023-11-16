@@ -265,7 +265,7 @@ func PreSignupUserHandler(c *components.HTTPComponents) {
 		}
 	}
 
-	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusNoContent)
+	components.HttpResponseWithPayload(c, ToResponse(*user), http.StatusCreated)
 }
 
 // DeleteUserHandler

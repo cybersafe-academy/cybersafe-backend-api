@@ -167,6 +167,57 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 	return courseResponse
 }
 
+func ToResponseWithAvgRating(course models.CourseExtraFields) httpmodels.CourseResponse {
+	courseResponse := httpmodels.CourseResponse{
+		ID:        course.ID,
+		AvgRating: course.AvgRating,
+		CreatedAt: course.CreatedAt,
+		UpdatedAt: course.UpdatedAt,
+		DeletedAt: course.DeletedAt,
+		CourseFields: httpmodels.CourseFields{
+			Title:           course.Title,
+			Description:     course.Description,
+			TitlePtBr:       course.TitlePtBr,
+			DescriptionPtBr: course.DescriptionPtBr,
+			ContentInHours:  course.ContentInHours,
+			ThumbnailURL:    course.ThumbnailURL,
+			Level:           course.Level,
+			ContentURL:      course.ContentURL,
+		},
+		Category: httpmodels.CourseCategoryResponse{
+			ID: course.CategoryID,
+			CategoryFields: httpmodels.CategoryFields{
+				Name: course.Category.Name,
+			},
+		},
+	}
+
+	for _, question := range course.Questions {
+		questionResponse := httpmodels.QuestionResponse{
+			ID: question.ID,
+			QuestionFields: httpmodels.QuestionFields{
+				Wording:     question.Wording,
+				WordingPtBr: question.WordingPtBr,
+			},
+		}
+
+		for _, answer := range question.Answers {
+			questionResponse.Answers = append(questionResponse.Answers,
+				httpmodels.AnswerResponse{
+					ID: answer.ID,
+					AnswerFields: httpmodels.AnswerFields{
+						Text:     answer.Text,
+						TextPtBr: answer.TextPtBr,
+					},
+				})
+		}
+
+		courseResponse.Questions = append(courseResponse.Questions, questionResponse)
+	}
+
+	return courseResponse
+}
+
 func ToReviewResponse(review models.Review) httpmodels.ReviewResponse {
 	reviewResponse := httpmodels.ReviewResponse{
 		ID:        review.ID,

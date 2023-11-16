@@ -99,6 +99,10 @@ func SetupRoutes(c *components.Components) http.Handler {
 			Enroll(components.HttpComponents(w, r, c))
 		})
 
+		r.Post("/{id}/withdraw", func(w http.ResponseWriter, r *http.Request) {
+			Withdraw(components.HttpComponents(w, r, c))
+		})
+
 		r.Post("/{courseID}/comments/{commentID}/likes", func(w http.ResponseWriter, r *http.Request) {
 			AddLikeToComment(components.HttpComponents(w, r, c))
 		})

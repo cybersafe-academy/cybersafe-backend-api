@@ -10,7 +10,7 @@ type CoursesManager interface {
 	ListWithPagination(int, int) ([]models.CourseExtraFields, int)
 	ListCoursesWithRecommendation(userID, companyID uuid.UUID, userMBTIType string) ([]models.CourseExtraFields, error)
 	GetEnrolledCourses(uuid.UUID) []models.Course
-	GetByID(uuid.UUID) (models.Course, error)
+	GetByID(uuid.UUID) (models.CourseExtraFields, error)
 	Create(*models.Course) error
 	Delete(uuid.UUID) error
 	Update(*models.Course) (int, error)
@@ -18,6 +18,7 @@ type CoursesManager interface {
 	UpdateEnrollmentProgress(uuid.UUID, uuid.UUID)
 	UpdateEnrollmentStatus(uuid.UUID, uuid.UUID) (float64, error)
 	Enroll(*models.Enrollment) error
+	Withdraw(uuid.UUID, uuid.UUID) error
 	GetEnrollmentProgress(uuid.UUID, uuid.UUID) (models.Enrollment, error)
 	GetQuestionsByCourseID(uuid.UUID) ([]models.Question, error)
 	GetReviewsByCourseID(uuid.UUID) ([]models.Review, error)

@@ -51,7 +51,7 @@ type ResponseContent struct {
 type RequestContent struct {
 	CourseFields
 
-	CategoryID uuid.UUID `valid:"required"`
+	CategoryID uuid.UUID `json:"categoryId"`
 
 	Questions []QuestionRequest `json:"questions"`
 }

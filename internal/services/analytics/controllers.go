@@ -53,6 +53,9 @@ func (am *AnalyticsManagerDB) GetData() (*AnalyticsData, error) {
 	}
 
 	totalEnrollments := completedAndFailedCount + inProgressCount
+	if totalEnrollments == 0 {
+		totalEnrollments = 1
+	}
 	completionPercentage := float64(completedAndFailedCount) / float64(totalEnrollments) * 100
 
 	// Accuracy in quizzes
@@ -74,7 +77,10 @@ func (am *AnalyticsManagerDB) GetData() (*AnalyticsData, error) {
 		return nil, err
 	}
 
-	userAnswersPercentage := float64(userAnswersCount) / float64(userCorrectAnswersCount) * 100
+	if userCorrectAnswersCount == 0 {
+		userCorrectAnswersCount = 1
+	}
+	userAnswersPercentage := float64(userCorrectAnswersCount) / float64(userAnswersCount) * 100
 
 	// Count by MBTI
 	result = am.DBConnection.Model(userModel).

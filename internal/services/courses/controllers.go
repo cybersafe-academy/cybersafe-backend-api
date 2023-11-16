@@ -110,8 +110,8 @@ func (cm *CoursesManagerDB) GetEnrolledCourses(userID uuid.UUID) []models.Course
 	return courses
 }
 
-func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.Course, error) {
-	var course models.Course
+func (cm *CoursesManagerDB) GetByID(id uuid.UUID) (models.CourseExtraFields, error) {
+	var course models.CourseExtraFields
 
 	result := cm.DBConnection.
 		Table("courses").
@@ -197,6 +197,7 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 		Joins("LEFT JOIN answers ON answers.id = user_answers.answer_id").
 		Where("answers.question_id IN (?)", questionsIDs).
 		Where("answers.is_correct = ?", true).
+		Where("user_answers.user_id = ?", userID).
 		Count(&userAnswersCount)
 
 	if len(questionsIDs) <= 0 {
@@ -224,6 +225,41 @@ func (cm *CoursesManagerDB) UpdateEnrollmentStatus(courseID, userID uuid.UUID) (
 func (cm *CoursesManagerDB) Enroll(enrollment *models.Enrollment) error {
 	result := cm.DBConnection.Create(enrollment)
 	return result.Error
+}
+
+func (cm *CoursesManagerDB) Withdraw(courseID, userID uuid.UUID) error {
+	tx := cm.DBConnection.Begin()
+
+	result := tx.
+		Where("course_id = ?", courseID).
+		Where("user_id = ?", userID).
+		Unscoped().
+		Delete(&models.Enrollment{})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
+
+	questionsIDs := tx.
+		Model(&models.Question{}).
+		Where("course_id = ?", courseID).
+		Pluck("id", &[]string{})
+	if questionsIDs.Error != nil {
+		tx.Rollback()
+		return questionsIDs.Error
+	}
+
+	result = tx.
+		Where("question_id IN(?)", questionsIDs).
+		Where("user_id = ?", userID).
+		Unscoped().
+		Delete(&models.UserAnswer{})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
+
+	return tx.Commit().Error
 }
 
 func (cm *CoursesManagerDB) AddComment(comment *models.Comment) error {
