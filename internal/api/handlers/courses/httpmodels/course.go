@@ -20,6 +20,7 @@ type CourseFields struct {
 	ThumbnailURL    string  `json:"thumbnailURL"`
 	Level           string  `json:"level" valid:"required"`
 	ContentURL      string  `json:"contentURL" valid:"required"`
+	Teste           string  `json:"teste" valid:"required"`
 }
 
 type CourseResponse struct {
@@ -119,6 +120,7 @@ func (re *RequestContent) ToEntity() *models.Course {
 		Level:           re.Level,
 		CategoryID:      re.CategoryID,
 		ContentURL:      re.ContentURL,
+		Teste:           re.Teste,
 	}
 
 	for _, question := range re.Questions {

@@ -31,6 +31,7 @@ type Course struct {
 	Category   Category `gorm:"foreignKey:CategoryID"`
 
 	ContentURL string
+	Teste      string
 
 	Questions   []Question   `gorm:"foreignKey:CourseID"`
 	Reviews     []Review     `gorm:"foreignKey:CourseID"`

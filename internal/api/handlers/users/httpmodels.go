@@ -59,10 +59,6 @@ type PersonalityTestRequest struct {
 }
 
 func (re *RequestContent) Bind(_ *http.Request) error {
-	if !govalidator.IsIn(re.Role, models.ValidUserRoles...) {
-		return errutil.ErrInvalidUserRole
-	}
-
 	_, err := govalidator.ValidateStruct(*re)
 	if err != nil {
 		return err

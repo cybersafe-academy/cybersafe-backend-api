@@ -24,6 +24,7 @@ func ToListResponse(courses []models.CourseExtraFields) []httpmodels.CourseRespo
 				ThumbnailURL:    course.ThumbnailURL,
 				Level:           course.Level,
 				ContentURL:      course.ContentURL,
+				Teste:           course.Teste,
 			},
 			Category: httpmodels.CourseCategoryResponse{
 				ID: course.Category.ID,
@@ -132,6 +133,7 @@ func ToResponse(course models.Course) httpmodels.CourseResponse {
 			ThumbnailURL:    course.ThumbnailURL,
 			Level:           course.Level,
 			ContentURL:      course.ContentURL,
+			Teste:           course.Teste,
 		},
 		Category: httpmodels.CourseCategoryResponse{
 			ID: course.CategoryID,
